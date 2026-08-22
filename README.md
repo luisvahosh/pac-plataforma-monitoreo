@@ -14,7 +14,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 1 | Arquitectura y diseño técnico | ✅ Aprobada |
 | 2 | Infraestructura base y andamiaje | 🔨 En rama `fase-2-infraestructura` |
 | 3 | Modelo de datos y backend core del dominio | 🔨 En rama `fase-3-dominio` |
-| 4–15 | Auth/2FA, avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 4 | Autenticación, usuarios, roles y 2FA | 🔨 En rama `fase-4-autenticacion` |
+| 5–15 | Avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -83,10 +84,9 @@ Endpoints principales (bajo `/api`):
 | GET | `/api/public/proyectos/:id/cronograma` | Cronograma con avance y estados (público) |
 | GET | `/api/public/proyectos/:id/indicadores` | Indicadores agregados (público) |
 
-> ⚠️ **Temporal:** en la Fase 3 los endpoints de **escritura no tienen autenticación**.
-> La protección por rol (solo Administrador para gestión y cambios de Línea Base)
-> se añade en la **Fase 4**. No expongas estos endpoints de escritura en un
-> despliegue público hasta entonces.
+> ✅ **Actualizado en la Fase 4:** los endpoints de escritura ya están protegidos
+> por autenticación + rol (ver sección de Autenticación). Los públicos siguen en
+> `/api/public/**`.
 
 ### Migraciones
 
@@ -103,6 +103,37 @@ cd backend
 npm install
 npm test
 ```
+
+## Autenticación y roles (Fase 4)
+
+Autenticación con contraseña + **2FA (TOTP, Microsoft Authenticator)**, contraseñas con **Argon2id**, secreto TOTP cifrado en reposo, tokens de sesión (access + refresh) y **RBAC** (Administrador / Colaborador). Sin autorregistro: las cuentas las crea un Administrador.
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST | `/api/auth/login` | Paso 1: usuario + contraseña → reto de 2FA |
+| POST | `/api/auth/2fa/verify` | Paso 2: código TOTP → access + refresh token |
+| POST | `/api/auth/refresh` | Renueva el access token (rota el refresh) |
+| POST | `/api/auth/logout` | Revoca el refresh token |
+| POST | `/api/auth/activate` | Activa cuenta (define contraseña + enrola 2FA, devuelve URI otpauth) |
+| POST | `/api/auth/password/forgot` | Solicita recuperación (respuesta neutra) |
+| POST | `/api/auth/password/reset` | Restablece contraseña con token |
+| POST/GET/PATCH | `/api/usuarios` | Gestión de usuarios — **solo Administrador** |
+| POST | `/api/usuarios/:id/desactivar` | Desactiva (conserva datos, RN-14) |
+
+**Flujo:** el Administrador crea un usuario → llega correo de activación → el usuario activa, define contraseña y escanea el QR en Microsoft Authenticator → inicia sesión con contraseña + código TOTP. Sin 2FA válido no hay sesión.
+
+### Variables de entorno nuevas
+
+Ver `.env.example`: `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ACCESS_TOKEN_TTL`, `RETO_2FA_TTL`, `REFRESH_TOKEN_TTL_DIAS`, `CIFRADO_2FA_SECRET`, `PASSWORD_MIN_LONGITUD`, `LOGIN_MAX_INTENTOS`, `LOGIN_BLOQUEO_MINUTOS`, `CORREO_MODO`, `CORREO_REMITENTE`, `SMTP_*`, `APP_URL`.
+
+### Correo (Office 365)
+
+- `CORREO_MODO=dev` (por defecto): **no envía correos reales**, los registra en consola. Útil para desarrollo y pruebas.
+- `CORREO_MODO=smtp`: envía por Office 365 / Microsoft 365 vía SMTP autenticado.
+
+> ⚠️ **A confirmar con el administrador del tenant de Microsoft 365:** si **SMTP AUTH**
+> está habilitado, o si hay que registrar una app en **Entra ID** con permiso
+> `Mail.Send` (Microsoft Graph API). El envío real de correos depende de esto.
 
 ## Calidad de código
 

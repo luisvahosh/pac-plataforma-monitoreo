@@ -89,9 +89,68 @@ model CambioLineaBase {
   fechaOriginal   DateTime? @map("fecha_original")
   fechaNueva      DateTime? @map("fecha_nueva")
   usuarioId       String?   @map("usuario_id")
+  usuario         Usuario?  @relation(fields: [usuarioId], references: [id])
   justificacion   String
   fechaHoraCambio DateTime  @default(now()) @map("fecha_hora_cambio")
 
   @@index([entidadTipo, entidadId])
   @@map("cambio_linea_base")
+}
+
+// ─── Autenticación y usuarios (Fase 4) ──────────────────────────────
+
+model Rol {
+  id       String    @id @default(uuid())
+  nombre   String    @unique // 'administrador' | 'colaborador'
+  usuarios Usuario[]
+
+  @@map("rol")
+}
+
+model Usuario {
+  id                String    @id @default(uuid())
+  rolId             String    @map("rol_id")
+  nombre            String
+  email             String    @unique
+  passwordHash      String?   @map("password_hash") // Argon2id; nunca texto plano
+  totpSecretCifrado String?   @map("totp_secret_cifrado") // AES-GCM en reposo
+  totpHabilitado    Boolean   @default(false) @map("totp_habilitado")
+  estado            String    @default("pendiente_activacion") // pendiente_activacion | activo | inactivo
+  intentosFallidos  Int       @default(0) @map("intentos_fallidos")
+  bloqueadoHasta    DateTime? @map("bloqueado_hasta")
+  creadoEn          DateTime  @default(now()) @map("creado_en")
+
+  rol              Rol               @relation(fields: [rolId], references: [id])
+  tokens           TokenCuenta[]
+  refreshTokens    RefreshToken[]
+  cambiosLineaBase CambioLineaBase[]
+
+  @@map("usuario")
+}
+
+model TokenCuenta {
+  id        String   @id @default(uuid())
+  usuarioId String   @map("usuario_id")
+  tipo      String // 'activacion' | 'recuperacion'
+  tokenHash String   @map("token_hash") // SHA-256 del token; el token en claro solo va por correo
+  expiraEn  DateTime @map("expira_en")
+  usado     Boolean  @default(false)
+  creadoEn  DateTime @default(now()) @map("creado_en")
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, tipo])
+  @@map("token_cuenta")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  usuarioId String   @map("usuario_id")
+  tokenHash String   @map("token_hash")
+  expiraEn  DateTime @map("expira_en")
+  revocado  Boolean  @default(false)
+  creadoEn  DateTime @default(now()) @map("creado_en")
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("refresh_token")
 }

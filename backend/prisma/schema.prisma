@@ -22,3 +22,76 @@ model AppMeta {
 
   @@map("app_meta")
 }
+
+// ─── Dominio (Fase 3) ───────────────────────────────────────────────
+// Proyecto → Fase → Actividad → Hito (RN-01). El Estado de la Actividad
+// NO se almacena: se deriva en consulta (ver src/dominio/estado-actividad.ts).
+
+model Proyecto {
+  id          String    @id @default(uuid())
+  nombre      String
+  descripcion String?
+  objetivos   String?
+  fechaInicio DateTime? @map("fecha_inicio")
+  fechaFin    DateTime? @map("fecha_fin")
+  creadoEn    DateTime  @default(now()) @map("creado_en")
+  fases       Fase[]
+
+  @@map("proyecto")
+}
+
+model Fase {
+  id             String      @id @default(uuid())
+  proyectoId     String      @map("proyecto_id")
+  nombre         String
+  descripcion    String?
+  pesoPorcentaje Float       @default(0) @map("peso_porcentaje") // aporte al Proyecto; el conjunto suma 100
+  orden          Int         @default(0)
+  proyecto       Proyecto    @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
+  actividades    Actividad[]
+
+  @@map("fase")
+}
+
+model Actividad {
+  id               String    @id @default(uuid())
+  faseId           String    @map("fase_id")
+  nombre           String
+  descripcion      String?
+  fechaInicioPlan  DateTime? @map("fecha_inicio_plan") // línea base vigente
+  fechaFinPlan     DateTime? @map("fecha_fin_plan") // línea base vigente
+  finalizada       Boolean   @default(false)
+  avancePorcentaje Float     @default(0) @map("avance_porcentaje") // 0..100
+  fase             Fase      @relation(fields: [faseId], references: [id], onDelete: Cascade)
+  hitos            Hito[]
+
+  @@map("actividad")
+}
+
+model Hito {
+  id            String    @id @default(uuid())
+  actividadId   String    @map("actividad_id")
+  nombre        String
+  fechaObjetivo DateTime? @map("fecha_objetivo") // línea base vigente
+  cumplido      Boolean   @default(false)
+  actividad     Actividad @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+
+  @@map("hito")
+}
+
+// Historial INMUTABLE de cambios de Línea Base (RN-07). La fecha original
+// nunca se sobrescribe. usuarioId será FK a Usuario a partir de la Fase 4.
+model CambioLineaBase {
+  id              String    @id @default(uuid())
+  entidadTipo     String    @map("entidad_tipo") // 'actividad' | 'hito'
+  entidadId       String    @map("entidad_id")
+  campo           String // 'fecha_inicio' | 'fecha_fin' | 'fecha_objetivo'
+  fechaOriginal   DateTime? @map("fecha_original")
+  fechaNueva      DateTime? @map("fecha_nueva")
+  usuarioId       String?   @map("usuario_id")
+  justificacion   String
+  fechaHoraCambio DateTime  @default(now()) @map("fecha_hora_cambio")
+
+  @@index([entidadTipo, entidadId])
+  @@map("cambio_linea_base")
+}

@@ -13,7 +13,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 0 | Descubrimiento y definición de requisitos | ✅ Aprobada |
 | 1 | Arquitectura y diseño técnico | ✅ Aprobada |
 | 2 | Infraestructura base y andamiaje | 🔨 En rama `fase-2-infraestructura` |
-| 3–15 | Dominio, auth/2FA, avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 3 | Modelo de datos y backend core del dominio | 🔨 En rama `fase-3-dominio` |
+| 4–15 | Auth/2FA, avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -62,6 +63,46 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 Caddy gestiona el certificado TLS automáticamente. Solo el reverse proxy publica
 puertos (80/443); PostgreSQL no se expone al exterior.
+
+## Dominio (Fase 3)
+
+Backend NestJS + Prisma con las entidades centrales: **Proyecto → Fase → Actividad → Hito**, e historial inmutable de **Línea Base**.
+
+Endpoints principales (bajo `/api`):
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST/GET/PATCH/DELETE | `/api/proyectos` | CRUD de Proyecto |
+| POST/GET/PATCH/DELETE | `/api/fases` | CRUD de Fase (`?proyectoId=` para listar) |
+| GET | `/api/fases/validar-pesos/:proyectoId` | Verifica que los pesos de las Fases sumen 100 % |
+| POST/GET/PATCH/DELETE | `/api/actividades` | CRUD de Actividad (`?faseId=` para listar) |
+| GET | `/api/actividades/:id/estado?umbralDias=7` | Estado derivado (pendiente/en ejecución/finalizada/próxima a vencer/vencida) |
+| POST/GET/PATCH/DELETE | `/api/hitos` | CRUD de Hito (`?actividadId=` para listar) |
+| POST | `/api/linea-base/cambios` | Cambio autorizado de Línea Base (conserva fecha original + historial) |
+| GET | `/api/linea-base/cambios?entidadTipo=&entidadId=` | Historial de cambios |
+| GET | `/api/public/proyectos/:id/cronograma` | Cronograma con avance y estados (público) |
+| GET | `/api/public/proyectos/:id/indicadores` | Indicadores agregados (público) |
+
+> ⚠️ **Temporal:** en la Fase 3 los endpoints de **escritura no tienen autenticación**.
+> La protección por rol (solo Administrador para gestión y cambios de Línea Base)
+> se añade en la **Fase 4**. No expongas estos endpoints de escritura en un
+> despliegue público hasta entonces.
+
+### Migraciones
+
+Las migraciones viven en `backend/prisma/migrations/` (`0001_init`, `0002_dominio`)
+y se aplican con `prisma migrate deploy` (el contenedor `backend` lo hace al arrancar).
+
+### Pruebas
+
+Lógica de dominio cubierta por pruebas unitarias (cálculo de avance RN-02, derivación
+de estado RN-03/04, inmutabilidad de Línea Base RN-07):
+
+```bash
+cd backend
+npm install
+npm test
+```
 
 ## Calidad de código
 

@@ -1,0 +1,81 @@
+import {
+  avanceFase,
+  avanceProyecto,
+  sumaPesosFases,
+  validarPesosFases,
+} from './calculo-avance';
+
+describe('calculo-avance (RN-02)', () => {
+  describe('avanceFase — promedio simple', () => {
+    it('fase vacía devuelve 0', () => {
+      expect(avanceFase([])).toBe(0);
+    });
+
+    it('promedia sin importar el número de actividades', () => {
+      expect(avanceFase([{ avancePorcentaje: 0 }, { avancePorcentaje: 100 }])).toBe(50);
+      expect(
+        avanceFase([
+          { avancePorcentaje: 30 },
+          { avancePorcentaje: 60 },
+          { avancePorcentaje: 90 },
+        ]),
+      ).toBe(60);
+    });
+
+    it('maneja 0 % y 100 %', () => {
+      expect(avanceFase([{ avancePorcentaje: 0 }])).toBe(0);
+      expect(avanceFase([{ avancePorcentaje: 100 }])).toBe(100);
+    });
+  });
+
+  describe('validarPesosFases', () => {
+    it('true cuando suman 100', () => {
+      expect(validarPesosFases([{ pesoPorcentaje: 40 }, { pesoPorcentaje: 60 }])).toBe(true);
+    });
+    it('false cuando no suman 100', () => {
+      expect(validarPesosFases([{ pesoPorcentaje: 40 }, { pesoPorcentaje: 40 }])).toBe(false);
+    });
+    it('false cuando no hay fases', () => {
+      expect(validarPesosFases([])).toBe(false);
+    });
+    it('sumaPesosFases suma correctamente', () => {
+      expect(sumaPesosFases([{ pesoPorcentaje: 25 }, { pesoPorcentaje: 75 }])).toBe(100);
+    });
+  });
+
+  describe('avanceProyecto — ponderado por peso de Fase', () => {
+    it('proyecto vacío devuelve 0', () => {
+      expect(avanceProyecto([])).toBe(0);
+    });
+
+    it('pondera por el peso de cada Fase', () => {
+      // Fase A (peso 70, avance 100) + Fase B (peso 30, avance 0) = 70
+      const avance = avanceProyecto([
+        { pesoPorcentaje: 70, actividades: [{ avancePorcentaje: 100 }] },
+        { pesoPorcentaje: 30, actividades: [{ avancePorcentaje: 0 }] },
+      ]);
+      expect(avance).toBeCloseTo(70, 5);
+    });
+
+    it('el número de actividades por fase no altera el resultado (promedio simple interno)', () => {
+      const avance = avanceProyecto([
+        {
+          pesoPorcentaje: 50,
+          actividades: [{ avancePorcentaje: 50 }, { avancePorcentaje: 50 }, { avancePorcentaje: 50 }],
+        },
+        { pesoPorcentaje: 50, actividades: [{ avancePorcentaje: 100 }] },
+      ]);
+      // 0.5*50 + 0.5*100 = 75
+      expect(avance).toBeCloseTo(75, 5);
+    });
+
+    it('lanza error si los pesos no suman 100 %', () => {
+      expect(() =>
+        avanceProyecto([
+          { pesoPorcentaje: 40, actividades: [{ avancePorcentaje: 100 }] },
+          { pesoPorcentaje: 40, actividades: [{ avancePorcentaje: 100 }] },
+        ]),
+      ).toThrow(/100 %/);
+    });
+  });
+});

@@ -12,7 +12,7 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 |---|---|---|
 | 0 | Descubrimiento y definición de requisitos | ✅ Aprobada |
 | 1 | Arquitectura y diseño técnico | ✅ Aprobada |
-| 2 | Infraestructura base y andamiaje | ⏳ En preparación |
+| 2 | Infraestructura base y andamiaje | 🔨 En rama `fase-2-infraestructura` |
 | 3–15 | Dominio, auth/2FA, avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
@@ -26,9 +26,52 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 
 Backend **NestJS** (TypeScript) · Frontend **React + Vite** · **PostgreSQL** + **Prisma** · 2FA **TOTP** (Microsoft Authenticator) · contraseñas **Argon2id** · correo **Microsoft 365** · reverse proxy **Caddy** · orquestación **Docker Compose**.
 
-## Arranque local
+## Arranque con Docker
 
-El andamiaje ejecutable y las instrucciones de arranque se incorporan en la **Fase 2**. Hasta entonces, este repositorio contiene la documentación de diseño.
+Requisitos: Docker y Docker Compose.
+
+1. Copia las variables de entorno y ajusta la contraseña de la base de datos:
+   ```bash
+   cp .env.example .env
+   # edita .env y cambia POSTGRES_PASSWORD y DATABASE_URL en consecuencia
+   ```
+2. Levanta todo el stack (reverse proxy, frontend, backend, worker y PostgreSQL):
+   ```bash
+   docker compose up --build
+   ```
+3. Abre el navegador en **http://localhost/** — la página muestra el estado del backend.
+   El endpoint de salud está en **http://localhost/api/health**.
+4. Para apagar sin borrar los datos:
+   ```bash
+   docker compose down
+   ```
+   Los datos de PostgreSQL persisten en el volumen `pg_data`; al volver a `up`
+   siguen ahí. Para borrar también los datos: `docker compose down -v`.
+
+### Migraciones
+
+El contenedor `backend` ejecuta `prisma migrate deploy` al arrancar, aplicando la
+migración inicial (`backend/prisma/migrations/`). El modelo de dominio real se
+añade desde la Fase 3.
+
+### Producción (Hostinger)
+
+Con el dominio configurado en `.env` (`DOMINIO=...`):
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+Caddy gestiona el certificado TLS automáticamente. Solo el reverse proxy publica
+puertos (80/443); PostgreSQL no se expone al exterior.
+
+## Calidad de código
+
+- `npm install` en la raíz instala las herramientas (workspaces).
+- `npm run lint` / `npm run format` ejecutan ESLint y Prettier.
+- El hook de pre-commit (Husky + lint-staged) formatea y lintea lo modificado.
+
+> **Nota:** este andamiaje se generó en la Fase 2 pero **no se verificó en runtime
+> localmente** (por decisión del proyecto: el despliegue se hará directamente en
+> Hostinger). La primera ejecución real ocurre al desplegar.
 
 ---
 

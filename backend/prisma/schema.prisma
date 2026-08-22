@@ -1,0 +1,24 @@
+// Esquema Prisma — andamiaje Fase 2.
+// El modelo de dominio real (Proyecto, Fase, Actividad, Hito, Línea Base,
+// Avance, Evidencia, Usuario, Auditoría, etc.) se implementa desde la Fase 3,
+// siguiendo docs/fase-1-arquitectura/02-modelo-datos.md.
+// Por ahora solo una tabla mínima para tener una migración inicial reproducible.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AppMeta {
+  id       Int      @id @default(autoincrement())
+  clave    String   @unique
+  valor    String
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@map("app_meta")
+}

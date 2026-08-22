@@ -1,0 +1,11 @@
+# Reverse proxy para producción (Hostinger).
+# Caddy obtiene certificado TLS automáticamente para el dominio indicado en la
+# variable DOMINIO. Enruta /api/* al backend y el resto al frontend.
+{$DOMINIO} {
+	handle /api/* {
+		reverse_proxy backend:3000
+	}
+	handle {
+		reverse_proxy frontend:4173
+	}
+}

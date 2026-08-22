@@ -1,0 +1,10 @@
+# Reverse proxy para desarrollo (HTTP en el puerto 80).
+# Enruta /api/* al backend y el resto al frontend.
+:80 {
+	handle /api/* {
+		reverse_proxy backend:3000
+	}
+	handle {
+		reverse_proxy frontend:4173
+	}
+}

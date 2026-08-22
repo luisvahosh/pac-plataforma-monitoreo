@@ -1,0 +1,17 @@
+# Override de producción. Se usa junto al archivo base:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Diferencias respecto a desarrollo:
+#  - Caddy publica 80 y 443 y usa el Caddyfile de producción con TLS automático.
+#  - Se requiere la variable DOMINIO (dominio/subdominio de Hostinger).
+services:
+  caddy:
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO}
+    volumes:
+      - ./infra/Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config

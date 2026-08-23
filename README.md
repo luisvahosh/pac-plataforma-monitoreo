@@ -15,7 +15,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 2 | Infraestructura base y andamiaje | 🔨 En rama `fase-2-infraestructura` |
 | 3 | Modelo de datos y backend core del dominio | 🔨 En rama `fase-3-dominio` |
 | 4 | Autenticación, usuarios, roles y 2FA | 🔨 En rama `fase-4-autenticacion` |
-| 5–15 | Avances, evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 5 | Asignación de actividades y registro de avances | 🔨 En rama `fase-5-avances` |
+| 6–15 | Evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -134,6 +135,21 @@ Ver `.env.example`: `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ACCESS_TOKEN_TTL
 > ⚠️ **A confirmar con el administrador del tenant de Microsoft 365:** si **SMTP AUTH**
 > está habilitado, o si hay que registrar una app en **Entra ID** con permiso
 > `Mail.Send` (Microsoft Graph API). El envío real de correos depende de esto.
+
+## Asignación y avances (Fase 5)
+
+Los Administradores asignan Actividades a Colaboradores (con **peso de trabajo**, RN-08) y los Colaboradores registran **avances** sobre sus Actividades asignadas. El avance de la Actividad se recalcula ponderado por el peso de cada colaborador (RN-02); el histórico es **append-only** y puede subir o bajar (RN-05), siempre trazado con autor y fecha/hora.
+
+| Método | Ruta | Rol | Descripción |
+|---|---|---|---|
+| POST | `/api/actividades/:id/asignaciones` | Admin | Asigna un colaborador con su peso de trabajo |
+| GET | `/api/actividades/:id/asignaciones` | Autenticado | Lista asignaciones + suma de pesos + validez (100 %) |
+| DELETE | `/api/actividades/:actividadId/asignaciones/:asignacionId` | Admin | Quita una asignación |
+| POST | `/api/actividades/:id/avances` | Colaborador asignado / Admin | Registra un avance (recalcula el avance de la actividad) |
+| GET | `/api/actividades/:id/avances` | Colaborador asignado / Admin | Histórico cronológico con autor y fecha/hora |
+| GET | `/api/mis-actividades` | Colaborador | Actividades asignadas al usuario autenticado |
+
+**Autorización (RN-10):** un Colaborador solo registra/consulta avances de sus Actividades asignadas (403 en caso contrario); el Administrador puede sobre cualquiera. Cubierto por pruebas (`avance.service.spec.ts`).
 
 ## Calidad de código
 

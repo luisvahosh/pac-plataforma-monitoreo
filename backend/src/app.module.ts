@@ -11,6 +11,8 @@ import { ActividadModule } from './actividad/actividad.module';
 import { HitoModule } from './hito/hito.module';
 import { LineaBaseModule } from './linea-base/linea-base.module';
 import { CronogramaModule } from './cronograma/cronograma.module';
+import { AvanceModule } from './avance/avance.module';
+import { AsignacionModule } from './asignacion/asignacion.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { CronogramaModule } from './cronograma/cronograma.module';
     HitoModule,
     LineaBaseModule,
     CronogramaModule,
+    AvanceModule,
+    AsignacionModule,
   ],
 })
 export class AppModule {}

@@ -54,16 +54,18 @@ model Fase {
 }
 
 model Actividad {
-  id               String    @id @default(uuid())
-  faseId           String    @map("fase_id")
+  id               String       @id @default(uuid())
+  faseId           String       @map("fase_id")
   nombre           String
   descripcion      String?
-  fechaInicioPlan  DateTime? @map("fecha_inicio_plan") // línea base vigente
-  fechaFinPlan     DateTime? @map("fecha_fin_plan") // línea base vigente
-  finalizada       Boolean   @default(false)
-  avancePorcentaje Float     @default(0) @map("avance_porcentaje") // 0..100
-  fase             Fase      @relation(fields: [faseId], references: [id], onDelete: Cascade)
+  fechaInicioPlan  DateTime?    @map("fecha_inicio_plan") // línea base vigente
+  fechaFinPlan     DateTime?    @map("fecha_fin_plan") // línea base vigente
+  finalizada       Boolean      @default(false)
+  avancePorcentaje Float        @default(0) @map("avance_porcentaje") // 0..100 (derivado de los avances, ponderado por peso)
+  fase             Fase         @relation(fields: [faseId], references: [id], onDelete: Cascade)
   hitos            Hito[]
+  asignaciones     Asignacion[]
+  avances          Avance[]
 
   @@map("actividad")
 }
@@ -124,6 +126,8 @@ model Usuario {
   tokens           TokenCuenta[]
   refreshTokens    RefreshToken[]
   cambiosLineaBase CambioLineaBase[]
+  asignaciones     Asignacion[]
+  avances          Avance[]
 
   @@map("usuario")
 }
@@ -153,4 +157,37 @@ model RefreshToken {
 
   @@index([usuarioId])
   @@map("refresh_token")
+}
+
+// ─── Asignación y avances (Fase 5) ──────────────────────────────────
+
+// Un Colaborador asignado a una Actividad, con su peso de trabajo (RN-08).
+// La suma de pesos por Actividad debe ser 100 %.
+model Asignacion {
+  id                    String    @id @default(uuid())
+  actividadId           String    @map("actividad_id")
+  usuarioId             String    @map("usuario_id")
+  pesoTrabajoPorcentaje Float     @map("peso_trabajo_porcentaje")
+  creadoEn              DateTime  @default(now()) @map("creado_en")
+  actividad             Actividad @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  usuario               Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([actividadId, usuarioId])
+  @@map("asignacion")
+}
+
+// Registro histórico (append-only) de avances. Puede subir o bajar (RN-05);
+// nunca se sobrescribe. Trazado con autor y fecha/hora.
+model Avance {
+  id            String    @id @default(uuid())
+  actividadId   String    @map("actividad_id")
+  usuarioId     String    @map("usuario_id")
+  porcentaje    Float // 0..100
+  observaciones String?
+  fechaHora     DateTime  @default(now()) @map("fecha_hora")
+  actividad     Actividad @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+
+  @@index([actividadId, usuarioId])
+  @@map("avance")
 }

@@ -49,3 +49,25 @@ export function avanceProyecto(fases: FaseAvance[]): number {
   }
   return fases.reduce((acc, f) => acc + (f.pesoPorcentaje / 100) * avanceFase(f.actividades), 0);
 }
+
+// ─── Avance de una Actividad con varios Colaboradores (RN-02, RN-08) ─
+
+export interface AporteColaborador {
+  pesoTrabajoPorcentaje: number; // peso de trabajo del colaborador en la actividad
+  avancePorcentaje: number; // último avance registrado por ese colaborador (0 si no hay)
+}
+
+/**
+ * Avance de una Actividad ponderado por el peso de trabajo de cada Colaborador.
+ * Se normaliza por la suma de pesos para ser robusto si aún no suman 100 %.
+ * Sin aportes => 0.
+ */
+export function avanceActividadPonderado(aportes: AporteColaborador[]): number {
+  if (aportes.length === 0) return 0;
+  const sumaPesos = aportes.reduce((acc, a) => acc + a.pesoTrabajoPorcentaje, 0);
+  if (sumaPesos === 0) return 0;
+  return aportes.reduce(
+    (acc, a) => acc + (a.pesoTrabajoPorcentaje / sumaPesos) * a.avancePorcentaje,
+    0,
+  );
+}

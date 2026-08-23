@@ -1,4 +1,5 @@
 import {
+  avanceActividadPonderado,
   avanceFase,
   avanceProyecto,
   sumaPesosFases,
@@ -76,6 +77,38 @@ describe('calculo-avance (RN-02)', () => {
           { pesoPorcentaje: 40, actividades: [{ avancePorcentaje: 100 }] },
         ]),
       ).toThrow(/100 %/);
+    });
+  });
+
+  describe('avanceActividadPonderado — por peso de colaborador (RN-08)', () => {
+    it('sin aportes devuelve 0', () => {
+      expect(avanceActividadPonderado([])).toBe(0);
+    });
+
+    it('un solo colaborador refleja su avance', () => {
+      expect(
+        avanceActividadPonderado([{ pesoTrabajoPorcentaje: 100, avancePorcentaje: 40 }]),
+      ).toBeCloseTo(40, 5);
+    });
+
+    it('pondera por el peso de trabajo de cada colaborador', () => {
+      // A (peso 70, avance 100) + B (peso 30, avance 0) = 70
+      expect(
+        avanceActividadPonderado([
+          { pesoTrabajoPorcentaje: 70, avancePorcentaje: 100 },
+          { pesoTrabajoPorcentaje: 30, avancePorcentaje: 0 },
+        ]),
+      ).toBeCloseTo(70, 5);
+    });
+
+    it('normaliza si los pesos aún no suman 100', () => {
+      // pesos 30 y 30 (suma 60), avances 100 y 0 => 50
+      expect(
+        avanceActividadPonderado([
+          { pesoTrabajoPorcentaje: 30, avancePorcentaje: 100 },
+          { pesoTrabajoPorcentaje: 30, avancePorcentaje: 0 },
+        ]),
+      ).toBeCloseTo(50, 5);
     });
   });
 });

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
@@ -23,6 +24,8 @@ const SELECT_SEGURO = {
 
 @Injectable()
 export class UsuarioService {
+  private readonly logger = new Logger(UsuarioService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly correo: CorreoService,
@@ -54,7 +57,20 @@ export class UsuarioService {
         expiraEn: new Date(Date.now() + 48 * 60 * 60 * 1000),
       },
     });
-    await this.correo.enviarActivacion(usuario.email, usuario.nombre, token);
+
+    // El envío de correo no debe hacer fallar la creación del usuario (ya quedó
+    // guardado en la base de datos): si el SMTP falla, se deja constancia en el
+    // log y se imprime el enlace para que un administrador con acceso al
+    // servidor pueda entregarlo manualmente.
+    try {
+      await this.correo.enviarActivacion(usuario.email, usuario.nombre, token);
+    } catch (error) {
+      const enlace = `${process.env.APP_URL ?? 'http://localhost'}/activar?token=${token}`;
+      this.logger.error(
+        `No se pudo enviar el correo de activación a ${usuario.email}: ${(error as Error).message}. ` +
+          `Enlace de activación (válido 48 h): ${enlace}`,
+      );
+    }
 
     return usuario;
   }

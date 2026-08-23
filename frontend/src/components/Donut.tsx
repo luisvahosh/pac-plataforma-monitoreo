@@ -14,7 +14,7 @@ export function Donut({ valor }: { valor: number | null }) {
         cy="50"
         r={radio}
         fill="none"
-        stroke="#7db1ff"
+        stroke="#ffdc2f"
         strokeWidth="10"
         strokeLinecap="round"
         strokeDasharray={circunferencia}

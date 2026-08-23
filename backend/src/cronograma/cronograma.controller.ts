@@ -25,7 +25,12 @@ export class CronogramaController {
   obtenerIndicadores(
     @Param('proyectoId') proyectoId: string,
     @Query('umbralDias') umbralDias?: string,
+    @Query('umbralDesviacionCritica') umbralDesviacionCritica?: string,
   ) {
-    return this.cronograma.indicadores(proyectoId, umbralDias ? Number(umbralDias) : undefined);
+    return this.cronograma.indicadores(
+      proyectoId,
+      umbralDias ? Number(umbralDias) : undefined,
+      umbralDesviacionCritica ? Number(umbralDesviacionCritica) : undefined,
+    );
   }
 }

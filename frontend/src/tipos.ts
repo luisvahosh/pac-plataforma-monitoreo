@@ -5,6 +5,11 @@ export type EstadoActividad =
   | 'proxima_a_vencer'
   | 'vencida';
 
+// Indicador complementario de gestión de proyectos: avance real vs. avance
+// esperado según la Línea Base vigente (no reemplaza `estado`, que es por
+// fecha límite).
+export type EstadoCronograma = 'sin_iniciar' | 'completada' | 'en_tiempo' | 'en_riesgo' | 'atrasada';
+
 export interface Hito {
   id: string;
   nombre: string;
@@ -20,6 +25,9 @@ export interface Actividad {
   avancePorcentaje: number;
   finalizada: boolean;
   estado: EstadoActividad;
+  avanceEsperado: number | null;
+  desviacion: number | null;
+  estadoCronograma: EstadoCronograma;
   hitos: Hito[];
 }
 
@@ -47,6 +55,8 @@ export interface Indicadores {
   pesosValidos: boolean;
   totalActividades: number;
   actividadesVencidas: number;
+  actividadesAtrasadas: number;
+  desviacionesCriticas: number;
   totalHitos: number;
   hitosCumplidos: number;
 }

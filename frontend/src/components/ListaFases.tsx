@@ -1,6 +1,7 @@
 import type { Fase } from '../tipos';
 import { BarraAvance } from './BarraAvance';
 import { EstadoBadge } from './EstadoBadge';
+import { DesviacionBadge } from './DesviacionBadge';
 import { formatearFecha, redondear } from '../api';
 
 export function ListaFases({ fases }: { fases: Fase[] }) {
@@ -33,7 +34,11 @@ export function ListaFases({ fases }: { fases: Fase[] }) {
                 <BarraAvance valor={actividad.avancePorcentaje} />
                 <div className="actividad-fechas">
                   Inicio: {formatearFecha(actividad.fechaInicioPlan)} · Fin:{' '}
-                  {formatearFecha(actividad.fechaFinPlan)}
+                  {formatearFecha(actividad.fechaFinPlan)}{' '}
+                  <DesviacionBadge
+                    estadoCronograma={actividad.estadoCronograma}
+                    desviacion={actividad.desviacion}
+                  />
                 </div>
                 {actividad.hitos.length > 0 && (
                   <ul className="hitos">

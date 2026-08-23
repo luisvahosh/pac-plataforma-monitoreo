@@ -1,18 +1,31 @@
+/*
+ * Paleta institucional Alcaldía/Distrito de Medellín (Libro de Marca 2022):
+ *   Amarillo #FFDC2F · Azul claro #00AEEF · Turquesa #00A7B8 ·
+ *   Verde #00904C · Naranja #F47B29.
+ * Los colores de estado son variantes oscurecidas (mismo tono) de esos
+ * colores, calibradas para cumplir contraste con texto blanco (WCAG AA,
+ * >= 4.5:1) y separación distinguible para daltonismo (CVD), verificado con
+ * el validador de la skill de dataviz — ver commit para el detalle numérico.
+ */
 :root {
   --fondo: #f4f6f9;
   --superficie: #ffffff;
   --borde: #e2e8f0;
   --texto: #1a2233;
   --texto-tenue: #5b6472;
-  --primario: #1f6feb;
-  --primario-suave: #e7f0ff;
+  --primario: #00aeef; /* azul claro institucional */
+  --primario-oscuro: #006f99; /* mismo tono, para texto/fondos oscuros */
+  --primario-suave: #e3f6ff;
+  --institucional-amarillo: #ffdc2f;
+  --institucional-verde: #00904c;
+  --institucional-naranja: #f47b29;
 
   /* Estados (color + siempre acompañado de texto, no solo color) */
   --pendiente: #6b7280;
-  --ejecucion: #1f6feb;
-  --finalizada: #1a7f4b;
-  --proxima: #b26a00;
-  --vencida: #c0392b;
+  --ejecucion: #006f99;
+  --finalizada: #008647;
+  --proxima: #c1540a;
+  --vencida: #b30000;
 }
 
 * {
@@ -34,7 +47,8 @@ body {
 }
 
 .cabecera {
-  background: linear-gradient(135deg, #16233d, #1f3a6b);
+  /* Mismo tono institucional (azul claro #00AEEF) oscurecido, no un azul genérico. */
+  background: linear-gradient(135deg, #003447, #005270);
   color: #fff;
   padding: 2rem 1rem;
 }
@@ -83,6 +97,7 @@ body {
 .kpi {
   background: var(--superficie);
   border: 1px solid var(--borde);
+  border-left: 4px solid var(--borde);
   border-radius: 12px;
   padding: 1rem 1.25rem;
 }
@@ -93,6 +108,22 @@ body {
 .kpi .etiqueta {
   color: var(--texto-tenue);
   font-size: 0.85rem;
+}
+/* Acento por tono (misma paleta institucional que los estados). */
+.kpi-info {
+  border-left-color: var(--primario);
+}
+.kpi-ok {
+  border-left-color: var(--finalizada);
+}
+.kpi-danger {
+  border-left-color: var(--vencida);
+}
+.kpi-warn {
+  border-left-color: var(--proxima);
+}
+.kpi-neutro {
+  border-left-color: var(--texto-tenue);
 }
 
 /* Fases y actividades */
@@ -185,6 +216,37 @@ body {
 }
 .badge.vencida {
   background: var(--vencida);
+}
+
+/* Indicador de desviación de cronograma (avance real vs. esperado). Se
+   muestra junto al badge de estado, no en su lugar: son dos preguntas
+   distintas ("¿qué tan cerca del vencimiento?" vs "¿vamos al ritmo?"). */
+.desviacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.desviacion.en_tiempo,
+.desviacion.completada {
+  color: var(--finalizada);
+  background: color-mix(in srgb, var(--finalizada) 12%, transparent);
+}
+.desviacion.sin_iniciar {
+  color: var(--texto-tenue);
+  background: var(--borde);
+}
+.desviacion.en_riesgo {
+  color: var(--proxima);
+  background: color-mix(in srgb, var(--proxima) 14%, transparent);
+}
+.desviacion.atrasada {
+  color: var(--vencida);
+  background: color-mix(in srgb, var(--vencida) 12%, transparent);
 }
 
 .hitos {

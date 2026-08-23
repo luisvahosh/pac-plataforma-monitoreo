@@ -2,6 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { avanceFase, avanceProyecto, validarPesosFases } from '../dominio/calculo-avance';
 import { derivarEstado } from '../dominio/estado-actividad';
+import {
+  calcularDesviacion,
+  UMBRAL_DESVIACION_CRITICA_PUNTOS_DEFECTO,
+} from '../dominio/desviacion-cronograma';
 
 @Injectable()
 export class CronogramaService {
@@ -44,6 +48,18 @@ export class CronogramaService {
           ahora,
           umbralDias,
         ),
+        // Indicador complementario de gestión de proyectos: avance real vs.
+        // avance esperado según la Línea Base vigente (no reemplaza el estado
+        // por fecha límite de arriba).
+        ...calcularDesviacion(
+          {
+            avancePorcentaje: a.avancePorcentaje,
+            finalizada: a.finalizada,
+            fechaInicioPlan: a.fechaInicioPlan,
+            fechaFinPlan: a.fechaFinPlan,
+          },
+          ahora,
+        ),
         hitos: a.hitos,
       })),
     }));
@@ -75,11 +91,22 @@ export class CronogramaService {
     return { proyecto: cronograma, indicadores };
   }
 
-  /** Indicadores agregados del Proyecto. */
-  async indicadores(proyectoId: string, umbralDias?: number) {
+  /**
+   * Indicadores agregados del Proyecto. `umbralDesviacionCritica` es el
+   * número de puntos porcentuales de atraso (avance real vs. esperado según
+   * cronograma) a partir del cual una actividad cuenta como "desviación
+   * crítica" (por defecto 20, ver desviacion-cronograma.ts).
+   */
+  async indicadores(
+    proyectoId: string,
+    umbralDias?: number,
+    umbralDesviacionCritica: number = UMBRAL_DESVIACION_CRITICA_PUNTOS_DEFECTO,
+  ) {
     const c = await this.cronograma(proyectoId, umbralDias);
     let totalActividades = 0;
     let actividadesVencidas = 0;
+    let actividadesAtrasadas = 0;
+    let desviacionesCriticas = 0;
     let totalHitos = 0;
     let hitosCumplidos = 0;
 
@@ -87,6 +114,10 @@ export class CronogramaService {
       for (const a of f.actividades) {
         totalActividades += 1;
         if (a.estado === 'vencida') actividadesVencidas += 1;
+        if (a.estadoCronograma === 'atrasada') actividadesAtrasadas += 1;
+        if (a.desviacion !== null && a.desviacion < -umbralDesviacionCritica) {
+          desviacionesCriticas += 1;
+        }
         for (const h of a.hitos) {
           totalHitos += 1;
           if (h.cumplido) hitosCumplidos += 1;
@@ -100,6 +131,8 @@ export class CronogramaService {
       pesosValidos: c.pesosValidos,
       totalActividades,
       actividadesVencidas,
+      actividadesAtrasadas,
+      desviacionesCriticas,
       totalHitos,
       hitosCumplidos,
     };

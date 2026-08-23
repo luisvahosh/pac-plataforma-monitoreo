@@ -208,6 +208,8 @@ Interfaz **pública de solo lectura** (React + Vite) que consume únicamente end
 - Consume `GET /api/public/proyectos/dashboard` (agrega cronograma + indicadores del proyecto único en una sola llamada).
 - Diseño **responsivo** y **accesible**: `progressbar` con ARIA, estados con color **y** texto (no solo color), soporte de modo oscuro.
 - Sin dependencias de gráficos: barras en CSS y donut en SVG.
+- **Paleta institucional** de la Alcaldía/Distrito de Medellín (Libro de Marca 2022: amarillo `#FFDC2F`, azul claro `#00AEEF`, verde `#00904C`, naranja `#F47B29`, más un rojo tomado de la bandera de la ciudad para "vencida"). Los tonos de estado son variantes oscurecidas del mismo color institucional, calibradas y verificadas con el validador de paleta de la skill de dataviz: contraste con texto blanco ≥ 4.5:1 (WCAG AA) y separación distinguible para daltonismo (CVD).
+- **Desviación de cronograma** (`estadoCronograma`, `desviacion`, `avanceEsperado` por actividad; indicador `desviacionesCriticas` agregado): compara el avance real contra el avance que correspondería según el tiempo transcurrido en la Línea Base vigente (ritmo lineal, umbral configurable). Es un indicador **complementario** al estado por fecha límite —no lo sustituye— inspirado en el manejo de proyectos del tablero de referencia del usuario (`error/muestra.html`). Lógica pura y testeada en `backend/src/dominio/desviacion-cronograma.ts`.
 
 ## Frontend: panel privado (Fase 10)
 

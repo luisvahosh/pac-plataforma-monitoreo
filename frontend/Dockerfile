@@ -8,6 +8,9 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+# Endurecimiento (Fase 12): correr como usuario no-root.
+USER node
+
 EXPOSE 4173
 
 # Sirve el build estático. Caddy hace de reverse proxy hacia este servicio.

@@ -22,7 +22,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 9 | Frontend: dashboard público | 🔨 En rama `fase-9-frontend-publico` |
 | 10 | Frontend: panel de colaboradores y administración | 🔨 En rama `fase-10-frontend-privado` |
 | 11 | Integración E2E y pruebas de sistema | 🔨 En rama `fase-11-e2e` |
-| 12–15 | Hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 12 | Hardening de seguridad | 🔨 En rama `fase-12-hardening` |
+| 13–15 | Despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -230,6 +231,18 @@ docker compose exec backend npx prisma migrate deploy
 docker compose exec backend npm run prisma:seed
 cd e2e && npm install && npm run install:browsers && npm test
 ```
+
+## Hardening de seguridad (Fase 12)
+
+Remediaciones aplicadas antes de producción (detalle en [`docs/fase-12-seguridad/`](docs/fase-12-seguridad/)):
+
+- **Cabeceras HTTP** con `helmet`; `x-powered-by` deshabilitado.
+- **Rate limiting** global (`@nestjs/throttler`) y estricto en `/api/auth/*` (complementa el bloqueo por intentos).
+- **Contenedores no-root** (`USER node`) y `no-new-privileges:true` en todos los servicios.
+- **`trust proxy`** para IP real (rate limiting + auditoría) tras Caddy.
+- **CORS** restrictivo (opcional vía `CORS_ORIGEN`).
+
+Ver el [informe de hardening](docs/fase-12-seguridad/informe-hardening.md) (hallazgos por severidad) y el [checklist de seguridad](docs/fase-12-seguridad/checklist-seguridad.md). Pendientes que se cierran en el despliegue (Fase 13): revocar `UPDATE/DELETE` de auditoría en BD y verificación de MIME real en subidas.
 
 ## Calidad de código
 

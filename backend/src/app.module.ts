@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
 import { SeguridadModule } from './seguridad/seguridad.module';
 import { CorreoModule } from './correo/correo.module';
@@ -22,6 +24,8 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
   imports: [
     // Globales / transversales
     ScheduleModule.forRoot(),
+    // Rate limiting global: 100 req/min por IP por defecto (Fase 12).
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     PrismaModule,
     SeguridadModule,
     CorreoModule,
@@ -41,5 +45,6 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
     AsignacionModule,
     EvidenciaModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

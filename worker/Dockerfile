@@ -9,4 +9,7 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
+# Endurecimiento (Fase 12): correr como usuario no-root.
+USER node
+
 CMD ["node", "dist/main.js"]

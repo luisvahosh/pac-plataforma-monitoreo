@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Verificar2faDto } from './dto/verificar-2fa.dto';
@@ -11,11 +12,14 @@ import { TokenDto } from './dto/token.dto';
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
+  // Límite estricto contra fuerza bruta (complementa el bloqueo por intentos).
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.auth.loginPaso1(dto);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('2fa/verify')
   verificar2fa(@Body() dto: Verificar2faDto) {
     return this.auth.loginPaso2(dto);
@@ -36,6 +40,7 @@ export class AuthController {
     return this.auth.activarCuenta(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('password/forgot')
   solicitarRecuperacion(@Body() dto: SolicitarRecuperacionDto) {
     return this.auth.solicitarRecuperacion(dto);

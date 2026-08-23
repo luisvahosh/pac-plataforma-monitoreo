@@ -6,6 +6,9 @@ import './estilos.css';
 import './privado/estilos-privado.css';
 import { AuthProvider } from './privado/auth-contexto';
 import { Login } from './privado/Login';
+import { Activar } from './privado/Activar';
+import { Restablecer } from './privado/Restablecer';
+import { OlvidePassword } from './privado/OlvidePassword';
 import { Layout } from './privado/Layout';
 import { RutaProtegida } from './privado/RutaProtegida';
 import { MisActividades } from './privado/paginas/MisActividades';
@@ -22,6 +25,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Routes>
           <Route path="/" element={<DashboardPublico />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/activar" element={<Activar />} />
+          <Route path="/restablecer" element={<Restablecer />} />
+          <Route path="/olvide" element={<OlvidePassword />} />
           <Route
             path="/app"
             element={

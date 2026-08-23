@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './auth-contexto';
 
 export function Login() {
@@ -64,6 +64,11 @@ export function Login() {
           <button type="submit" disabled={cargando}>
             {cargando ? 'Verificando…' : 'Continuar'}
           </button>
+          <p style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+            <Link to="/olvide" style={{ fontSize: '0.85rem' }}>
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
         </form>
       ) : (
         <form onSubmit={enviarPaso2} className="form">

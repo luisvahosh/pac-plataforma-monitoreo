@@ -14,6 +14,7 @@ import { RutaProtegida } from './privado/RutaProtegida';
 import { MisActividades } from './privado/paginas/MisActividades';
 import { DetalleActividad } from './privado/paginas/DetalleActividad';
 import { Usuarios } from './privado/paginas/admin/Usuarios';
+import { Actividades } from './privado/paginas/admin/Actividades';
 import { LineaBase } from './privado/paginas/admin/LineaBase';
 import { Alertas } from './privado/paginas/admin/Alertas';
 import { Auditoria } from './privado/paginas/admin/Auditoria';
@@ -38,6 +39,14 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           >
             <Route index element={<MisActividades />} />
             <Route path="actividad/:id" element={<DetalleActividad />} />
+            <Route
+              path="admin/actividades"
+              element={
+                <RutaProtegida rol="administrador">
+                  <Actividades />
+                </RutaProtegida>
+              }
+            />
             <Route
               path="admin/usuarios"
               element={

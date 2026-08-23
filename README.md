@@ -217,7 +217,7 @@ Aplicación autenticada (React Router) para colaboradores y administradores, ser
 
 - **Login en dos pasos** (`/login`): correo + contraseña → código **2FA** (Microsoft Authenticator). Tokens en `localStorage`; renovación automática con el refresh token ante un 401.
 - **Colaborador:** "Mis actividades" (`/app`) y detalle de actividad (`/app/actividad/:id`) para **registrar avances** y **cargar/descargar evidencias** (enlace o archivo).
-- **Administrador:** gestión de **usuarios** (crear → activación por correo, desactivar), **asignaciones** con peso por colaborador (en el detalle de actividad), **cambios de línea base** con justificación e historial, configuración de **alertas**, y consulta de **auditoría**.
+- **Administrador:** gestión de **usuarios** (crear → activación por correo, editar, desactivar, eliminar solo si nunca tuvieron actividad — RN-14, y campo de **celular**), un explorador de **fases → actividades** (`/app/admin/actividades`) para llegar a cualquier actividad y **asignar responsables** sin necesitar su ID, **asignaciones** con peso por colaborador (en el detalle de actividad, con la nota original de "responsable líder" como referencia), **cambios de línea base** con justificación e historial, configuración de **alertas**, y consulta de **auditoría**.
 - **RBAC en la interfaz** (rutas protegidas por rol) que refleja —no sustituye— la autorización del backend.
 
 Rutas: `/` dashboard público · `/login` · `/app/**` protegidas. El acceso al contenido de evidencias siempre pasa por el endpoint autenticado (RN-13).

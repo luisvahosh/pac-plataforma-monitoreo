@@ -5,6 +5,7 @@ interface Usuario {
   id: string;
   nombre: string;
   email: string;
+  celular: string | null;
   estado: string;
   rol: { nombre: string };
 }
@@ -14,11 +15,13 @@ export function Usuarios() {
   const [error, setError] = useState<string | null>(null);
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
+  const [celular, setCelular] = useState('');
   const [rol, setRol] = useState('colaborador');
 
   // Edición en línea
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [editNombre, setEditNombre] = useState('');
+  const [editCelular, setEditCelular] = useState('');
   const [editRol, setEditRol] = useState('colaborador');
 
   async function cargar() {
@@ -36,9 +39,13 @@ export function Usuarios() {
     e.preventDefault();
     setError(null);
     try {
-      await apiJson('/api/usuarios', { method: 'POST', body: JSON.stringify({ nombre, email, rol }) });
+      await apiJson('/api/usuarios', {
+        method: 'POST',
+        body: JSON.stringify({ nombre, email, rol, celular: celular || undefined }),
+      });
       setNombre('');
       setEmail('');
+      setCelular('');
       await cargar();
     } catch (e) {
       setError((e as Error).message);
@@ -54,6 +61,7 @@ export function Usuarios() {
     setError(null);
     setEditandoId(u.id);
     setEditNombre(u.nombre);
+    setEditCelular(u.celular ?? '');
     setEditRol(u.rol.nombre);
   }
 
@@ -66,7 +74,7 @@ export function Usuarios() {
     try {
       await apiJson(`/api/usuarios/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ nombre: editNombre, rol: editRol }),
+        body: JSON.stringify({ nombre: editNombre, rol: editRol, celular: editCelular || undefined }),
       });
       setEditandoId(null);
       await cargar();
@@ -106,6 +114,15 @@ export function Usuarios() {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </label>
         <label>
+          Celular
+          <input
+            type="tel"
+            value={celular}
+            onChange={(e) => setCelular(e.target.value)}
+            placeholder="+57 300 000 0000"
+          />
+        </label>
+        <label>
           Rol
           <select value={rol} onChange={(e) => setRol(e.target.value)}>
             <option value="colaborador">Colaborador</option>
@@ -120,6 +137,7 @@ export function Usuarios() {
           <tr>
             <th>Nombre</th>
             <th>Correo</th>
+            <th>Celular</th>
             <th>Rol</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -133,6 +151,14 @@ export function Usuarios() {
                   <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} />
                 </td>
                 <td className="tenue">{u.email}</td>
+                <td>
+                  <input
+                    type="tel"
+                    value={editCelular}
+                    onChange={(e) => setEditCelular(e.target.value)}
+                    placeholder="+57 300 000 0000"
+                  />
+                </td>
                 <td>
                   <select value={editRol} onChange={(e) => setEditRol(e.target.value)}>
                     <option value="colaborador">Colaborador</option>
@@ -153,6 +179,7 @@ export function Usuarios() {
               <tr key={u.id}>
                 <td>{u.nombre}</td>
                 <td>{u.email}</td>
+                <td>{u.celular ?? <span className="tenue">—</span>}</td>
                 <td>{u.rol.nombre}</td>
                 <td>{u.estado}</td>
                 <td>

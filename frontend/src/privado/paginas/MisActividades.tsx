@@ -1,5 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { apiJson } from '../api-cliente';
 import { useAuth } from '../auth-contexto';
 
@@ -16,21 +16,14 @@ interface MiActividad {
 
 export function MisActividades() {
   const { esAdmin } = useAuth();
-  const navigate = useNavigate();
   const [items, setItems] = useState<MiActividad[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [idManual, setIdManual] = useState('');
 
   useEffect(() => {
     apiJson<MiActividad[]>('/api/mis-actividades')
       .then(setItems)
       .catch((e: Error) => setError(e.message));
   }, []);
-
-  function abrirManual(e: FormEvent) {
-    e.preventDefault();
-    if (idManual.trim()) navigate(`/app/actividad/${idManual.trim()}`);
-  }
 
   return (
     <section>
@@ -51,13 +44,10 @@ export function MisActividades() {
       </ul>
 
       {esAdmin && (
-        <form onSubmit={abrirManual} className="form-inline">
-          <label>
-            Abrir actividad por ID (admin)
-            <input value={idManual} onChange={(e) => setIdManual(e.target.value)} placeholder="uuid de actividad" />
-          </label>
-          <button type="submit">Abrir</button>
-        </form>
+        <p className="tenue">
+          ¿Buscas otra actividad para asignar responsables o revisar avances? Ve a{' '}
+          <Link to="/app/admin/actividades">Actividades</Link> para explorar todas las fases del proyecto.
+        </p>
       )}
     </section>
   );

@@ -17,6 +17,7 @@ const SELECT_SEGURO = {
   id: true,
   nombre: true,
   email: true,
+  celular: true,
   estado: true,
   creadoEn: true,
   rol: { select: { nombre: true } },
@@ -43,7 +44,13 @@ export class UsuarioService {
     if (existe) throw new ConflictException('El correo ya está registrado');
 
     const usuario = await this.prisma.usuario.create({
-      data: { nombre: dto.nombre, email: dto.email, rolId, estado: 'pendiente_activacion' },
+      data: {
+        nombre: dto.nombre,
+        email: dto.email,
+        celular: dto.celular,
+        rolId,
+        estado: 'pendiente_activacion',
+      },
       select: SELECT_SEGURO,
     });
 
@@ -90,7 +97,7 @@ export class UsuarioService {
     const rolId = dto.rol ? await this.rolId(dto.rol) : undefined;
     return this.prisma.usuario.update({
       where: { id },
-      data: { nombre: dto.nombre, rolId },
+      data: { nombre: dto.nombre, rolId, celular: dto.celular },
       select: SELECT_SEGURO,
     });
   }

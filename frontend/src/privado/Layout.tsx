@@ -19,6 +19,7 @@ export function Layout() {
             <Link to="/app">Mis actividades</Link>
             {esAdmin && (
               <>
+                <Link to="/app/admin/actividades">Actividades</Link>
                 <Link to="/app/admin/usuarios">Usuarios</Link>
                 <Link to="/app/admin/linea-base">Línea base</Link>
                 <Link to="/app/admin/alertas">Alertas</Link>

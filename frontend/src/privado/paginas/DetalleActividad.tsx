@@ -6,6 +6,7 @@ import { useAuth } from '../auth-contexto';
 interface Actividad {
   id: string;
   nombre: string;
+  descripcion: string | null;
   avancePorcentaje: number;
 }
 interface Avance {
@@ -224,7 +225,7 @@ export function DetalleActividad() {
         </div>
       </div>
 
-      {esAdmin && <AsignacionesAdmin actividadId={id} />}
+      {esAdmin && <AsignacionesAdmin actividadId={id} descripcion={actividad.descripcion} />}
     </section>
   );
 }
@@ -246,7 +247,13 @@ interface UsuarioLista {
   email: string;
 }
 
-function AsignacionesAdmin({ actividadId }: { actividadId: string }) {
+function AsignacionesAdmin({
+  actividadId,
+  descripcion,
+}: {
+  actividadId: string;
+  descripcion: string | null;
+}) {
   const [datos, setDatos] = useState<RespAsignaciones | null>(null);
   const [usuarios, setUsuarios] = useState<UsuarioLista[]>([]);
   const [usuarioId, setUsuarioId] = useState('');
@@ -295,6 +302,11 @@ function AsignacionesAdmin({ actividadId }: { actividadId: string }) {
   return (
     <div className="panel">
       <h3>Asignaciones (admin)</h3>
+      {descripcion && (
+        <p className="tenue" style={{ marginBottom: '0.75rem' }}>
+          <strong>Nota original:</strong> {descripcion}
+        </p>
+      )}
       {error && <div className="form-error">{error}</div>}
       {datos && (
         <p className="tenue">

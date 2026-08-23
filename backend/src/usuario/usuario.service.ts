@@ -95,9 +95,13 @@ export class UsuarioService {
   async actualizar(id: string, dto: ActualizarUsuarioDto) {
     await this.obtener(id);
     const rolId = dto.rol ? await this.rolId(dto.rol) : undefined;
+    if (dto.email) {
+      const otro = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+      if (otro && otro.id !== id) throw new ConflictException('El correo ya está registrado');
+    }
     return this.prisma.usuario.update({
       where: { id },
-      data: { nombre: dto.nombre, rolId, celular: dto.celular },
+      data: { nombre: dto.nombre, email: dto.email, rolId, celular: dto.celular },
       select: SELECT_SEGURO,
     });
   }

@@ -12,7 +12,8 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "ts-node prisma/seed.ts",
     "bootstrap:admin": "ts-node prisma/crear-admin.ts",
-    "seed:pac": "ts-node prisma/seed-pac.ts"
+    "seed:pac": "ts-node prisma/seed-pac.ts",
+    "enriquecer:pac": "ts-node prisma/enriquecer-pac.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

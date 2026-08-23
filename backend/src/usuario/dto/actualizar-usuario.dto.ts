@@ -1,9 +1,13 @@
-import { IsIn, IsOptional, IsString, Matches } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString, Matches } from 'class-validator';
 
 export class ActualizarUsuarioDto {
   @IsOptional()
   @IsString()
   nombre?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
 
   @IsOptional()
   @IsIn(['administrador', 'colaborador'])

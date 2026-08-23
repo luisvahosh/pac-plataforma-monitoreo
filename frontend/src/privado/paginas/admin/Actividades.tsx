@@ -18,6 +18,8 @@ interface ActividadResumen {
   descripcion: string | null;
   avancePorcentaje: number;
   finalizada: boolean;
+  tramoPago: string | null;
+  tramoPagoPorcentaje: number | null;
 }
 
 /**
@@ -83,7 +85,7 @@ export function Actividades() {
                 <Link to={`/app/actividad/${a.id}`}>{a.nombre}</Link>
                 <span className="tenue">
                   Avance {Math.round(a.avancePorcentaje)}%{a.finalizada ? ' · finalizada' : ''}
-                  {a.descripcion ? ` · ${a.descripcion}` : ''}
+                  {a.tramoPago ? ` · ${a.tramoPago} (${a.tramoPagoPorcentaje}%)` : ''}
                 </span>
               </li>
             ))}

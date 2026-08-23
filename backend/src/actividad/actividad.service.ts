@@ -27,7 +27,13 @@ export class ActividadService {
   }
 
   async obtener(id: string) {
-    const actividad = await this.prisma.actividad.findUnique({ where: { id } });
+    const actividad = await this.prisma.actividad.findUnique({
+      where: { id },
+      include: {
+        dependeDe: { include: { dependeDe: { select: { id: true, nombre: true } } } },
+        esDependenciaDe: { include: { actividad: { select: { id: true, nombre: true } } } },
+      },
+    });
     if (!actividad) throw new NotFoundException('Actividad no encontrada');
     return actividad;
   }

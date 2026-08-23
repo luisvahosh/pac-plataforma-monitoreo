@@ -21,6 +21,7 @@ export function Usuarios() {
   // Edición en línea
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [editNombre, setEditNombre] = useState('');
+  const [editEmail, setEditEmail] = useState('');
   const [editCelular, setEditCelular] = useState('');
   const [editRol, setEditRol] = useState('colaborador');
 
@@ -61,6 +62,7 @@ export function Usuarios() {
     setError(null);
     setEditandoId(u.id);
     setEditNombre(u.nombre);
+    setEditEmail(u.email);
     setEditCelular(u.celular ?? '');
     setEditRol(u.rol.nombre);
   }
@@ -74,7 +76,12 @@ export function Usuarios() {
     try {
       await apiJson(`/api/usuarios/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ nombre: editNombre, rol: editRol, celular: editCelular || undefined }),
+        body: JSON.stringify({
+          nombre: editNombre,
+          email: editEmail,
+          rol: editRol,
+          celular: editCelular || undefined,
+        }),
       });
       setEditandoId(null);
       await cargar();
@@ -150,7 +157,9 @@ export function Usuarios() {
                 <td>
                   <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} />
                 </td>
-                <td className="tenue">{u.email}</td>
+                <td>
+                  <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+                </td>
                 <td>
                   <input
                     type="tel"

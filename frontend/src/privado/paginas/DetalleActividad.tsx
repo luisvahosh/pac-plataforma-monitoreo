@@ -1,13 +1,21 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { apiFetch, apiJson } from '../api-cliente';
 import { useAuth } from '../auth-contexto';
 
+interface ActividadRef {
+  id: string;
+  nombre: string;
+}
 interface Actividad {
   id: string;
   nombre: string;
   descripcion: string | null;
   avancePorcentaje: number;
+  tramoPago: string | null;
+  tramoPagoPorcentaje: number | null;
+  dependeDe: { dependeDe: ActividadRef }[];
+  esDependenciaDe: { actividad: ActividadRef }[];
 }
 interface Avance {
   id: string;
@@ -133,7 +141,37 @@ export function DetalleActividad() {
   return (
     <section>
       <h2>{actividad.nombre}</h2>
-      <p className="tenue">Avance actual: {Math.round(actividad.avancePorcentaje)}%</p>
+      <p className="tenue">
+        Avance actual: {Math.round(actividad.avancePorcentaje)}%
+        {actividad.tramoPago && ` · ${actividad.tramoPago} del contrato (${actividad.tramoPagoPorcentaje}%)`}
+      </p>
+      {(actividad.dependeDe.length > 0 || actividad.esDependenciaDe.length > 0) && (
+        <p className="tenue">
+          {actividad.dependeDe.length > 0 && (
+            <>
+              Depende de:{' '}
+              {actividad.dependeDe.map((d, i) => (
+                <span key={d.dependeDe.id}>
+                  {i > 0 && ', '}
+                  <Link to={`/app/actividad/${d.dependeDe.id}`}>{d.dependeDe.nombre}</Link>
+                </span>
+              ))}
+              {actividad.esDependenciaDe.length > 0 && ' · '}
+            </>
+          )}
+          {actividad.esDependenciaDe.length > 0 && (
+            <>
+              Requerida por:{' '}
+              {actividad.esDependenciaDe.map((d, i) => (
+                <span key={d.actividad.id}>
+                  {i > 0 && ', '}
+                  <Link to={`/app/actividad/${d.actividad.id}`}>{d.actividad.nombre}</Link>
+                </span>
+              ))}
+            </>
+          )}
+        </p>
+      )}
       {error && <div className="form-error">{error}</div>}
 
       <div className="grid-2">
@@ -303,8 +341,8 @@ function AsignacionesAdmin({
     <div className="panel">
       <h3>Asignaciones (admin)</h3>
       {descripcion && (
-        <p className="tenue" style={{ marginBottom: '0.75rem' }}>
-          <strong>Nota original:</strong> {descripcion}
+        <p className="tenue" style={{ marginBottom: '0.75rem', whiteSpace: 'pre-line' }}>
+          {descripcion}
         </p>
       )}
       {error && <div className="form-error">{error}</div>}

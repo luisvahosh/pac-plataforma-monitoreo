@@ -54,21 +54,39 @@ model Fase {
 }
 
 model Actividad {
-  id               String       @id @default(uuid())
-  faseId           String       @map("fase_id")
-  nombre           String
-  descripcion      String?
-  fechaInicioPlan  DateTime?    @map("fecha_inicio_plan") // línea base vigente
-  fechaFinPlan     DateTime?    @map("fecha_fin_plan") // línea base vigente
-  finalizada       Boolean      @default(false)
-  avancePorcentaje Float        @default(0) @map("avance_porcentaje") // 0..100 (derivado de los avances, ponderado por peso)
-  fase             Fase         @relation(fields: [faseId], references: [id], onDelete: Cascade)
-  hitos            Hito[]
-  asignaciones     Asignacion[]
-  avances          Avance[]
-  evidencias       Evidencia[]
+  id                  String       @id @default(uuid())
+  faseId              String       @map("fase_id")
+  nombre              String
+  descripcion         String?
+  fechaInicioPlan     DateTime?    @map("fecha_inicio_plan") // línea base vigente
+  fechaFinPlan        DateTime?    @map("fecha_fin_plan") // línea base vigente
+  finalizada          Boolean      @default(false)
+  avancePorcentaje    Float        @default(0) @map("avance_porcentaje") // 0..100 (derivado de los avances, ponderado por peso)
+  tramoPago           String?      @map("tramo_pago") // p.ej. "Pago 2", "Pago 3", "Pago 4"
+  tramoPagoPorcentaje Float?       @map("tramo_pago_porcentaje") // % del contrato asociado a ese tramo
+  fase                Fase         @relation(fields: [faseId], references: [id], onDelete: Cascade)
+  hitos               Hito[]
+  asignaciones        Asignacion[]
+  avances             Avance[]
+  evidencias          Evidencia[]
+
+  // Dependencias entre entregables (p.ej. P9 depende de P6 y P14).
+  dependeDe       DependenciaActividad[] @relation("ActividadDependiente")
+  esDependenciaDe DependenciaActividad[] @relation("ActividadOrigen")
 
   @@map("actividad")
+}
+
+// Relación "A depende de B": A no puede considerarse listo/entregable sin B.
+model DependenciaActividad {
+  id          String    @id @default(uuid())
+  actividadId String    @map("actividad_id") // la que depende
+  dependeDeId String    @map("depende_de_id") // la actividad de la que depende
+  actividad   Actividad @relation("ActividadDependiente", fields: [actividadId], references: [id], onDelete: Cascade)
+  dependeDe   Actividad @relation("ActividadOrigen", fields: [dependeDeId], references: [id], onDelete: Cascade)
+
+  @@unique([actividadId, dependeDeId])
+  @@map("dependencia_actividad")
 }
 
 model Hito {

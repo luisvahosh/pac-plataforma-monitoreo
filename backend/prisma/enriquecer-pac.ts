@@ -386,7 +386,6 @@ async function main(): Promise<void> {
     const apoyoNombres = e.apoyo.map((c) => PERSONAS[c].nombre).join(', ');
     const responsablesNombres = e.responsables.map((c) => PERSONAS[c].nombre).join(', ');
     const descripcion = [
-      ...(e.tareasPrincipales ? [`Tareas principales (subactividades):\n${e.tareasPrincipales}`] : []),
       `Apoyo de componente: ${apoyoNombres}`,
       `Responsables principales: ${responsablesNombres}`,
       NOTA_REVISOR,
@@ -399,6 +398,41 @@ async function main(): Promise<void> {
     });
   }
   console.log('Actividades: descripción real (equipo + insumos) y tramo de pago actualizados.');
+
+  // ── 4b) Subactividades: cada viñeta de "Tareas principales" del entregable
+  // puntual (P1, P3, P5, P8, P11, P15) se vuelve una Subactividad rastreable
+  // con su propio % de avance (el de la Actividad se deriva de estas).
+  let subactividadesCreadas = 0;
+  for (const e of ENTREGABLES) {
+    if (!e.tareasPrincipales) continue;
+    const actividadId = actividadIdPorProducto.get(e.producto);
+    if (!actividadId) continue;
+
+    const tareas = e.tareasPrincipales
+      .split('\n')
+      .map((l) => l.replace(/^●\s*/, '').trim())
+      .filter((l) => l.length > 0);
+
+    for (const [i, descripcion] of tareas.entries()) {
+      const existente = await prisma.subactividad.findFirst({ where: { actividadId, descripcion } });
+      if (existente) continue;
+      await prisma.subactividad.create({ data: { actividadId, descripcion, orden: i } });
+      subactividadesCreadas += 1;
+    }
+  }
+  console.log(`Subactividades: ${subactividadesCreadas} tareas nuevas creadas (avance inicial 0%).`);
+
+  // El avance de una Actividad con Subactividades se deriva de ellas (promedio
+  // simple), nunca se reporta directo — se recalcula por si el script corre
+  // de nuevo después de que ya haya avances registrados en las subactividades.
+  for (const e of ENTREGABLES) {
+    if (!e.tareasPrincipales) continue;
+    const actividadId = actividadIdPorProducto.get(e.producto);
+    if (!actividadId) continue;
+    const subs = await prisma.subactividad.findMany({ where: { actividadId } });
+    const promedio = subs.length === 0 ? 0 : subs.reduce((a, s) => a + s.avancePorcentaje, 0) / subs.length;
+    await prisma.actividad.update({ where: { id: actividadId }, data: { avancePorcentaje: promedio } });
+  }
 
   // ── 5) Dependencias entre actividades (segunda pasada: ya existen todas) ─
   let dependenciasCreadas = 0;

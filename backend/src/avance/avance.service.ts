@@ -1,7 +1,7 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificacionService } from '../notificacion/notificacion.service';
-import { AporteColaborador, avanceActividadPonderado } from '../dominio/calculo-avance';
+import { AporteColaborador, avanceActividadPonderado, avanceFase } from '../dominio/calculo-avance';
 import { RegistrarAvanceDto } from './dto/registrar-avance.dto';
 
 @Injectable()
@@ -26,6 +26,14 @@ export class AvanceService {
 
     if (!esAdmin && !(await this.estaAsignado(actividadId, autorId))) {
       throw new ForbiddenException('No estás asignado a esta actividad');
+    }
+
+    const tieneSubactividades = (await this.prisma.subactividad.count({ where: { actividadId } })) > 0;
+    if (tieneSubactividades) {
+      throw new BadRequestException(
+        'Esta actividad tiene subactividades: su avance se calcula automáticamente. ' +
+          'Registra el avance en cada subactividad.',
+      );
     }
 
     const avance = await this.prisma.avance.create({
@@ -65,8 +73,20 @@ export class AvanceService {
    * Recalcula `actividad.avancePorcentaje` (RN-02): ponderado por el peso de
    * trabajo de cada colaborador asignado, tomando su último avance. Sin
    * asignaciones, usa el último avance registrado en la actividad.
+   *
+   * Si la actividad tiene Subactividades, el avance no se reporta
+   * directamente: se deriva como el promedio simple de sus subactividades
+   * (ver SubactividadService.registrarAvance, que llama aquí después de
+   * actualizar el caché de cada subactividad).
    */
   async recalcularActividad(actividadId: string): Promise<void> {
+    const subactividades = await this.prisma.subactividad.findMany({ where: { actividadId } });
+    if (subactividades.length > 0) {
+      const nuevo = avanceFase(subactividades);
+      await this.prisma.actividad.update({ where: { id: actividadId }, data: { avancePorcentaje: nuevo } });
+      return;
+    }
+
     const asignaciones = await this.prisma.asignacion.findMany({ where: { actividadId } });
 
     let nuevo: number;

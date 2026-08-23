@@ -34,6 +34,12 @@ interface Evidencia {
   fechaHora: string;
   autor: { nombre: string };
 }
+interface Subactividad {
+  id: string;
+  descripcion: string;
+  orden: number;
+  avancePorcentaje: number;
+}
 
 export function DetalleActividad() {
   const { id = '' } = useParams();
@@ -41,6 +47,7 @@ export function DetalleActividad() {
   const [actividad, setActividad] = useState<Actividad | null>(null);
   const [avances, setAvances] = useState<Avance[]>([]);
   const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
+  const [subactividades, setSubactividades] = useState<Subactividad[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // formularios
@@ -57,14 +64,16 @@ export function DetalleActividad() {
   const cargar = useCallback(async () => {
     setError(null);
     try {
-      const [a, av, ev] = await Promise.all([
+      const [a, av, ev, sub] = await Promise.all([
         apiJson<Actividad>(`/api/actividades/${id}`),
         apiJson<Avance[]>(`/api/actividades/${id}/avances`),
         apiJson<Evidencia[]>(`/api/actividades/${id}/evidencias`),
+        apiJson<Subactividad[]>(`/api/actividades/${id}/subactividades`),
       ]);
       setActividad(a);
       setAvances(av);
       setEvidencias(ev);
+      setSubactividades(sub);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -231,41 +240,55 @@ export function DetalleActividad() {
       {error && <div className="form-error">{error}</div>}
 
       <div className="grid-2">
-        <div className="panel">
-          <h3>Registrar avance</h3>
-          <form onSubmit={registrarAvance} className="form">
-            <label>
-              Porcentaje (0–100)
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={porcentaje}
-                onChange={(e) => setPorcentaje(e.target.value)}
-                required
-              />
-            </label>
-            <label>
-              Observaciones
-              <textarea value={obsAvance} onChange={(e) => setObsAvance(e.target.value)} />
-            </label>
-            <button type="submit">Guardar avance</button>
-          </form>
+        {subactividades.length > 0 ? (
+          <div className="panel">
+            <h3>Subactividades</h3>
+            <p className="tenue">
+              El avance de esta actividad se calcula como el promedio de sus subactividades.
+            </p>
+            <ul className="lista-simple">
+              {subactividades.map((s) => (
+                <SubactividadFila key={s.id} subactividad={s} onCambio={cargar} />
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="panel">
+            <h3>Registrar avance</h3>
+            <form onSubmit={registrarAvance} className="form">
+              <label>
+                Porcentaje (0–100)
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={porcentaje}
+                  onChange={(e) => setPorcentaje(e.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Observaciones
+                <textarea value={obsAvance} onChange={(e) => setObsAvance(e.target.value)} />
+              </label>
+              <button type="submit">Guardar avance</button>
+            </form>
 
-          <h4>Histórico</h4>
-          <ul className="lista-simple">
-            {avances.map((a) => (
-              <li key={a.id}>
-                <strong>{Math.round(a.porcentaje)}%</strong> — {a.usuario.nombre}
-                <span className="tenue">
-                  {new Date(a.fechaHora).toLocaleString('es-CO')}
-                  {a.observaciones ? ` · ${a.observaciones}` : ''}
-                </span>
-              </li>
-            ))}
-            {avances.length === 0 && <li className="tenue">Sin avances aún.</li>}
-          </ul>
-        </div>
+            <h4>Histórico</h4>
+            <ul className="lista-simple">
+              {avances.map((a) => (
+                <li key={a.id}>
+                  <strong>{Math.round(a.porcentaje)}%</strong> — {a.usuario.nombre}
+                  <span className="tenue">
+                    {new Date(a.fechaHora).toLocaleString('es-CO')}
+                    {a.observaciones ? ` · ${a.observaciones}` : ''}
+                  </span>
+                </li>
+              ))}
+              {avances.length === 0 && <li className="tenue">Sin avances aún.</li>}
+            </ul>
+          </div>
+        )}
 
         <div className="panel">
           <h3>Evidencias</h3>
@@ -300,6 +323,126 @@ export function DetalleActividad() {
 
       {esAdmin && <AsignacionesAdmin actividadId={id} descripcion={actividad.descripcion} />}
     </section>
+  );
+}
+
+// ─── Fila de una subactividad: su propio avance + evidencia (enlace) ─
+interface AvanceSubactividad {
+  id: string;
+  porcentaje: number;
+  enlaceEvidencia: string | null;
+  observaciones: string | null;
+  fechaHora: string;
+  usuario: { nombre: string };
+}
+
+function SubactividadFila({
+  subactividad,
+  onCambio,
+}: {
+  subactividad: Subactividad;
+  onCambio: () => Promise<void>;
+}) {
+  const [porcentaje, setPorcentaje] = useState('');
+  const [enlace, setEnlace] = useState('');
+  const [observaciones, setObservaciones] = useState('');
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [historial, setHistorial] = useState<AvanceSubactividad[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function registrar(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await apiJson(`/api/subactividades/${subactividad.id}/avances`, {
+        method: 'POST',
+        body: JSON.stringify({
+          porcentaje: Number(porcentaje),
+          enlaceEvidencia: enlace || undefined,
+          observaciones: observaciones || undefined,
+        }),
+      });
+      setPorcentaje('');
+      setEnlace('');
+      setObservaciones('');
+      setMostrarForm(false);
+      setHistorial(null);
+      await onCambio();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function alternarHistorial() {
+    if (historial) {
+      setHistorial(null);
+      return;
+    }
+    try {
+      setHistorial(await apiJson<AvanceSubactividad[]>(`/api/subactividades/${subactividad.id}/avances`));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  return (
+    <li>
+      {subactividad.descripcion}
+      <span className="tenue"> — {Math.round(subactividad.avancePorcentaje)}%</span>{' '}
+      <button type="button" className="enlace" onClick={() => setMostrarForm((v) => !v)}>
+        {mostrarForm ? 'cancelar' : 'actualizar avance'}
+      </button>{' '}
+      <button type="button" className="enlace" onClick={alternarHistorial}>
+        {historial ? 'ocultar historial' : 'ver historial'}
+      </button>
+      {error && <div className="form-error">{error}</div>}
+      {mostrarForm && (
+        <form onSubmit={registrar} className="form-inline">
+          <label>
+            % avance
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={porcentaje}
+              onChange={(e) => setPorcentaje(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Enlace de evidencia
+            <input type="url" value={enlace} onChange={(e) => setEnlace(e.target.value)} placeholder="https://…" />
+          </label>
+          <label>
+            Observaciones
+            <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
+          </label>
+          <button type="submit">Guardar</button>
+        </form>
+      )}
+      {historial && (
+        <ul className="lista-simple">
+          {historial.map((h) => (
+            <li key={h.id}>
+              <strong>{Math.round(h.porcentaje)}%</strong> — {h.usuario.nombre}
+              <span className="tenue">
+                {new Date(h.fechaHora).toLocaleString('es-CO')}
+                {h.observaciones ? ` · ${h.observaciones}` : ''}
+              </span>
+              {h.enlaceEvidencia && (
+                <>
+                  {' · '}
+                  <a href={h.enlaceEvidencia} target="_blank" rel="noopener noreferrer">
+                    evidencia
+                  </a>
+                </>
+              )}
+            </li>
+          ))}
+          {historial.length === 0 && <li className="tenue">Sin avances aún.</li>}
+        </ul>
+      )}
+    </li>
   );
 }
 

@@ -74,6 +74,11 @@ model Actividad {
   dependeDe       DependenciaActividad[] @relation("ActividadDependiente")
   esDependenciaDe DependenciaActividad[] @relation("ActividadOrigen")
 
+  // Subactividades (tareas del entregable, cuando el entregable las trae
+  // desglosadas). Si una Actividad tiene subactividades, su avancePorcentaje
+  // se calcula como el promedio de ellas en vez de reportarse directamente.
+  subactividades Subactividad[]
+
   @@map("actividad")
 }
 
@@ -148,6 +153,7 @@ model Usuario {
   cambiosLineaBase CambioLineaBase[]
   asignaciones     Asignacion[]
   avances          Avance[]
+  avancesSubactividad AvanceSubactividad[]
   evidencias       Evidencia[]
 
   @@map("usuario")
@@ -212,6 +218,40 @@ model Avance {
 
   @@index([actividadId, usuarioId])
   @@map("avance")
+}
+
+// Tarea puntual dentro de una Actividad (p.ej. cada viñeta de "Tareas
+// principales" de un entregable). avancePorcentaje es un caché del último
+// AvanceSubactividad registrado; ver AvanceSubactividad para el histórico.
+model Subactividad {
+  id               String               @id @default(uuid())
+  actividadId      String               @map("actividad_id")
+  descripcion      String
+  orden            Int                  @default(0)
+  avancePorcentaje Float                @default(0) @map("avance_porcentaje")
+  actividad        Actividad            @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  avances          AvanceSubactividad[]
+
+  @@map("subactividad")
+}
+
+// Registro histórico (append-only) de avances de una Subactividad, igual que
+// Avance (RN-05): puede subir o bajar, nunca se sobrescribe. La evidencia de
+// una subactividad es siempre un enlace (no adjuntos), guardado junto al
+// avance que la aporta.
+model AvanceSubactividad {
+  id              String       @id @default(uuid())
+  subactividadId  String       @map("subactividad_id")
+  usuarioId       String       @map("usuario_id")
+  porcentaje      Float
+  enlaceEvidencia String?      @map("enlace_evidencia")
+  observaciones   String?
+  fechaHora       DateTime     @default(now()) @map("fecha_hora")
+  subactividad    Subactividad @relation(fields: [subactividadId], references: [id], onDelete: Cascade)
+  usuario         Usuario      @relation(fields: [usuarioId], references: [id])
+
+  @@index([subactividadId, usuarioId])
+  @@map("avance_subactividad")
 }
 
 // ─── Auditoría (Fase 8) ─────────────────────────────────────────────

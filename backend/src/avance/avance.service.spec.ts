@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { AvanceService } from './avance.service';
 
 // Pruebas de autorización del registro de avances (RN-10), con Prisma simulado.
@@ -25,6 +25,10 @@ describe('AvanceService — autorización (RN-10)', () => {
         create: jest.fn().mockImplementation((args: any) => ({ id: 'av1', ...args.data })),
         findFirst: jest.fn().mockResolvedValue(null),
       },
+      subactividad: {
+        count: jest.fn().mockResolvedValue(0),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
     };
     service = new AvanceService(prisma, notificaciones);
   });
@@ -48,5 +52,14 @@ describe('AvanceService — autorización (RN-10)', () => {
     prisma.asignacion.findUnique.mockResolvedValue(null);
     await service.registrar('act1', 'admin', true, { porcentaje: 70 });
     expect(prisma.avance.create).toHaveBeenCalled();
+  });
+
+  it('rechaza el avance directo si la actividad tiene subactividades', async () => {
+    prisma.asignacion.findUnique.mockResolvedValue({ id: 'asg1' });
+    prisma.subactividad.count.mockResolvedValue(2);
+    await expect(
+      service.registrar('act1', 'colab', false, { porcentaje: 50 }),
+    ).rejects.toThrow(BadRequestException);
+    expect(prisma.avance.create).not.toHaveBeenCalled();
   });
 });

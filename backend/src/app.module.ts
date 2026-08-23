@@ -15,6 +15,7 @@ import { HitoModule } from './hito/hito.module';
 import { LineaBaseModule } from './linea-base/linea-base.module';
 import { CronogramaModule } from './cronograma/cronograma.module';
 import { AvanceModule } from './avance/avance.module';
+import { SubactividadModule } from './subactividad/subactividad.module';
 import { AsignacionModule } from './asignacion/asignacion.module';
 import { EvidenciaModule } from './evidencia/evidencia.module';
 import { NotificacionModule } from './notificacion/notificacion.module';
@@ -42,6 +43,7 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
     CronogramaModule,
     NotificacionModule,
     AvanceModule,
+    SubactividadModule,
     AsignacionModule,
     EvidenciaModule,
   ],

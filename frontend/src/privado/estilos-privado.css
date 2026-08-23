@@ -105,6 +105,9 @@ button.enlace {
   font-weight: 500;
   text-decoration: underline;
 }
+button.enlace.enlace-peligro {
+  color: #c0392b;
+}
 .acciones {
   display: flex;
   gap: 0.75rem;

@@ -106,4 +106,29 @@ export class UsuarioService {
       select: SELECT_SEGURO,
     });
   }
+
+  /**
+   * Elimina definitivamente la cuenta, SOLO si nunca tuvo actividad
+   * trazable (avances, evidencias o cambios de línea base). Si ya la tuvo,
+   * se rechaza para no perder la trazabilidad (RN-14): en ese caso se debe
+   * usar `desactivar`, que conserva el histórico.
+   */
+  async eliminar(id: string) {
+    await this.obtener(id);
+
+    const [avances, evidencias, cambiosLineaBase] = await Promise.all([
+      this.prisma.avance.count({ where: { usuarioId: id } }),
+      this.prisma.evidencia.count({ where: { autorId: id } }),
+      this.prisma.cambioLineaBase.count({ where: { usuarioId: id } }),
+    ]);
+    if (avances > 0 || evidencias > 0 || cambiosLineaBase > 0) {
+      throw new ConflictException(
+        'No se puede eliminar: el usuario tiene avances, evidencias o cambios de línea base ' +
+          'registrados. Usa "desactivar" para conservar la trazabilidad (RN-14).',
+      );
+    }
+
+    await this.prisma.usuario.delete({ where: { id } });
+    return { mensaje: 'Usuario eliminado' };
+  }
 }

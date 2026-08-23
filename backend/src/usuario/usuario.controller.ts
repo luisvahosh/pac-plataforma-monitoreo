@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto';
@@ -36,5 +36,10 @@ export class UsuarioController {
   @Post(':id/desactivar')
   desactivar(@Param('id') id: string) {
     return this.usuarios.desactivar(id);
+  }
+
+  @Delete(':id')
+  eliminar(@Param('id') id: string) {
+    return this.usuarios.eliminar(id);
   }
 }

@@ -195,6 +195,26 @@ model Avance {
   @@map("avance")
 }
 
+// ─── Auditoría (Fase 8) ─────────────────────────────────────────────
+// Registro append-only e inmutable (RN-17, RN-18): sin endpoints de
+// modificación/borrado. En producción se revoca UPDATE/DELETE al rol de
+// aplicación sobre esta tabla (ver README / Fase 13).
+model EventoAuditoria {
+  id          String   @id @default(uuid())
+  usuarioId   String?  @map("usuario_id")
+  accion      String // crear | editar | eliminar | acceso_sensible | login
+  entidadTipo String?  @map("entidad_tipo")
+  entidadId   String?  @map("entidad_id")
+  detalle     Json?
+  ip          String?
+  fechaHora   DateTime @default(now()) @map("fecha_hora")
+
+  @@index([usuarioId])
+  @@index([entidadTipo, entidadId])
+  @@index([fechaHora])
+  @@map("evento_auditoria")
+}
+
 // ─── Notificaciones y alertas (Fase 7) ─────────────────────────────
 
 // Configuración de anticipación de las Alertas de vencimiento (RN-03b, PA-08/12).

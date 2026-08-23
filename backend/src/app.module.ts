@@ -16,6 +16,7 @@ import { AvanceModule } from './avance/avance.module';
 import { AsignacionModule } from './asignacion/asignacion.module';
 import { EvidenciaModule } from './evidencia/evidencia.module';
 import { NotificacionModule } from './notificacion/notificacion.module';
+import { AuditoriaModule } from './auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { NotificacionModule } from './notificacion/notificacion.module';
     SeguridadModule,
     CorreoModule,
     AuthModule,
+    AuditoriaModule,
     // Funcionales
     HealthModule,
     UsuarioModule,

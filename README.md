@@ -18,7 +18,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 5 | Asignación de actividades y registro de avances | 🔨 En rama `fase-5-avances` |
 | 6 | Gestión de evidencias | 🔨 En rama `fase-6-evidencias` |
 | 7 | Notificaciones y alertas por correo | 🔨 En rama `fase-7-notificaciones` |
-| 8–15 | Auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 8 | Auditoría y trazabilidad | 🔨 En rama `fase-8-auditoria` |
+| 9–15 | Frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -183,6 +184,19 @@ Un **scheduler** de servidor evalúa a diario el cronograma y envía por correo 
 El envío usa la misma interfaz de correo desacoplada (dev/SMTP Office 365). La no-duplicación se garantiza con la tabla `notificacion_enviada`. Prueba unitaria de la lógica de umbrales en `dominio/alertas.spec.ts`.
 
 > Nota: el scheduler corre hoy dentro del backend (`@nestjs/schedule`); puede moverse al contenedor `worker` (ADR-0006) sin cambiar la lógica. Los "cambios importantes" notificables (RN-12) quedan pendientes de definir (PA-16).
+
+## Auditoría y trazabilidad (Fase 8)
+
+Un **interceptor global** registra automáticamente toda mutación exitosa (POST/PUT/PATCH/DELETE) como evento de auditoría con **usuario, fecha/hora, acción, entidad e IP** (RN-17). No guarda el cuerpo de la petición (evita capturar datos sensibles) y omite las rutas de `/auth`. El registro es **append-only e inmutable** (RN-18): no existe endpoint de modificación/borrado.
+
+| Método | Ruta | Rol | Descripción |
+|---|---|---|---|
+| GET | `/api/auditoria` | Admin | Consulta filtrable por `usuarioId`, `entidadTipo`, `entidadId`, `accion`, `desde`, `hasta` (+ `limite`/`offset`) |
+
+> **Inmutabilidad a nivel de base de datos (Fase 13):** en producción se debe
+> revocar `UPDATE`/`DELETE` sobre `evento_auditoria` al rol de aplicación de
+> PostgreSQL, de modo que ni siquiera un fallo de la aplicación permita alterar
+> el histórico. Pruebas de los ayudantes en `auditoria/auditoria.util.spec.ts`.
 
 ## Calidad de código
 

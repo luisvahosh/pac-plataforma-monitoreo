@@ -45,57 +45,16 @@ const PERSONAS = {
 
 type ClavePersona = keyof typeof PERSONAS;
 
-// ─── Tareas principales por Componente (hoja "Estructura por Entregable";
-// la columna está diligenciada una sola vez por componente, no por
-// entregable individual — se anexa a la descripción de la Fase). ────
-const TAREAS_POR_COMPONENTE: Record<string, string> = {
-  C1:
-    '● Consolidación y análisis de la serie histórica de inventarios de emisiones de GEI con base en información suministrada por la Secretaría de Medio Ambiente\n' +
-    '● Consolidación y análisis de las trayectorias de emisiones al 2030, 2040 y 2050, considerando entre otros insumos los resultados del soporte técnico proporcionado por parte del Grupo de Liderazgo Climático de Ciudades C40\n' +
-    '● Integración de los resultados de la Evaluación de Riesgos Climáticos actualizada.\n' +
-    '● Caracterización socioeconómica del territorio con enfoque diferencial, de equidad y justicia climática que permita la identificación y priorización de comunidades, grupos poblacionales y/o sectores más vulnerables ante las amenazas identificadas\n' +
-    '● Descripción de factores estructurales que condicionan la vulnerabilidad y la capacidad adaptativa del Distrito.',
-  C2:
-    '● Revisión y reformulación de objetivos estratégicos y sectoriales del Plan de Acción Climática bajo criterios SMART (específicos, medibles, realizables, realistas y temporales).\n' +
-    '● Actualización de la teoría de cambio y la cadena de valor del instrumento.\n' +
-    '● Revisión y depuración de acciones con dificultades de implementación derivadas de restricciones competenciales o de gobernanza\n' +
-    '● Diseño e incorporación de medidas de gestión, medios de implementación, proyectos o instrumentos de implementación para el cumplimiento de los objetivos SMART y las acciones sectoriales\n' +
-    '● Incorporación transversal de los enfoques de resiliencia, biodiversidad, economía circular y transición energética en el marco estratégico del plan.',
-  C3:
-    '● Integración de las Acciones de Alto Impacto (High Impact Actions – HIA) promovidas por el Grupo de Liderazgo Climático de Ciudades C40, en coherencia con evidencia y evaluación de pertinencia y oportunidad para el Distrito\n' +
-    '● Identificación y caracterización del inventario de acciones y medidas planteadas para el Plan de Acción Climática, mediante la estandarización y estructuración de metas, clasificación de opciones tecnológicas, potencial de reducción de emisiones basadas en consumo, Soluciones basadas en la Naturaleza (SbN) y medidas político-institucionales de mitigación y adaptación aplicables a los sectores priorizados del Distrito (Transporte, Residuos, Energía, Agricultura Silvicultura, Gestión del Riesgo, entre otros), garantizando su alineación con instrumentos de mayor jerarquía, metas y políticas nacionales y las recomendaciones del Grupo de Liderazgo Climático de Ciudades C40.\n' +
-    '● Estimación cuantitativa del potencial de reducción de emisiones de Gases de Efecto Invernadero (expresado en ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).\n' +
-    '● Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.\n' +
-    '● Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.\n' +
-    '● Diseño y aplicación de un modelo de análisis multicriterio basado en el Proceso de Redes Analíticas (ANP) para la priorización del portafolio que permita evaluar cómo las alternativas de mitigación impactan y potencian la capacidad de adaptación (co-beneficios de doble vía) y cómo interactúan con criterios socioeconómicos clave del Distrito (equidad de género, generación de empleo verde, salud pública/calidad del aire por reducción de PM 2.5 y viabilidad institucional).\n' +
-    '● Modelación de escenarios y trayectorias de descarbonización y resiliencia para la implementación en el corto, mediano y largo plazo a partir de los resultados del modelo ANP, definiendo la hoja de ruta técnica e institucional de manera conjunta y con consideración de las herramientas proporcionadas por el Grupo de Liderazgo Climático de Ciudades C40',
-  C4:
-    '● Armonización del PAC con la Política Distrital de CTeI para la Sostenibilidad y el Plan Decenal de CTeI.\n' +
-    '● Identificación de retos climáticos susceptibles de ser abordados mediante innovación y tecnologías emergentes.\n' +
-    '● Definición de mecanismos de articulación con el sistema de CTeI.\n' +
-    '● Diseño de estrategias para la apropiación social del conocimiento climático.\n' +
-    '● Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.\n' +
-    '● Desarrollo de herramientas para la integración del PAC con la estrategia del Plan Maestro Distrito Inteligente, relacionadas con plataformas de seguimiento de datos y asistentes inteligentes para la consulta de información.',
-  C5:
-    '● Identificación de análisis de barreras, riesgos y gestión de la implementación. Incluye la identificación de los cuellos de botella normativos, técnicos, institucionales, políticos o de apropiación social que puedan ralentizar la ejecución de las medidas prioritarias formulando las respectivas estrategias de mitigación del riesgo.\n' +
-    '● Estimación de los requerimientos de inversión (CAPEX), costos operativos (OPEX) y la viabilidad física e institucional de las medidas priorizadas para el corto y mediano plazo.\n' +
-    '● Estructuración de la Cartera de Proyectos Climáticos bajo criterios de Viabilidad y Bancabilidad. La viabilidad se fundamenta en el análisis previo de barreras y sus estrategias de mitigación. La bancabilidad se determina mediante el perfilamiento financiero del costeo detallado, garantizando una articulación orgánica con el Diagnóstico de Oportunidades de Inversión Climática del Distrito para facilitar el enganche con fuentes de recursos.\n' +
-    '● Diseño de la Estrategia de Financiamiento y Movilización de Recursos\n' +
-    '● Estructuración del marco institucional y operativo del Sistema MERL (Monitoreo, Evaluación, Reporte y Aprendizaje) para el seguimiento del plan, definiendo la gobernanza y la interoperabilidad de datos climáticos entre las secretarías del Distrito, entes descentralizados, Área Metropolitana del Valle de Aburrá (AMVA), considerando los avances metodológicos señalados en el documento de Evaluación\n' +
-    '● Revisión, ajuste y concertación de la batería de indicadores de gestión, resultados e impactos climáticos y socioeconómicos (reducción neta de GEI, inversión ejecutada, población con resiliencia aumentada), garantizando la articulación técnica con el sistema de Monitoreo a nivel nacional e instrumentos regionales.\n' +
-    '● Diseño de protocolos de reporte, seguimiento y actualización del plan. Incluye el desarrollo de las guías metodológicas, periodicidad, flujos de información y asignación de responsabilidades institucionales para asegurar que el sistema MERL actúe como un eje de actualización dinámica y mejora continua del PAC',
-  C6:
-    '● Diseño e implementación de espacios de participación con actores institucionales, comunitarios, académicos y productivos.\n' +
-    '● Validación técnica y social de los resultados del proceso.\n' +
-    '● Elaboración de materiales de comunicación y divulgación.\n' +
-    '● Diagramación y publicación de los documentos finales.',
-};
-
 // ─── Datos por entregable (hojas "Cronograma", "Estructura por
-// Entregable" e "Asignación por Entregable"). ───────────────────────
+// Entregable" e "Asignación por Entregable"). La columna "Tareas
+// principales" de "Estructura por Entregable" está diligenciada solo en
+// la fila del primer ID de cada componente (P1, P3, P5, P8, P11, P15):
+// son las subactividades de ESE entregable puntual, no de todo el
+// componente — por eso solo esos 6 productos tienen `tareasPrincipales`.
 interface DatosEntregable {
   producto: string;
   insumos: string;
+  tareasPrincipales?: string;
   apoyo: ClavePersona[];
   responsables: ClavePersona[];
   dependeDe: string[]; // códigos de producto de los que depende
@@ -108,6 +67,12 @@ const ENTREGABLES: DatosEntregable[] = [
     producto: 'P1',
     insumos:
       'Inventarios de emisiones de GEI; insumos del soporte técnico proporcionado por el Grupo de Liderazgo Climático de Ciudades C40; Evaluación de Riesgos Climáticos; datos DANE/POT + insumo de equidad territorial; Evaluación de Necesidades de Inclusión Social y Grupos Vulnerables (doc. #8 del directorio)',
+    tareasPrincipales:
+      '● Consolidación y análisis de la serie histórica de inventarios de emisiones de GEI con base en información suministrada por la Secretaría de Medio Ambiente\n' +
+      '● Consolidación y análisis de las trayectorias de emisiones al 2030, 2040 y 2050, considerando entre otros insumos los resultados del soporte técnico proporcionado por parte del Grupo de Liderazgo Climático de Ciudades C40\n' +
+      '● Integración de los resultados de la Evaluación de Riesgos Climáticos actualizada.\n' +
+      '● Caracterización socioeconómica del territorio con enfoque diferencial, de equidad y justicia climática que permita la identificación y priorización de comunidades, grupos poblacionales y/o sectores más vulnerables ante las amenazas identificadas\n' +
+      '● Descripción de factores estructurales que condicionan la vulnerabilidad y la capacidad adaptativa del Distrito.',
     apoyo: ['paolaRuiz'],
     responsables: ['julianaValencia', 'harlemAcevedo', 'jeinerCastellanos', 'marcosArango', 'sebastianCartagena'],
     dependeDe: [],
@@ -128,6 +93,12 @@ const ENTREGABLES: DatosEntregable[] = [
     producto: 'P3',
     insumos:
       'Plan de Acción Climática vigente (Decreto 942/2021); 33 acciones/7 sectores clasificados por la U de A (Evaluación, Cap. 2) como inventario base; Matriz de relacionamiento PDD 2024-2027 (Anexo 8 de la Evaluación)',
+    tareasPrincipales:
+      '● Revisión y reformulación de objetivos estratégicos y sectoriales del Plan de Acción Climática bajo criterios SMART (específicos, medibles, realizables, realistas y temporales).\n' +
+      '● Actualización de la teoría de cambio y la cadena de valor del instrumento.\n' +
+      '● Revisión y depuración de acciones con dificultades de implementación derivadas de restricciones competenciales o de gobernanza\n' +
+      '● Diseño e incorporación de medidas de gestión, medios de implementación, proyectos o instrumentos de implementación para el cumplimiento de los objetivos SMART y las acciones sectoriales\n' +
+      '● Incorporación transversal de los enfoques de resiliencia, biodiversidad, economía circular y transición energética en el marco estratégico del plan.',
     apoyo: ['mariaJose'],
     responsables: [
       'paolaRuiz',
@@ -173,6 +144,14 @@ const ENTREGABLES: DatosEntregable[] = [
     producto: 'P5',
     insumos:
       'Acciones de Alto Impacto (HIA) promovidas por el Grupo de Liderazgo Climático de Ciudades C40; metas y políticas nacionales y recomendaciones del C40; catálogo de medidas del directorio (docs. #6, #12, #13, #27, #28)',
+    tareasPrincipales:
+      '● Integración de las Acciones de Alto Impacto (High Impact Actions – HIA) promovidas por el Grupo de Liderazgo Climático de Ciudades C40, en coherencia con evidencia y evaluación de pertinencia y oportunidad para el Distrito\n' +
+      '● Identificación y caracterización del inventario de acciones y medidas planteadas para el Plan de Acción Climática, mediante la estandarización y estructuración de metas, clasificación de opciones tecnológicas, potencial de reducción de emisiones basadas en consumo, Soluciones basadas en la Naturaleza (SbN) y medidas político-institucionales de mitigación y adaptación aplicables a los sectores priorizados del Distrito (Transporte, Residuos, Energía, Agricultura Silvicultura, Gestión del Riesgo, entre otros), garantizando su alineación con instrumentos de mayor jerarquía, metas y políticas nacionales y las recomendaciones del Grupo de Liderazgo Climático de Ciudades C40.\n' +
+      '● Estimación cuantitativa del potencial de reducción de emisiones de Gases de Efecto Invernadero (expresado en ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).\n' +
+      '● Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.\n' +
+      '● Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.\n' +
+      '● Diseño y aplicación de un modelo de análisis multicriterio basado en el Proceso de Redes Analíticas (ANP) para la priorización del portafolio que permita evaluar cómo las alternativas de mitigación impactan y potencian la capacidad de adaptación (co-beneficios de doble vía) y cómo interactúan con criterios socioeconómicos clave del Distrito (equidad de género, generación de empleo verde, salud pública/calidad del aire por reducción de PM 2.5 y viabilidad institucional).\n' +
+      '● Modelación de escenarios y trayectorias de descarbonización y resiliencia para la implementación en el corto, mediano y largo plazo a partir de los resultados del modelo ANP, definiendo la hoja de ruta técnica e institucional de manera conjunta y con consideración de las herramientas proporcionadas por el Grupo de Liderazgo Climático de Ciudades C40',
     apoyo: ['marcosArango'],
     responsables: ['dianaRios', 'alejandroSilva', 'vanessaGarcia', 'jeinerCastellanos', 'harlemAcevedo'],
     dependeDe: ['P3', 'P4'],
@@ -202,6 +181,13 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P8',
     insumos: 'Política Distrital de CTeI para la Sostenibilidad; Plan Decenal de CTeI; diagnóstico consolidado (P2)',
+    tareasPrincipales:
+      '● Armonización del PAC con la Política Distrital de CTeI para la Sostenibilidad y el Plan Decenal de CTeI.\n' +
+      '● Identificación de retos climáticos susceptibles de ser abordados mediante innovación y tecnologías emergentes.\n' +
+      '● Definición de mecanismos de articulación con el sistema de CTeI.\n' +
+      '● Diseño de estrategias para la apropiación social del conocimiento climático.\n' +
+      '● Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.\n' +
+      '● Desarrollo de herramientas para la integración del PAC con la estrategia del Plan Maestro Distrito Inteligente, relacionadas con plataformas de seguimiento de datos y asistentes inteligentes para la consulta de información.',
     apoyo: ['sebastianCartagena'],
     responsables: ['danielGonzalez', 'luisVahos', 'leonOrrego', 'mariaJose', 'julianaValencia', 'harlemAcevedo', 'lilianaRestrepo'],
     dependeDe: ['P2'],
@@ -231,6 +217,14 @@ const ENTREGABLES: DatosEntregable[] = [
     producto: 'P11',
     insumos:
       'Diagnóstico de Oportunidades de Inversión Climática del Distrito (doc. #16 del directorio); Evaluación de Riesgos Climáticos (ERC); medidas priorizadas (P6)',
+    tareasPrincipales:
+      '● Identificación de análisis de barreras, riesgos y gestión de la implementación. Incluye la identificación de los cuellos de botella normativos, técnicos, institucionales, políticos o de apropiación social que puedan ralentizar la ejecución de las medidas prioritarias formulando las respectivas estrategias de mitigación del riesgo.\n' +
+      '● Estimación de los requerimientos de inversión (CAPEX), costos operativos (OPEX) y la viabilidad física e institucional de las medidas priorizadas para el corto y mediano plazo.\n' +
+      '● Estructuración de la Cartera de Proyectos Climáticos bajo criterios de Viabilidad y Bancabilidad. La viabilidad se fundamenta en el análisis previo de barreras y sus estrategias de mitigación. La bancabilidad se determina mediante el perfilamiento financiero del costeo detallado, garantizando una articulación orgánica con el Diagnóstico de Oportunidades de Inversión Climática del Distrito para facilitar el enganche con fuentes de recursos.\n' +
+      '● Diseño de la Estrategia de Financiamiento y Movilización de Recursos\n' +
+      '● Estructuración del marco institucional y operativo del Sistema MERL (Monitoreo, Evaluación, Reporte y Aprendizaje) para el seguimiento del plan, definiendo la gobernanza y la interoperabilidad de datos climáticos entre las secretarías del Distrito, entes descentralizados, Área Metropolitana del Valle de Aburrá (AMVA), considerando los avances metodológicos señalados en el documento de Evaluación\n' +
+      '● Revisión, ajuste y concertación de la batería de indicadores de gestión, resultados e impactos climáticos y socioeconómicos (reducción neta de GEI, inversión ejecutada, población con resiliencia aumentada), garantizando la articulación técnica con el sistema de Monitoreo a nivel nacional e instrumentos regionales.\n' +
+      '● Diseño de protocolos de reporte, seguimiento y actualización del plan. Incluye el desarrollo de las guías metodológicas, periodicidad, flujos de información y asignación de responsabilidades institucionales para asegurar que el sistema MERL actúe como un eje de actualización dinámica y mejora continua del PAC',
     apoyo: ['marcosArango', 'paolaRuiz'],
     responsables: ['alejandroSilva', 'dianaRios', 'julianaValencia', 'vanessaGarcia', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
     dependeDe: ['P6'],
@@ -270,6 +264,11 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P15',
     insumos: 'Transversal — recoge insumos de todos los componentes a medida que avanzan',
+    tareasPrincipales:
+      '● Diseño e implementación de espacios de participación con actores institucionales, comunitarios, académicos y productivos.\n' +
+      '● Validación técnica y social de los resultados del proceso.\n' +
+      '● Elaboración de materiales de comunicación y divulgación.\n' +
+      '● Diagramación y publicación de los documentos finales.',
     apoyo: ['paolaRuiz', 'mariaJose'],
     responsables: ['sebastianCartagena', 'lilianaRestrepo'],
     dependeDe: [],
@@ -356,19 +355,17 @@ async function main(): Promise<void> {
   }
   console.log(`Equipo real: ${usuarioIdPorClave.size} cuentas (correos provisionales @${DOMINIO_PROVISIONAL}).`);
 
-  // ── 2) Enriquecer descripción de cada Fase con las tareas del componente ─
+  // ── 2) Revertir cualquier "Tareas principales" que una versión anterior
+  // de este script haya anexado a la Fase: las tareas son subactividades
+  // del entregable puntual (P1, P3, P5, P8, P11, P15), no del componente
+  // completo, así que ahora viven en la descripción de esa Actividad (paso 4).
   const fases = await prisma.fase.findMany({ where: { proyectoId: proyecto.id } });
   for (const fase of fases) {
-    const codigo = fase.nombre.split(' — ')[0].trim(); // 'C1' | 'C2' | ... | 'Preparación'
-    const tareas = TAREAS_POR_COMPONENTE[codigo];
-    if (!tareas) continue;
-    const base = (fase.descripcion ?? '').split('\n\nTareas principales:\n')[0];
-    await prisma.fase.update({
-      where: { id: fase.id },
-      data: { descripcion: `${base}\n\nTareas principales:\n${tareas}` },
-    });
+    if (!fase.descripcion?.includes('\n\nTareas principales:\n')) continue;
+    const base = fase.descripcion.split('\n\nTareas principales:\n')[0];
+    await prisma.fase.update({ where: { id: fase.id }, data: { descripcion: base } });
   }
-  console.log('Fases: descripciones enriquecidas con tareas principales por componente.');
+  console.log('Fases: descripción restaurada (sin tareas principales; ahora van en la Actividad correspondiente).');
 
   // ── 3) Localizar cada Actividad P1..P18 por su prefijo de nombre ──
   const actividades = await prisma.actividad.findMany({ where: { fase: { proyectoId: proyecto.id } } });
@@ -389,11 +386,12 @@ async function main(): Promise<void> {
     const apoyoNombres = e.apoyo.map((c) => PERSONAS[c].nombre).join(', ');
     const responsablesNombres = e.responsables.map((c) => PERSONAS[c].nombre).join(', ');
     const descripcion = [
+      ...(e.tareasPrincipales ? [`Tareas principales (subactividades):\n${e.tareasPrincipales}`] : []),
       `Apoyo de componente: ${apoyoNombres}`,
       `Responsables principales: ${responsablesNombres}`,
       NOTA_REVISOR,
       `Insumos de entrada necesarios: ${e.insumos}`,
-    ].join('\n');
+    ].join('\n\n');
 
     await prisma.actividad.update({
       where: { id: actividadId },

@@ -10,7 +10,8 @@
     "test:watch": "jest --watch",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "bootstrap:admin": "ts-node prisma/crear-admin.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

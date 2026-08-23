@@ -71,11 +71,19 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d backend wo
 
 ## 5. Crear el primer administrador
 
-No hay autorregistro. Crea el administrador inicial con un script puntual (o
-temporalmente con el seed adaptado). Opción con `psql` + hash generado por la
-app no es directa; lo más simple es un script único de bootstrap ejecutado una
-vez dentro del contenedor backend (pendiente de crear según preferencia) o
-habilitar temporalmente el seed con datos reales. Documentar la vía elegida.
+No hay autorregistro. Usa el script de bootstrap: crea la cuenta en estado
+"pendiente de activación" y emite un enlace de activación (válido 48 h) para que
+el administrador establezca su contraseña y enrole su 2FA.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm \
+  -e ADMIN_EMAIL=admin@tu-dominio.com -e ADMIN_NOMBRE="Nombre Apellido" \
+  backend npm run bootstrap:admin
+```
+
+Copia el enlace de activación que imprime y ábrelo en el navegador: define la
+contraseña, escanea el QR en **Microsoft Authenticator** y ya puedes iniciar
+sesión. (Si el correo ya está operativo, también llega por correo.)
 
 ## 6. Verificación post-despliegue (smoke test)
 

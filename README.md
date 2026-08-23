@@ -19,7 +19,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 6 | Gestión de evidencias | 🔨 En rama `fase-6-evidencias` |
 | 7 | Notificaciones y alertas por correo | 🔨 En rama `fase-7-notificaciones` |
 | 8 | Auditoría y trazabilidad | 🔨 En rama `fase-8-auditoria` |
-| 9–15 | Frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 9 | Frontend: dashboard público | 🔨 En rama `fase-9-frontend-publico` |
+| 10–15 | Frontend privado, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -197,6 +198,14 @@ Un **interceptor global** registra automáticamente toda mutación exitosa (POST
 > revocar `UPDATE`/`DELETE` sobre `evento_auditoria` al rol de aplicación de
 > PostgreSQL, de modo que ni siquiera un fallo de la aplicación permita alterar
 > el histórico. Pruebas de los ayudantes en `auditoria/auditoria.util.spec.ts`.
+
+## Frontend: dashboard público (Fase 9)
+
+Interfaz **pública de solo lectura** (React + Vite) que consume únicamente endpoints públicos (`/api/public/**`) y **nunca** contenido de evidencias (RN-13). Muestra: nombre y objetivos del proyecto, **avance global** (donut), indicadores (KPIs), y las **fases → actividades → hitos** con barras de avance, **estados** (semáforo: pendiente / en ejecución / finalizada / próxima a vencer / vencida) y fechas de línea base.
+
+- Consume `GET /api/public/proyectos/dashboard` (agrega cronograma + indicadores del proyecto único en una sola llamada).
+- Diseño **responsivo** y **accesible**: `progressbar` con ARIA, estados con color **y** texto (no solo color), soporte de modo oscuro.
+- Sin dependencias de gráficos: barras en CSS y donut en SVG.
 
 ## Calidad de código
 

@@ -1,50 +1,59 @@
 import { useEffect, useState } from 'react';
-
-interface Salud {
-  estado: string;
-  servicio: string;
-  baseDatos: string;
-  hora: string;
-}
+import { obtenerDashboard } from './api';
+import type { DashboardResp } from './tipos';
+import { Donut } from './components/Donut';
+import { TarjetasIndicadores } from './components/TarjetasIndicadores';
+import { ListaFases } from './components/ListaFases';
 
 export function App() {
-  const [salud, setSalud] = useState<Salud | null>(null);
+  const [data, setData] = useState<DashboardResp | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    fetch('/api/health')
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json() as Promise<Salud>;
-      })
-      .then((data) => setSalud(data))
-      .catch((e: Error) => setError(e.message));
+    obtenerDashboard()
+      .then(setData)
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setCargando(false));
   }, []);
 
+  if (cargando) {
+    return <div className="estado-carga">Cargando el estado del proyecto…</div>;
+  }
+  if (error) {
+    return <div className="estado-error">No se pudo cargar el dashboard: {error}</div>;
+  }
+  if (!data || !data.proyecto || !data.indicadores) {
+    return <div className="estado-carga">Aún no hay un proyecto publicado.</div>;
+  }
+
+  const { proyecto, indicadores } = data;
+
   return (
-    <main
-      style={{
-        fontFamily: 'system-ui, sans-serif',
-        maxWidth: 640,
-        margin: '4rem auto',
-        padding: '0 1rem',
-        lineHeight: 1.5,
-      }}
-    >
-      <h1>PAC — Plataforma de Seguimiento y Monitoreo</h1>
-      <p>Andamiaje de la Fase 2. Estado del backend (consulta a /api/health):</p>
-      {error && <p style={{ color: '#b00020' }}>Error al consultar /api/health: {error}</p>}
-      {!error && !salud && <p>Consultando…</p>}
-      {salud && (
-        <ul>
-          <li>
-            Estado: <strong>{salud.estado}</strong>
-          </li>
-          <li>Servicio: {salud.servicio}</li>
-          <li>Base de datos: {salud.baseDatos}</li>
-          <li>Hora: {salud.hora}</li>
-        </ul>
-      )}
-    </main>
+    <>
+      <header className="cabecera">
+        <div className="contenedor">
+          <h1>{proyecto.nombre}</h1>
+          {proyecto.objetivos && <p>{proyecto.objetivos}</p>}
+          <div className="resumen">
+            <Donut valor={proyecto.avance} />
+            <div>
+              <strong style={{ fontSize: '1.1rem' }}>Avance global</strong>
+              <div style={{ color: '#cdd8ee' }}>Monitoreo público del proyecto</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="contenedor">
+        {!proyecto.pesosValidos && (
+          <div className="aviso">
+            Nota: los pesos de las fases aún no suman 100 %, por lo que el avance global es aproximado.
+          </div>
+        )}
+        <TarjetasIndicadores indicadores={indicadores} />
+        <ListaFases fases={proyecto.fases} />
+      </main>
+    </>
   );
 }

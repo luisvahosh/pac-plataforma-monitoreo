@@ -1,0 +1,239 @@
+:root {
+  --fondo: #f4f6f9;
+  --superficie: #ffffff;
+  --borde: #e2e8f0;
+  --texto: #1a2233;
+  --texto-tenue: #5b6472;
+  --primario: #1f6feb;
+  --primario-suave: #e7f0ff;
+
+  /* Estados (color + siempre acompañado de texto, no solo color) */
+  --pendiente: #6b7280;
+  --ejecucion: #1f6feb;
+  --finalizada: #1a7f4b;
+  --proxima: #b26a00;
+  --vencida: #c0392b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.contenedor {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.cabecera {
+  background: linear-gradient(135deg, #16233d, #1f3a6b);
+  color: #fff;
+  padding: 2rem 1rem;
+}
+.cabecera .contenedor {
+  padding-bottom: 1.5rem;
+}
+.cabecera h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+.cabecera p {
+  margin: 0;
+  color: #cdd8ee;
+  max-width: 60ch;
+}
+
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+/* Donut de avance global */
+.donut {
+  --tamano: 120px;
+  width: var(--tamano);
+  height: var(--tamano);
+  flex: 0 0 auto;
+}
+.donut text {
+  fill: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+/* KPIs */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.kpi {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+.kpi .valor {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.kpi .etiqueta {
+  color: var(--texto-tenue);
+  font-size: 0.85rem;
+}
+
+/* Fases y actividades */
+.fase {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.fase-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.fase-cabecera h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.fase-peso {
+  color: var(--texto-tenue);
+  font-size: 0.85rem;
+}
+
+.barra {
+  background: var(--borde);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+  margin: 0.5rem 0 0.25rem;
+}
+.barra > span {
+  display: block;
+  height: 100%;
+  background: var(--primario);
+  border-radius: 999px;
+}
+
+.actividades {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.actividad {
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+.actividad-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.actividad-nombre {
+  font-weight: 600;
+}
+.actividad-fechas {
+  color: var(--texto-tenue);
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+/* Badge de estado (color + texto) */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+.badge.pendiente {
+  background: var(--pendiente);
+}
+.badge.en_ejecucion {
+  background: var(--ejecucion);
+}
+.badge.finalizada {
+  background: var(--finalizada);
+}
+.badge.proxima_a_vencer {
+  background: var(--proxima);
+}
+.badge.vencida {
+  background: var(--vencida);
+}
+
+.hitos {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.hito {
+  font-size: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 0.15rem 0.5rem;
+  color: var(--texto-tenue);
+}
+.hito.cumplido {
+  color: var(--finalizada);
+  border-color: var(--finalizada);
+}
+
+.estado-carga,
+.estado-error {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--texto-tenue);
+}
+.estado-error {
+  color: var(--vencida);
+}
+
+.aviso {
+  background: #fff7e6;
+  border: 1px solid #f0c36d;
+  color: #7a5300;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0f1420;
+    --superficie: #161d2e;
+    --borde: #2a3547;
+    --texto: #e6ebf5;
+    --texto-tenue: #9aa6bb;
+    --primario-suave: #16233d;
+  }
+}

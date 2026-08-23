@@ -61,6 +61,20 @@ export class CronogramaService {
     };
   }
 
+  /**
+   * Dashboard del proyecto único (plataforma mono-proyecto): toma el primer
+   * Proyecto y devuelve su cronograma + indicadores en una sola respuesta.
+   */
+  async dashboardPublico(umbralDias?: number) {
+    const proyecto = await this.prisma.proyecto.findFirst({ orderBy: { creadoEn: 'asc' } });
+    if (!proyecto) return { proyecto: null, indicadores: null };
+    const [cronograma, indicadores] = await Promise.all([
+      this.cronograma(proyecto.id, umbralDias),
+      this.indicadores(proyecto.id, umbralDias),
+    ]);
+    return { proyecto: cronograma, indicadores };
+  }
+
   /** Indicadores agregados del Proyecto. */
   async indicadores(proyectoId: string, umbralDias?: number) {
     const c = await this.cronograma(proyectoId, umbralDias);

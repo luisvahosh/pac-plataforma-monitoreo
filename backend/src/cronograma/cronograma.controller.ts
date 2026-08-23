@@ -7,6 +7,12 @@ import { CronogramaService } from './cronograma.service';
 export class CronogramaController {
   constructor(private readonly cronograma: CronogramaService) {}
 
+  // Dashboard del proyecto único, en una sola llamada (para el frontend público).
+  @Get('dashboard')
+  dashboard(@Query('umbralDias') umbralDias?: string) {
+    return this.cronograma.dashboardPublico(umbralDias ? Number(umbralDias) : undefined);
+  }
+
   @Get(':proyectoId/cronograma')
   obtenerCronograma(
     @Param('proyectoId') proyectoId: string,

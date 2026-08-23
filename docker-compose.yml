@@ -36,6 +36,9 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    # Recibe todos los secretos (JWT, cifrado 2FA, correo, política, etc.) del .env.
+    env_file:
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       PORT: 3000
@@ -54,6 +57,8 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    env_file:
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       WORKER_INTERVALO_MS: ${WORKER_INTERVALO_MS:-30000}

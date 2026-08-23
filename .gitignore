@@ -22,6 +22,9 @@ playwright-report/
 test-results/
 .playwright/
 
+# === Salida de graphify (grafo de conocimiento; contiene rutas locales) ===
+graphify-out/
+
 # === Logs ===
 *.log
 npm-debug.log*

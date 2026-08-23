@@ -134,16 +134,13 @@ Autenticación con contraseña + **2FA (TOTP, Microsoft Authenticator)**, contra
 
 ### Variables de entorno nuevas
 
-Ver `.env.example`: `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ACCESS_TOKEN_TTL`, `RETO_2FA_TTL`, `REFRESH_TOKEN_TTL_DIAS`, `CIFRADO_2FA_SECRET`, `PASSWORD_MIN_LONGITUD`, `LOGIN_MAX_INTENTOS`, `LOGIN_BLOQUEO_MINUTOS`, `CORREO_MODO`, `CORREO_REMITENTE`, `SMTP_*`, `APP_URL`.
+Ver `.env.example`: `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `ACCESS_TOKEN_TTL`, `RETO_2FA_TTL`, `REFRESH_TOKEN_TTL_DIAS`, `CIFRADO_2FA_SECRET`, `PASSWORD_MIN_LONGITUD`, `LOGIN_MAX_INTENTOS`, `LOGIN_BLOQUEO_MINUTOS`, `CORREO_MODO`, `CORREO_REMITENTE`, `MS_GRAPH_*`, `SMTP_*`, `APP_URL`.
 
-### Correo (Office 365)
+### Correo (Office 365 / Microsoft 365)
 
 - `CORREO_MODO=dev` (por defecto): **no envía correos reales**, los registra en consola. Útil para desarrollo y pruebas.
-- `CORREO_MODO=smtp`: envía por Office 365 / Microsoft 365 vía SMTP autenticado.
-
-> ⚠️ **A confirmar con el administrador del tenant de Microsoft 365:** si **SMTP AUTH**
-> está habilitado, o si hay que registrar una app en **Entra ID** con permiso
-> `Mail.Send` (Microsoft Graph API). El envío real de correos depende de esto.
+- `CORREO_MODO=graph` (**recomendado en producción**): envía vía **Microsoft Graph API** con OAuth2 (client credentials). No depende de SMTP AUTH ni de los "Security Defaults" del tenant, que bloquean autenticación básica a nivel de todo el tenant (error típico: `535 5.7.139 ... security defaults policy`). Ver la guía paso a paso: [`docs/fase-13-despliegue/correo-microsoft-graph.md`](docs/fase-13-despliegue/correo-microsoft-graph.md).
+- `CORREO_MODO=smtp`: envía por SMTP autenticado. Alternativa más simple, pero falla si el tenant bloquea autenticación heredada.
 
 ## Asignación y avances (Fase 5)
 

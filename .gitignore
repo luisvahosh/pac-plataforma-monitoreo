@@ -17,6 +17,11 @@ out/
 coverage/
 .nyc_output/
 
+# === Playwright (E2E) ===
+playwright-report/
+test-results/
+.playwright/
+
 # === Logs ===
 *.log
 npm-debug.log*

@@ -21,7 +21,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 8 | Auditoría y trazabilidad | 🔨 En rama `fase-8-auditoria` |
 | 9 | Frontend: dashboard público | 🔨 En rama `fase-9-frontend-publico` |
 | 10 | Frontend: panel de colaboradores y administración | 🔨 En rama `fase-10-frontend-privado` |
-| 11–15 | Integración E2E, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 11 | Integración E2E y pruebas de sistema | 🔨 En rama `fase-11-e2e` |
+| 12–15 | Hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -218,6 +219,17 @@ Aplicación autenticada (React Router) para colaboradores y administradores, ser
 - **RBAC en la interfaz** (rutas protegidas por rol) que refleja —no sustituye— la autorización del backend.
 
 Rutas: `/` dashboard público · `/login` · `/app/**` protegidas. El acceso al contenido de evidencias siempre pasa por el endpoint autenticado (RN-13).
+
+## Integración y pruebas E2E (Fase 11)
+
+Suite **Playwright** en [`e2e/`](e2e/) que valida los cuatro flujos generales sobre el stack completo levantado con Docker: Visitante, Colaborador, Administrador y Sistema de notificaciones. Incluye un **seed de datos demo** (`backend/prisma/seed.ts`) con usuarios de prueba (2FA de secreto fijo para automatizar el login) y un proyecto de ejemplo. Ver [`e2e/README.md`](e2e/README.md) para ejecutar.
+
+```bash
+docker compose up --build -d
+docker compose exec backend npx prisma migrate deploy
+docker compose exec backend npm run prisma:seed
+cd e2e && npm install && npm run install:browsers && npm test
+```
 
 ## Calidad de código
 

@@ -1,0 +1,105 @@
+# docker-compose.hostinger.yml
+# Despliegue en Hostinger (Docker Manager) DETRÁS del nginx del host.
+#
+# - El nginx del sistema (fuera de Docker) hace de proxy inverso público y TLS.
+# - Los contenedores se publican SOLO en 127.0.0.1 (loopback): nadie los alcanza
+#   desde fuera; solo el nginx del host. PostgreSQL no publica ningún puerto.
+# - Usa las variables REALES de la app (ver .env.hostinger.example).
+#
+# Puertos loopback (ajústalos si ya están usados por otros proyectos):
+#   backend  -> 127.0.0.1:${BACKEND_PORT:-4005}
+#   frontend -> 127.0.0.1:${FRONTEND_PORT:-4006}
+# Configura el nginx del host con infra/nginx-pac.conf apuntando a esos puertos.
+
+name: pac
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: 3000
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-15m}
+      RETO_2FA_TTL: ${RETO_2FA_TTL:-5m}
+      REFRESH_TOKEN_TTL_DIAS: ${REFRESH_TOKEN_TTL_DIAS:-7}
+      CIFRADO_2FA_SECRET: ${CIFRADO_2FA_SECRET}
+      PASSWORD_MIN_LONGITUD: ${PASSWORD_MIN_LONGITUD:-10}
+      LOGIN_MAX_INTENTOS: ${LOGIN_MAX_INTENTOS:-5}
+      LOGIN_BLOQUEO_MINUTOS: ${LOGIN_BLOQUEO_MINUTOS:-15}
+      CORREO_MODO: ${CORREO_MODO:-dev}
+      CORREO_REMITENTE: ${CORREO_REMITENTE}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      APP_URL: ${APP_URL}
+      EVIDENCIAS_DIR: /app/evidencias
+      EVIDENCIAS_MAX_MB: ${EVIDENCIAS_MAX_MB:-25}
+      EVIDENCIAS_EXT: ${EVIDENCIAS_EXT:-pdf,png,jpg,jpeg,gif,webp,docx,xlsx,pptx,txt,csv}
+    volumes:
+      - evidencias:/app/evidencias
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-4005}:3000"
+    networks:
+      - interna
+
+  worker:
+    build: ./worker
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      WORKER_INTERVALO_MS: ${WORKER_INTERVALO_MS:-30000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - interna
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-4006}:4173"
+    networks:
+      - interna
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - interna
+
+volumes:
+  pg_data:
+  evidencias:
+
+networks:
+  interna:
+    driver: bridge

@@ -14,5 +14,7 @@ export default defineConfig({
   preview: {
     host: true,
     port: 4173,
+    // Detrás del nginx del host, el Host header es el dominio real: permitirlo.
+    allowedHosts: true,
   },
 });

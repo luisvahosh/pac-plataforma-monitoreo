@@ -24,7 +24,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 11 | Integración E2E y pruebas de sistema | 🔨 En rama `fase-11-e2e` |
 | 12 | Hardening de seguridad | 🔨 En rama `fase-12-hardening` |
 | 13 | Preparación de despliegue en Hostinger | 🔨 En rama `fase-13-despliegue` |
-| 14–15 | Respaldos y monitoreo, documentación | ⏳ Pendientes |
+| 14 | Respaldos, recuperación y monitoreo | 🔨 En rama `fase-14-respaldos` |
+| 15 | Documentación final y cierre | ⏳ Pendiente |
 
 ## Documentación
 
@@ -258,6 +259,16 @@ Guía y utilidades para publicar en producción (ver [`docs/fase-13-despliegue/`
 cp .env.prod.example .env   # completar en el servidor
 ./infra/desplegar.sh
 ```
+
+## Respaldos y monitoreo (Fase 14)
+
+Scripts operativos (ver [`docs/fase-14-respaldos/`](docs/fase-14-respaldos/)):
+
+- **`infra/respaldo.sh`** — respaldo de PostgreSQL (`pg_dump -Fc`) y de los archivos de evidencia, con retención configurable; programable por cron.
+- **`infra/restaurar.sh`** — restauración de BD y evidencias desde un respaldo (para recuperación y simulacro).
+- **`infra/monitoreo.sh`** — health check (`/api/health`) + uso de disco, con alertas por cron/correo.
+
+Guías: [respaldos y recuperación](docs/fase-14-respaldos/respaldos-y-recuperacion.md) (incluye **simulacro de restauración** obligatorio) y [monitoreo](docs/fase-14-respaldos/monitoreo.md).
 
 ## Calidad de código
 

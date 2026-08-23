@@ -1,21 +1,24 @@
 # docker-compose.hostinger.yml
-# Despliegue en Hostinger (Docker Manager) DETRÁS del nginx del host.
+# Despliegue en Hostinger DETRÁS de Nginx Proxy Manager (NPM), que corre en su
+# propio contenedor Docker sobre la red compartida "red-de-sitios_red-web".
 #
-# - El nginx del sistema (fuera de Docker) hace de proxy inverso público y TLS.
-# - Los contenedores se publican SOLO en 127.0.0.1 (loopback): nadie los alcanza
-#   desde fuera; solo el nginx del host. PostgreSQL no publica ningún puerto.
-# - Usa las variables REALES de la app (ver .env.hostinger.example).
+# - backend y frontend se conectan TAMBIÉN a esa red compartida, para que NPM
+#   pueda alcanzarlos por NOMBRE DE CONTENEDOR (pac-backend / pac-frontend) y
+#   su PUERTO INTERNO (3000 / 4173) — no por IP pública ni puerto publicado.
+# - Los puertos 127.0.0.1 se mantienen solo para pruebas/depuración locales
+#   por SSH (curl); no son necesarios para que NPM funcione.
+# - PostgreSQL y worker permanecen SOLO en la red interna (nunca expuestos).
 #
-# Puertos loopback (ajústalos si ya están usados por otros proyectos):
-#   backend  -> 127.0.0.1:${BACKEND_PORT:-4005}
-#   frontend -> 127.0.0.1:${FRONTEND_PORT:-4006}
-# Configura el nginx del host con infra/nginx-pac.conf apuntando a esos puertos.
+# En Nginx Proxy Manager, el Proxy Host debe usar:
+#   Forward Hostname/IP = pac-frontend   Forward Port = 4173
+#   Custom Location /api -> Forward Hostname/IP = pac-backend   Forward Port = 3000
 
 name: pac
 
 services:
   backend:
     build: ./backend
+    container_name: pac-backend
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -50,6 +53,7 @@ services:
       - "127.0.0.1:${BACKEND_PORT:-4005}:3000"
     networks:
       - interna
+      - red-de-sitios_red-web
 
   worker:
     build: ./worker
@@ -67,6 +71,7 @@ services:
 
   frontend:
     build: ./frontend
+    container_name: pac-frontend
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -76,6 +81,7 @@ services:
       - "127.0.0.1:${FRONTEND_PORT:-4006}:4173"
     networks:
       - interna
+      - red-de-sitios_red-web
 
   postgres:
     image: postgres:16-alpine
@@ -103,3 +109,5 @@ volumes:
 networks:
   interna:
     driver: bridge
+  red-de-sitios_red-web:
+    external: true

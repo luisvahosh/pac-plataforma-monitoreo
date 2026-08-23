@@ -66,6 +66,7 @@ model Actividad {
   hitos            Hito[]
   asignaciones     Asignacion[]
   avances          Avance[]
+  evidencias       Evidencia[]
 
   @@map("actividad")
 }
@@ -128,6 +129,7 @@ model Usuario {
   cambiosLineaBase CambioLineaBase[]
   asignaciones     Asignacion[]
   avances          Avance[]
+  evidencias       Evidencia[]
 
   @@map("usuario")
 }
@@ -184,10 +186,36 @@ model Avance {
   usuarioId     String    @map("usuario_id")
   porcentaje    Float // 0..100
   observaciones String?
-  fechaHora     DateTime  @default(now()) @map("fecha_hora")
-  actividad     Actividad @relation(fields: [actividadId], references: [id], onDelete: Cascade)
-  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  fechaHora     DateTime    @default(now()) @map("fecha_hora")
+  actividad     Actividad   @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  evidencias    Evidencia[]
 
   @@index([actividadId, usuarioId])
   @@map("avance")
+}
+
+// ─── Evidencias (Fase 6) ────────────────────────────────────────────
+// El CONTENIDO/enlace de toda Evidencia es privado (RN-06, RN-13): nunca
+// accesible sin autenticación. Se sirve solo por endpoint autenticado.
+model Evidencia {
+  id            String     @id @default(uuid())
+  actividadId   String     @map("actividad_id")
+  avanceId      String?    @map("avance_id")
+  autorId       String     @map("autor_id")
+  tipo          String // enlace | imagen | archivo | documento | observacion
+  url           String? // solo tipo enlace
+  archivoRef    String?    @map("archivo_ref") // nombre del archivo en el volumen; NUNCA público
+  nombreArchivo String?    @map("nombre_archivo")
+  mime          String?
+  tamanoBytes   Int?       @map("tamano_bytes")
+  checksum      String? // SHA-256 para integridad
+  observacion   String?
+  fechaHora     DateTime   @default(now()) @map("fecha_hora")
+  actividad     Actividad  @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  avance        Avance?    @relation(fields: [avanceId], references: [id], onDelete: SetNull)
+  autor         Usuario    @relation(fields: [autorId], references: [id])
+
+  @@index([actividadId])
+  @@map("evidencia")
 }

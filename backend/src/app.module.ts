@@ -13,6 +13,7 @@ import { LineaBaseModule } from './linea-base/linea-base.module';
 import { CronogramaModule } from './cronograma/cronograma.module';
 import { AvanceModule } from './avance/avance.module';
 import { AsignacionModule } from './asignacion/asignacion.module';
+import { EvidenciaModule } from './evidencia/evidencia.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AsignacionModule } from './asignacion/asignacion.module';
     CronogramaModule,
     AvanceModule,
     AsignacionModule,
+    EvidenciaModule,
   ],
 })
 export class AppModule {}

@@ -16,7 +16,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 3 | Modelo de datos y backend core del dominio | 🔨 En rama `fase-3-dominio` |
 | 4 | Autenticación, usuarios, roles y 2FA | 🔨 En rama `fase-4-autenticacion` |
 | 5 | Asignación de actividades y registro de avances | 🔨 En rama `fase-5-avances` |
-| 6–15 | Evidencias, notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 6 | Gestión de evidencias | 🔨 En rama `fase-6-evidencias` |
+| 7–15 | Notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -150,6 +151,22 @@ Los Administradores asignan Actividades a Colaboradores (con **peso de trabajo**
 | GET | `/api/mis-actividades` | Colaborador | Actividades asignadas al usuario autenticado |
 
 **Autorización (RN-10):** un Colaborador solo registra/consulta avances de sus Actividades asignadas (403 en caso contrario); el Administrador puede sobre cualquiera. Cubierto por pruebas (`avance.service.spec.ts`).
+
+## Evidencias (Fase 6)
+
+Evidencias asociadas a Actividades (y opcionalmente a un Avance): **enlaces**, **imágenes**, **archivos** y **documentos**, más `observacion` como metadato. El **contenido/enlace es siempre privado** (RN-06, RN-13): solo accesible autenticado, servido por un endpoint controlado; los archivos se guardan en un volumen fuera del webroot (ADR-0005), con nombre aleatorio, validación de extensión/tamaño y checksum SHA-256.
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST | `/api/actividades/:id/evidencias/enlace` | Registra una evidencia de tipo enlace (URL) |
+| POST | `/api/actividades/:id/evidencias/archivo` | Sube archivo (`multipart/form-data`: `archivo`, `tipo`, `observacion?`) |
+| GET | `/api/actividades/:id/evidencias` | Lista metadatos (nunca expone la ruta física) |
+| GET | `/api/evidencias/:id/contenido` | **Descarga/stream del contenido** (autenticado) o URL del enlace |
+| DELETE | `/api/evidencias/:id` | Elimina (autor o Administrador) |
+
+**Autorización:** subir requiere estar asignado a la actividad (o ser Administrador); ver/descargar requiere sesión (RN-13). Validación de tipos y tamaño configurable (`EVIDENCIAS_MAX_MB`, `EVIDENCIAS_EXT`).
+
+> Nota (PA-24): "archivo adjunto" y "documento de soporte" se distinguen por el campo `tipo`; pueden unificarse si el usuario lo prefiere. La verificación profunda de MIME real es un endurecimiento previsto para la Fase 12.
 
 ## Calidad de código
 

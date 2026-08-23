@@ -60,4 +60,38 @@ export class CorreoService {
        <p>Si no fuiste tú, ignora este mensaje.</p>`,
     );
   }
+
+  async enviarAlertaProximaVencer(
+    destino: string,
+    actividad: string,
+    dias: number,
+  ): Promise<void> {
+    await this.enviar(
+      destino,
+      `Actividad próxima a vencer (${dias} día(s)) — PAC`,
+      `<p>La actividad <strong>${actividad}</strong> vence en aproximadamente ${dias} día(s).</p>
+       <p>Registra tu avance en la plataforma.</p>`,
+    );
+  }
+
+  async enviarAlertaVencida(destino: string, actividad: string): Promise<void> {
+    await this.enviar(
+      destino,
+      `Actividad vencida — PAC`,
+      `<p>La actividad <strong>${actividad}</strong> ha superado su fecha de fin planificada.</p>
+       <p>Actualiza su estado o solicita un cambio de línea base si corresponde.</p>`,
+    );
+  }
+
+  async enviarConfirmacionAvance(
+    destino: string,
+    actividad: string,
+    porcentaje: number,
+  ): Promise<void> {
+    await this.enviar(
+      destino,
+      `Avance registrado — PAC`,
+      `<p>Se registró tu avance en la actividad <strong>${actividad}</strong>: ${porcentaje}%.</p>`,
+    );
+  }
 }

@@ -6,8 +6,11 @@ describe('AvanceService — autorización (RN-10)', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prisma: any;
   let service: AvanceService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let notificaciones: any;
 
   beforeEach(() => {
+    notificaciones = { confirmarRegistroAvance: jest.fn().mockResolvedValue(undefined) };
     prisma = {
       actividad: {
         findUnique: jest.fn().mockResolvedValue({ id: 'act1' }),
@@ -23,7 +26,7 @@ describe('AvanceService — autorización (RN-10)', () => {
         findFirst: jest.fn().mockResolvedValue(null),
       },
     };
-    service = new AvanceService(prisma);
+    service = new AvanceService(prisma, notificaciones);
   });
 
   it('rechaza a un colaborador NO asignado', async () => {

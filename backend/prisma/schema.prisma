@@ -195,6 +195,33 @@ model Avance {
   @@map("avance")
 }
 
+// ─── Notificaciones y alertas (Fase 7) ─────────────────────────────
+
+// Configuración de anticipación de las Alertas de vencimiento (RN-03b, PA-08/12).
+model ReglaAlerta {
+  id               String   @id @default(uuid())
+  ambito           String   @default("global")
+  diasAnticipacion Int[]    @map("dias_anticipacion") // p. ej. [7, 3, 1]
+  activo           Boolean  @default(true)
+  actualizadoEn    DateTime @default(now()) @updatedAt @map("actualizado_en")
+
+  @@map("regla_alerta")
+}
+
+// Registro de notificaciones enviadas, para evitar duplicados (RN-11) y auditar.
+model NotificacionEnviada {
+  id          String   @id @default(uuid())
+  tipo        String // activacion | recuperacion | proxima_a_vencer | vencida | confirmacion_avance | cambio_importante
+  usuarioId   String?  @map("usuario_id")
+  entidadTipo String?  @map("entidad_tipo")
+  entidadId   String?  @map("entidad_id")
+  umbralDias  Int?     @map("umbral_dias")
+  fechaHora   DateTime @default(now()) @map("fecha_hora")
+
+  @@index([tipo, entidadId, usuarioId])
+  @@map("notificacion_enviada")
+}
+
 // ─── Evidencias (Fase 6) ────────────────────────────────────────────
 // El CONTENIDO/enlace de toda Evidencia es privado (RN-06, RN-13): nunca
 // accesible sin autenticación. Se sirve solo por endpoint autenticado.

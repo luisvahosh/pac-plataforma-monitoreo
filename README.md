@@ -17,7 +17,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 4 | Autenticación, usuarios, roles y 2FA | 🔨 En rama `fase-4-autenticacion` |
 | 5 | Asignación de actividades y registro de avances | 🔨 En rama `fase-5-avances` |
 | 6 | Gestión de evidencias | 🔨 En rama `fase-6-evidencias` |
-| 7–15 | Notificaciones, auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 7 | Notificaciones y alertas por correo | 🔨 En rama `fase-7-notificaciones` |
+| 8–15 | Auditoría, frontends, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -167,6 +168,21 @@ Evidencias asociadas a Actividades (y opcionalmente a un Avance): **enlaces**, *
 **Autorización:** subir requiere estar asignado a la actividad (o ser Administrador); ver/descargar requiere sesión (RN-13). Validación de tipos y tamaño configurable (`EVIDENCIAS_MAX_MB`, `EVIDENCIAS_EXT`).
 
 > Nota (PA-24): "archivo adjunto" y "documento de soporte" se distinguen por el campo `tipo`; pueden unificarse si el usuario lo prefiere. La verificación profunda de MIME real es un endurecimiento previsto para la Fase 12.
+
+## Notificaciones y alertas (Fase 7)
+
+Un **scheduler** de servidor evalúa a diario el cronograma y envía por correo **alertas de próxima a vencer / vencida**, con anticipación configurable (por defecto 7/3/1 días) y **sin duplicar** (una alerta por umbral, RN-11). Además, al registrar un avance se envía una **confirmación** al colaborador (RNF-16).
+
+| Método | Ruta | Rol | Descripción |
+|---|---|---|---|
+| GET | `/api/reglas-alerta` | Admin | Lee la configuración de anticipación de alertas |
+| PUT | `/api/reglas-alerta` | Admin | Define `diasAnticipacion` (p. ej. `[7,3,1]`) y `activo` |
+| GET | `/api/notificaciones/enviadas` | Admin | Log de notificaciones enviadas |
+| POST | `/api/notificaciones/evaluar` | Admin | Dispara la evaluación manualmente (pruebas/operación) |
+
+El envío usa la misma interfaz de correo desacoplada (dev/SMTP Office 365). La no-duplicación se garantiza con la tabla `notificacion_enviada`. Prueba unitaria de la lógica de umbrales en `dominio/alertas.spec.ts`.
+
+> Nota: el scheduler corre hoy dentro del backend (`@nestjs/schedule`); puede moverse al contenedor `worker` (ADR-0006) sin cambiar la lógica. Los "cambios importantes" notificables (RN-12) quedan pendientes de definir (PA-16).
 
 ## Calidad de código
 

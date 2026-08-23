@@ -1,11 +1,17 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificacionService } from '../notificacion/notificacion.service';
 import { AporteColaborador, avanceActividadPonderado } from '../dominio/calculo-avance';
 import { RegistrarAvanceDto } from './dto/registrar-avance.dto';
 
 @Injectable()
 export class AvanceService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AvanceService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificaciones: NotificacionService,
+  ) {}
 
   private estaAsignado(actividadId: string, usuarioId: string): Promise<boolean> {
     return this.prisma.asignacion
@@ -31,6 +37,13 @@ export class AvanceService {
       },
     });
     await this.recalcularActividad(actividadId);
+
+    // Confirmación por correo (RNF-16). No debe hacer fallar el registro.
+    try {
+      await this.notificaciones.confirmarRegistroAvance(actividadId, autorId, dto.porcentaje);
+    } catch (error) {
+      this.logger.warn(`No se pudo enviar la confirmación de avance: ${(error as Error).message}`);
+    }
     return avance;
   }
 

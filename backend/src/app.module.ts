@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './prisma/prisma.module';
 import { SeguridadModule } from './seguridad/seguridad.module';
 import { CorreoModule } from './correo/correo.module';
@@ -14,10 +15,12 @@ import { CronogramaModule } from './cronograma/cronograma.module';
 import { AvanceModule } from './avance/avance.module';
 import { AsignacionModule } from './asignacion/asignacion.module';
 import { EvidenciaModule } from './evidencia/evidencia.module';
+import { NotificacionModule } from './notificacion/notificacion.module';
 
 @Module({
   imports: [
     // Globales / transversales
+    ScheduleModule.forRoot(),
     PrismaModule,
     SeguridadModule,
     CorreoModule,
@@ -31,6 +34,7 @@ import { EvidenciaModule } from './evidencia/evidencia.module';
     HitoModule,
     LineaBaseModule,
     CronogramaModule,
+    NotificacionModule,
     AvanceModule,
     AsignacionModule,
     EvidenciaModule,

@@ -23,7 +23,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 10 | Frontend: panel de colaboradores y administración | 🔨 En rama `fase-10-frontend-privado` |
 | 11 | Integración E2E y pruebas de sistema | 🔨 En rama `fase-11-e2e` |
 | 12 | Hardening de seguridad | 🔨 En rama `fase-12-hardening` |
-| 13–15 | Despliegue, respaldos, documentación | ⏳ Pendientes |
+| 13 | Preparación de despliegue en Hostinger | 🔨 En rama `fase-13-despliegue` |
+| 14–15 | Respaldos y monitoreo, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -243,6 +244,20 @@ Remediaciones aplicadas antes de producción (detalle en [`docs/fase-12-segurida
 - **CORS** restrictivo (opcional vía `CORS_ORIGEN`).
 
 Ver el [informe de hardening](docs/fase-12-seguridad/informe-hardening.md) (hallazgos por severidad) y el [checklist de seguridad](docs/fase-12-seguridad/checklist-seguridad.md). Pendientes que se cierran en el despliegue (Fase 13): revocar `UPDATE/DELETE` de auditoría en BD y verificación de MIME real en subidas.
+
+## Despliegue en Hostinger (Fase 13)
+
+Guía y utilidades para publicar en producción (ver [`docs/fase-13-despliegue/`](docs/fase-13-despliegue/)):
+
+- **`.env.prod.example`** — plantilla de variables de producción.
+- **`infra/desplegar.sh`** — despliegue reproducible (pull → build → migrate → up) con el override `docker-compose.prod.yml` (Caddy + TLS automático).
+- **`infra/seguridad-bd.sql`** — rol de aplicación de menor privilegio + revocación de `UPDATE/DELETE` sobre auditoría y línea base (cierra pendientes de Fase 12).
+- **Guías:** [despliegue paso a paso](docs/fase-13-despliegue/despliegue-hostinger.md), [rollback](docs/fase-13-despliegue/rollback.md) y [checklist](docs/fase-13-despliegue/checklist-despliegue.md).
+
+```bash
+cp .env.prod.example .env   # completar en el servidor
+./infra/desplegar.sh
+```
 
 ## Calidad de código
 

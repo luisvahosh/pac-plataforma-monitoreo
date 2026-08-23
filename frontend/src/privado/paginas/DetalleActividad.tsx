@@ -12,6 +12,7 @@ interface Actividad {
   nombre: string;
   descripcion: string | null;
   avancePorcentaje: number;
+  finalizada: boolean;
   tramoPago: string | null;
   tramoPagoPorcentaje: number | null;
   dependeDe: { dependeDe: ActividadRef }[];
@@ -46,8 +47,12 @@ export function DetalleActividad() {
   const [porcentaje, setPorcentaje] = useState('');
   const [obsAvance, setObsAvance] = useState('');
   const [urlEnlace, setUrlEnlace] = useState('');
-  const [archivo, setArchivo] = useState<File | null>(null);
-  const [tipoArchivo, setTipoArchivo] = useState('archivo');
+
+  // edición de la actividad (admin)
+  const [editando, setEditando] = useState(false);
+  const [editNombre, setEditNombre] = useState('');
+  const [editDescripcion, setEditDescripcion] = useState('');
+  const [editFinalizada, setEditFinalizada] = useState(false);
 
   const cargar = useCallback(async () => {
     setError(null);
@@ -68,6 +73,33 @@ export function DetalleActividad() {
   useEffect(() => {
     void cargar();
   }, [cargar]);
+
+  function iniciarEdicion() {
+    if (!actividad) return;
+    setError(null);
+    setEditNombre(actividad.nombre);
+    setEditDescripcion(actividad.descripcion ?? '');
+    setEditFinalizada(actividad.finalizada);
+    setEditando(true);
+  }
+
+  async function guardarEdicion(e: FormEvent) {
+    e.preventDefault();
+    try {
+      await apiJson(`/api/actividades/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          nombre: editNombre,
+          descripcion: editDescripcion || undefined,
+          finalizada: editFinalizada,
+        }),
+      });
+      setEditando(false);
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
 
   async function registrarAvance(e: FormEvent) {
     e.preventDefault();
@@ -92,22 +124,6 @@ export function DetalleActividad() {
         body: JSON.stringify({ url: urlEnlace }),
       });
       setUrlEnlace('');
-      await cargar();
-    } catch (e) {
-      setError((e as Error).message);
-    }
-  }
-
-  async function subirArchivo(e: FormEvent) {
-    e.preventDefault();
-    if (!archivo) return;
-    const fd = new FormData();
-    fd.append('archivo', archivo);
-    fd.append('tipo', tipoArchivo);
-    try {
-      const r = await apiFetch(`/api/actividades/${id}/evidencias/archivo`, { method: 'POST', body: fd });
-      if (!r.ok) throw new Error(`No se pudo subir (HTTP ${r.status})`);
-      setArchivo(null);
       await cargar();
     } catch (e) {
       setError((e as Error).message);
@@ -140,11 +156,51 @@ export function DetalleActividad() {
 
   return (
     <section>
-      <h2>{actividad.nombre}</h2>
-      <p className="tenue">
-        Avance actual: {Math.round(actividad.avancePorcentaje)}%
-        {actividad.tramoPago && ` · ${actividad.tramoPago} del contrato (${actividad.tramoPagoPorcentaje}%)`}
-      </p>
+      {editando ? (
+        <form onSubmit={guardarEdicion} className="form panel">
+          <label>
+            Nombre
+            <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} required />
+          </label>
+          <label>
+            Descripción
+            <textarea
+              value={editDescripcion}
+              onChange={(e) => setEditDescripcion(e.target.value)}
+              rows={6}
+            />
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={editFinalizada}
+              onChange={(e) => setEditFinalizada(e.target.checked)}
+            />
+            Finalizada
+          </label>
+          <div className="acciones">
+            <button type="submit">Guardar</button>
+            <button type="button" onClick={() => setEditando(false)}>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      ) : (
+        <>
+          <h2>
+            {actividad.nombre}{' '}
+            {esAdmin && (
+              <button type="button" className="enlace" onClick={iniciarEdicion}>
+                editar
+              </button>
+            )}
+          </h2>
+          <p className="tenue">
+            Avance actual: {Math.round(actividad.avancePorcentaje)}%
+            {actividad.tramoPago && ` · ${actividad.tramoPago} del contrato (${actividad.tramoPagoPorcentaje}%)`}
+          </p>
+        </>
+      )}
       {(actividad.dependeDe.length > 0 || actividad.esDependenciaDe.length > 0) && (
         <p className="tenue">
           {actividad.dependeDe.length > 0 && (
@@ -224,27 +280,6 @@ export function DetalleActividad() {
               />
             </label>
             <button type="submit">Añadir enlace</button>
-          </form>
-
-          <form onSubmit={subirArchivo} className="form-inline">
-            <label>
-              Archivo
-              <input
-                type="file"
-                onChange={(e) => setArchivo(e.target.files?.[0] ?? null)}
-              />
-            </label>
-            <label>
-              Tipo
-              <select value={tipoArchivo} onChange={(e) => setTipoArchivo(e.target.value)}>
-                <option value="imagen">Imagen</option>
-                <option value="archivo">Archivo</option>
-                <option value="documento">Documento</option>
-              </select>
-            </label>
-            <button type="submit" disabled={!archivo}>
-              Subir
-            </button>
           </form>
 
           <ul className="lista-simple">

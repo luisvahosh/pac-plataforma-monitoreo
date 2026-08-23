@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
-import { obtenerDashboard } from './api';
+import { obtenerDashboard, redondear } from './api';
 import type { DashboardResp } from './tipos';
 import { Donut } from './components/Donut';
 import { TarjetasIndicadores } from './components/TarjetasIndicadores';
 import { ListaFases } from './components/ListaFases';
+import { Gantt } from './components/Gantt';
+
+type Pestana = 'resumen' | 'cronograma';
 
 export function App() {
   const [data, setData] = useState<DashboardResp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
+  const [pestana, setPestana] = useState<Pestana>('resumen');
+  const [faseId, setFaseId] = useState<string>('todas');
 
   useEffect(() => {
     obtenerDashboard()
@@ -28,6 +33,8 @@ export function App() {
   }
 
   const { proyecto, indicadores } = data;
+  const fasesFiltradas =
+    faseId === 'todas' ? proyecto.fases : proyecto.fases.filter((f) => f.id === faseId);
 
   return (
     <>
@@ -57,7 +64,50 @@ export function App() {
           </div>
         )}
         <TarjetasIndicadores indicadores={indicadores} />
-        <ListaFases fases={proyecto.fases} />
+
+        <nav className="tabs">
+          <button
+            type="button"
+            className={`tab ${pestana === 'resumen' ? 'activo' : ''}`}
+            onClick={() => setPestana('resumen')}
+          >
+            Resumen por componente
+          </button>
+          <button
+            type="button"
+            className={`tab ${pestana === 'cronograma' ? 'activo' : ''}`}
+            onClick={() => setPestana('cronograma')}
+          >
+            Cronograma (Gantt)
+          </button>
+        </nav>
+
+        {pestana === 'resumen' && (
+          <>
+            <div className="selector-componentes">
+              <button
+                type="button"
+                className={`chip ${faseId === 'todas' ? 'activo' : ''}`}
+                onClick={() => setFaseId('todas')}
+              >
+                Todos los componentes
+              </button>
+              {proyecto.fases.map((f) => (
+                <button
+                  type="button"
+                  key={f.id}
+                  className={`chip ${faseId === f.id ? 'activo' : ''}`}
+                  onClick={() => setFaseId(f.id)}
+                >
+                  {f.nombre} · {redondear(f.avance)}%
+                </button>
+              ))}
+            </div>
+            <ListaFases fases={fasesFiltradas} />
+          </>
+        )}
+
+        {pestana === 'cronograma' && <Gantt fases={proyecto.fases} />}
       </main>
     </>
   );

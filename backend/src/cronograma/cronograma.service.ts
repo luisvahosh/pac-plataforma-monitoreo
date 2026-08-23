@@ -18,7 +18,11 @@ export class CronogramaService {
       include: {
         fases: {
           orderBy: { orden: 'asc' },
-          include: { actividades: { include: { hitos: true } } },
+          include: {
+            actividades: {
+              include: { hitos: true, subactividades: { orderBy: { orden: 'asc' } } },
+            },
+          },
         },
       },
     });
@@ -61,6 +65,13 @@ export class CronogramaService {
           ahora,
         ),
         hitos: a.hitos,
+        // Solo descripción y avance (nunca el enlace de evidencia: RN-06/RN-13,
+        // la evidencia es siempre privada aunque sea "solo un enlace").
+        subactividades: a.subactividades.map((s) => ({
+          id: s.id,
+          descripcion: s.descripcion,
+          avancePorcentaje: s.avancePorcentaje,
+        })),
       })),
     }));
 

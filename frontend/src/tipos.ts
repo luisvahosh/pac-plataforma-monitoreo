@@ -17,6 +17,12 @@ export interface Hito {
   cumplido: boolean;
 }
 
+export interface Subactividad {
+  id: string;
+  descripcion: string;
+  avancePorcentaje: number;
+}
+
 export interface Actividad {
   id: string;
   nombre: string;
@@ -29,6 +35,7 @@ export interface Actividad {
   desviacion: number | null;
   estadoCronograma: EstadoCronograma;
   hitos: Hito[];
+  subactividades: Subactividad[];
 }
 
 export interface Fase {

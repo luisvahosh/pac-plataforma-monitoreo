@@ -50,6 +50,17 @@ export function ListaFases({ fases }: { fases: Fase[] }) {
                     ))}
                   </ul>
                 )}
+                {actividad.subactividades.length > 0 && (
+                  <ul className="subactividades">
+                    {actividad.subactividades.map((sub) => (
+                      <li className="subactividad" key={sub.id}>
+                        <span className="subactividad-nombre">{sub.descripcion}</span>
+                        <span className="subactividad-avance">{redondear(sub.avancePorcentaje)}%</span>
+                        <BarraAvance valor={sub.avancePorcentaje} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

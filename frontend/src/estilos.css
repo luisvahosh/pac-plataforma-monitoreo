@@ -269,6 +269,213 @@ body {
   border-color: var(--finalizada);
 }
 
+.subactividades {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0.6rem 0 0;
+  border-top: 1px dashed var(--borde);
+  display: grid;
+  gap: 0.4rem;
+}
+.subactividad {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+}
+.subactividad-nombre {
+  color: var(--texto-tenue);
+}
+.subactividad-avance {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.subactividad .barra {
+  grid-column: 1 / -1;
+  height: 6px;
+  margin: 0;
+}
+
+/* Pestañas del dashboard público */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 0.2rem;
+  margin-right: 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--texto-tenue);
+  cursor: pointer;
+}
+.tab.activo {
+  color: var(--primario-oscuro);
+  border-bottom-color: var(--primario);
+}
+
+/* Selector de componente (Fase) */
+.selector-componentes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.chip {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
+  font: inherit;
+  color: var(--texto);
+  cursor: pointer;
+}
+.chip.activo {
+  background: var(--primario-oscuro);
+  border-color: var(--primario-oscuro);
+  color: #fff;
+}
+
+/* Gantt (pestaña Cronograma) */
+.gantt-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--texto-tenue);
+}
+.gantt-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.gantt-punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+.gantt-punto.sin_iniciar {
+  background: var(--pendiente);
+}
+.gantt-punto.en_tiempo,
+.gantt-punto.completada {
+  background: var(--finalizada);
+}
+.gantt-punto.en_riesgo {
+  background: var(--proxima);
+}
+.gantt-punto.atrasada {
+  background: var(--vencida);
+}
+
+.gantt-scroll {
+  overflow-x: auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.gantt-eje {
+  display: flex;
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 0.4rem;
+  position: sticky;
+  top: 0;
+  background: var(--superficie);
+}
+.gantt-eje-etiqueta {
+  flex: 0 0 220px;
+}
+.gantt-mes {
+  flex: 0 0 90px;
+  font-size: 0.75rem;
+  color: var(--texto-tenue);
+  text-transform: uppercase;
+}
+.gantt-cuerpo {
+  position: relative;
+}
+.gantt-hoy {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--vencida);
+  z-index: 2;
+}
+.gantt-fila {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  border-bottom: 1px solid var(--borde);
+}
+.gantt-fila-fase {
+  background: var(--primario-suave);
+  font-weight: 700;
+  min-height: 34px;
+}
+.gantt-etiqueta {
+  flex: 0 0 220px;
+  padding-right: 0.75rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gantt-etiqueta-fase {
+  color: var(--primario-oscuro);
+}
+.gantt-area {
+  position: relative;
+  flex: 1 1 auto;
+  height: 20px;
+}
+.gantt-barra {
+  position: absolute;
+  top: 3px;
+  height: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.gantt-barra.sin_iniciar {
+  background: color-mix(in srgb, var(--pendiente) 30%, var(--superficie));
+}
+.gantt-barra.en_tiempo,
+.gantt-barra.completada {
+  background: color-mix(in srgb, var(--finalizada) 25%, var(--superficie));
+}
+.gantt-barra.en_riesgo {
+  background: color-mix(in srgb, var(--proxima) 25%, var(--superficie));
+}
+.gantt-barra.atrasada {
+  background: color-mix(in srgb, var(--vencida) 25%, var(--superficie));
+}
+.gantt-barra-progreso {
+  height: 100%;
+}
+.gantt-barra.sin_iniciar .gantt-barra-progreso {
+  background: var(--pendiente);
+}
+.gantt-barra.en_tiempo .gantt-barra-progreso,
+.gantt-barra.completada .gantt-barra-progreso {
+  background: var(--finalizada);
+}
+.gantt-barra.en_riesgo .gantt-barra-progreso {
+  background: var(--proxima);
+}
+.gantt-barra.atrasada .gantt-barra-progreso {
+  background: var(--vencida);
+}
+
 .estado-carga,
 .estado-error {
   text-align: center;

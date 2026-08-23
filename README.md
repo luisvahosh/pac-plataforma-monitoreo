@@ -20,7 +20,8 @@ El desarrollo sigue un **plan maestro de 16 fases** (ver `plan_maestro_pac.md`).
 | 7 | Notificaciones y alertas por correo | 🔨 En rama `fase-7-notificaciones` |
 | 8 | Auditoría y trazabilidad | 🔨 En rama `fase-8-auditoria` |
 | 9 | Frontend: dashboard público | 🔨 En rama `fase-9-frontend-publico` |
-| 10–15 | Frontend privado, integración, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
+| 10 | Frontend: panel de colaboradores y administración | 🔨 En rama `fase-10-frontend-privado` |
+| 11–15 | Integración E2E, hardening, despliegue, respaldos, documentación | ⏳ Pendientes |
 
 ## Documentación
 
@@ -206,6 +207,17 @@ Interfaz **pública de solo lectura** (React + Vite) que consume únicamente end
 - Consume `GET /api/public/proyectos/dashboard` (agrega cronograma + indicadores del proyecto único en una sola llamada).
 - Diseño **responsivo** y **accesible**: `progressbar` con ARIA, estados con color **y** texto (no solo color), soporte de modo oscuro.
 - Sin dependencias de gráficos: barras en CSS y donut en SVG.
+
+## Frontend: panel privado (Fase 10)
+
+Aplicación autenticada (React Router) para colaboradores y administradores, servida junto al dashboard público:
+
+- **Login en dos pasos** (`/login`): correo + contraseña → código **2FA** (Microsoft Authenticator). Tokens en `localStorage`; renovación automática con el refresh token ante un 401.
+- **Colaborador:** "Mis actividades" (`/app`) y detalle de actividad (`/app/actividad/:id`) para **registrar avances** y **cargar/descargar evidencias** (enlace o archivo).
+- **Administrador:** gestión de **usuarios** (crear → activación por correo, desactivar), **asignaciones** con peso por colaborador (en el detalle de actividad), **cambios de línea base** con justificación e historial, configuración de **alertas**, y consulta de **auditoría**.
+- **RBAC en la interfaz** (rutas protegidas por rol) que refleja —no sustituye— la autorización del backend.
+
+Rutas: `/` dashboard público · `/login` · `/app/**` protegidas. El acceso al contenido de evidencias siempre pasa por el endpoint autenticado (RN-13).
 
 ## Calidad de código
 

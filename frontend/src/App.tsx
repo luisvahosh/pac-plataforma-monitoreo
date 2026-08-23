@@ -33,6 +33,11 @@ export function App() {
     <>
       <header className="cabecera">
         <div className="contenedor">
+          <div style={{ textAlign: 'right' }}>
+            <a href="/login" style={{ color: '#cdd8ee', fontSize: '0.85rem' }}>
+              Acceso colaboradores →
+            </a>
+          </div>
           <h1>{proyecto.nombre}</h1>
           {proyecto.objetivos && <p>{proyecto.objetivos}</p>}
           <div className="resumen">

@@ -1,0 +1,178 @@
+/* Estilos del panel privado (Fase 10). Reutiliza variables de estilos.css. */
+
+.barra-nav {
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.nav-enlaces {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.nav-enlaces a {
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.nav-enlaces a:hover {
+  color: var(--primario);
+}
+.nav-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+}
+
+.login-caja {
+  max-width: 380px;
+  margin: 4rem auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.75rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.85rem;
+}
+.form-inline {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin: 0.75rem 0;
+}
+.form label,
+.form-inline label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+}
+.form label.checkbox {
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+  gap: 0.5rem;
+}
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--texto);
+}
+textarea {
+  min-height: 4rem;
+  resize: vertical;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  background: var(--primario);
+  color: #fff;
+  font-weight: 600;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+button.enlace {
+  background: none;
+  color: var(--primario);
+  padding: 0;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.acciones {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.panel {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 760px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lista-simple {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.lista-simple li {
+  display: flex;
+  flex-direction: column;
+}
+.lista-simple .tenue,
+.tenue {
+  color: var(--texto-tenue);
+  font-size: 0.8rem;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-error {
+  background: #fdecea;
+  color: #a12a1f;
+  border: 1px solid #f1b0a8;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}
+.form-ok {
+  background: #e7f6ec;
+  color: #1a7f4b;
+  border: 1px solid #a6ddbb;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}

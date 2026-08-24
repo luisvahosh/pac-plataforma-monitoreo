@@ -9,6 +9,8 @@ import { Gantt } from './components/Gantt';
 import { ActividadesBitacora } from './components/ActividadesBitacora';
 import { AlertasPublicas } from './components/AlertasPublicas';
 import { GuiaTab } from './components/GuiaTab';
+import { Esqueleto } from './components/Esqueleto';
+import { TemaBoton } from './components/TemaBoton';
 import { useAuth } from './privado/auth-contexto';
 
 type Pestana = 'resumen' | 'cronograma' | 'actividades' | 'alertas';
@@ -29,7 +31,61 @@ export function App() {
   }, []);
 
   if (cargando) {
-    return <div className="estado-carga">Cargando el estado del proyecto…</div>;
+    return (
+      <>
+        <header className="cabecera">
+          <div className="contenedor" role="status" aria-label="Cargando el estado del proyecto">
+            <span className="sr-solo">Cargando el estado del proyecto…</span>
+            <Esqueleto
+              ancho="55%"
+              alto="1.6rem"
+              className="esqueleto-en-cabecera"
+              aria-hidden="true"
+            />
+            <Esqueleto
+              ancho="80%"
+              alto="1rem"
+              className="esqueleto-en-cabecera"
+              aria-hidden="true"
+            />
+            <div className="resumen" aria-hidden="true">
+              <Esqueleto
+                ancho="120px"
+                alto="120px"
+                radio="999px"
+                className="esqueleto-en-cabecera"
+              />
+              <Esqueleto ancho="160px" alto="1.1rem" className="esqueleto-en-cabecera" />
+            </div>
+          </div>
+        </header>
+        <main className="contenedor" aria-hidden="true">
+          <div className="kpis">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div className="kpi" key={i}>
+                <Esqueleto ancho="50%" alto="1.8rem" />
+                <Esqueleto
+                  ancho="80%"
+                  alto="0.85rem"
+                  className="esqueleto-fila"
+                  style={{ marginTop: '0.4rem' }}
+                />
+              </div>
+            ))}
+          </div>
+          {[0, 1].map((i) => (
+            <div className="fase" key={i}>
+              <Esqueleto ancho="35%" alto="1.15rem" />
+              <Esqueleto ancho="100%" alto="10px" radio="999px" style={{ marginTop: '0.75rem' }} />
+              <div className="actividad" style={{ marginTop: '1rem' }}>
+                <Esqueleto ancho="60%" alto="1rem" />
+                <Esqueleto ancho="100%" alto="10px" radio="999px" style={{ marginTop: '0.5rem' }} />
+              </div>
+            </div>
+          ))}
+        </main>
+      </>
+    );
   }
   if (error) {
     return (
@@ -58,8 +114,9 @@ export function App() {
       <header className="cabecera">
         <div className="contenedor">
           <div className="cabecera-acciones">
+            <TemaBoton className="tema-boton tema-boton-cabecera" />
             <a href="/guia" className="enlace-guia">
-              Guía
+              ¿Cómo se lee esto?
             </a>
             {usuario ? (
               <>

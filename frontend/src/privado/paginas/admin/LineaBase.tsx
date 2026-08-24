@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { ClockCounterClockwise } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
+import { useToast } from '../../../components/ToastProvider';
+import { EstadoVacio } from '../../../components/EstadoVacio';
 
 interface Proyecto {
   id: string;
@@ -28,6 +31,7 @@ interface Cambio {
 }
 
 export function LineaBase() {
+  const { mostrar } = useToast();
   const [fases, setFases] = useState<Fase[]>([]);
   const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadOpcion[]>>(
     {},
@@ -44,8 +48,8 @@ export function LineaBase() {
   const [fechaNueva, setFechaNueva] = useState('');
   const [justificacion, setJustificacion] = useState('');
   const [historial, setHistorial] = useState<Cambio[]>([]);
+  const [historialConsultado, setHistorialConsultado] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
 
   const camposDisponibles =
     entidadTipo === 'actividad' ? ['fecha_inicio', 'fecha_fin'] : ['fecha_objetivo'];
@@ -94,12 +98,12 @@ export function LineaBase() {
 
   useEffect(() => {
     setHistorial([]);
+    setHistorialConsultado(false);
   }, [entidadId, entidadTipo]);
 
   async function cambiar(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    setOk(null);
     if (!entidadId) {
       setError('Elige primero una actividad' + (entidadTipo === 'hito' ? ' y un hito' : '') + '.');
       return;
@@ -115,7 +119,7 @@ export function LineaBase() {
           justificacion,
         }),
       });
-      setOk('Cambio de línea base registrado.');
+      mostrar('Cambio de línea base registrado.', 'exito');
       setJustificacion('');
       await consultar();
     } catch (e) {
@@ -131,6 +135,7 @@ export function LineaBase() {
           `/api/linea-base/cambios?entidadTipo=${entidadTipo}&entidadId=${encodeURIComponent(entidadId)}`,
         ),
       );
+      setHistorialConsultado(true);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -146,11 +151,6 @@ export function LineaBase() {
       {error && (
         <div className="form-error" role="alert">
           {error}
-        </div>
-      )}
-      {ok && (
-        <div className="form-ok" role="status">
-          {ok}
         </div>
       )}
 
@@ -253,6 +253,13 @@ export function LineaBase() {
         </div>
       </form>
 
+      {historialConsultado && historial.length === 0 && (
+        <EstadoVacio
+          icono={ClockCounterClockwise}
+          titulo="Sin cambios de línea base"
+          descripcion="Esta actividad (o hito) todavía no tiene cambios de fecha registrados."
+        />
+      )}
       {historial.length > 0 && (
         <div className="tabla-scroll">
           <table className="tabla">

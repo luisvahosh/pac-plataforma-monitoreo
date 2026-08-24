@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { MagnifyingGlass } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
+import { EstadoVacio } from '../../../components/EstadoVacio';
 
 interface Evento {
   id: string;
@@ -32,12 +34,17 @@ export function Auditoria() {
 
   useEffect(() => {
     void consultar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <section>
       <h2>Auditoría</h2>
-      {error && <div className="form-error">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
       <form onSubmit={consultar} className="form-inline">
         <label>
           Entidad
@@ -85,8 +92,12 @@ export function Auditoria() {
             ))}
             {eventos.length === 0 && (
               <tr>
-                <td colSpan={5} className="tenue">
-                  Sin eventos.
+                <td colSpan={5}>
+                  <EstadoVacio
+                    icono={MagnifyingGlass}
+                    titulo="Sin eventos"
+                    descripcion="No hay eventos de auditoría para estos filtros. Prueba a ampliar la búsqueda."
+                  />
                 </td>
               </tr>
             )}

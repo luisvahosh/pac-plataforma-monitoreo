@@ -2,11 +2,7 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module"
@@ -16,5 +12,15 @@
     "es2022": true,
     "browser": true
   },
-  "ignorePatterns": ["dist", "node_modules", "*.config.ts", "vite.config.ts"]
+  "ignorePatterns": ["dist", "node_modules", "*.config.ts", "vite.config.ts"],
+  "overrides": [
+    {
+      "files": ["frontend/**/*.tsx"],
+      "plugins": ["react-hooks"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+      }
+    }
+  ]
 }

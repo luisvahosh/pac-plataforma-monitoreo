@@ -163,6 +163,12 @@ button {
   color: #fff;
   font-weight: 600;
 }
+button:hover:not(:disabled) {
+  background: var(--primario-oscuro);
+}
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -174,8 +180,17 @@ button.enlace {
   font-weight: 500;
   text-decoration: underline;
 }
+button.enlace:hover:not(:disabled) {
+  background: none;
+  color: var(--enlace-color-hover);
+}
 button.enlace.enlace-peligro {
-  color: #c0392b;
+  /* Token en vez de #c0392b fijo: ese tono cae a 3.1:1 sobre --superficie
+     en modo oscuro (bajo AA); --peligro-color se invierte en ese modo. */
+  color: var(--peligro-color);
+}
+button.enlace.enlace-peligro:hover:not(:disabled) {
+  color: var(--peligro-color-hover);
 }
 .acciones {
   display: flex;
@@ -208,7 +223,7 @@ button.enlace.enlace-peligro {
 }
 .acciones-tabla button.enlace.enlace-peligro:hover,
 .acciones-tabla button.enlace.enlace-peligro:focus-visible {
-  background: color-mix(in srgb, #c0392b 12%, transparent);
+  background: color-mix(in srgb, var(--peligro-color) 12%, transparent);
 }
 
 .panel {
@@ -255,6 +270,13 @@ button.enlace.enlace-peligro {
   display: flex;
   flex-direction: column;
 }
+.lista-simple a {
+  color: var(--enlace-color);
+  transition: color var(--transicion);
+}
+.lista-simple a:hover {
+  color: var(--enlace-color-hover);
+}
 .lista-simple .tenue,
 .tenue {
   color: var(--texto-tenue);
@@ -283,6 +305,9 @@ button.enlace.enlace-peligro {
 }
 .tabla th {
   white-space: nowrap;
+}
+.tabla tbody tr:hover {
+  background: var(--primario-suave);
 }
 
 .form-error {

@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { BellSlash } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
+import { useToast } from '../../../components/ToastProvider';
+import { EstadoVacio } from '../../../components/EstadoVacio';
 
 interface Regla {
   id: string;
@@ -26,6 +29,7 @@ const ETIQUETA_TIPO: Record<string, string> = {
 };
 
 export function Alertas() {
+  const { mostrar } = useToast();
   const [dias, setDias] = useState('');
   const [activo, setActivo] = useState(true);
   const [enviadas, setEnviadas] = useState<NotificacionEnviada[]>([]);
@@ -54,7 +58,6 @@ export function Alertas() {
   async function guardar(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    setOk(null);
     const diasAnticipacion = dias
       .split(',')
       .map((d) => Number(d.trim()))
@@ -64,7 +67,7 @@ export function Alertas() {
         method: 'PUT',
         body: JSON.stringify({ diasAnticipacion, activo }),
       });
-      setOk('Configuración de alertas guardada.');
+      mostrar('Configuración de alertas guardada.', 'exito');
     } catch (e) {
       setError((e as Error).message);
     }
@@ -151,8 +154,12 @@ export function Alertas() {
             ))}
             {enviadas.length === 0 && (
               <tr>
-                <td colSpan={3} className="tenue">
-                  Aún no se ha enviado ninguna alerta de vencimiento.
+                <td colSpan={3}>
+                  <EstadoVacio
+                    icono={BellSlash}
+                    titulo="Sin alertas enviadas todavía"
+                    descripcion="Aquí aparecerán los correos de vencimiento a medida que se envíen."
+                  />
                 </td>
               </tr>
             )}

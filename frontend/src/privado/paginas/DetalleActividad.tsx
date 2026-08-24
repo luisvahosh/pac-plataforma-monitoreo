@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { CheckCircle } from '@phosphor-icons/react';
 import { apiFetch, apiJson } from '../api-cliente';
 import { useAuth } from '../auth-contexto';
+import { Esqueleto } from '../../components/Esqueleto';
 
 interface ActividadRef {
   id: string;
@@ -170,7 +171,22 @@ export function DetalleActividad() {
         {error}
       </div>
     );
-  if (!actividad) return <p>Cargando…</p>;
+  if (!actividad) {
+    return (
+      <section role="status" aria-label="Cargando actividad">
+        <span className="sr-solo">Cargando…</span>
+        <Esqueleto ancho="55%" alto="1.6rem" />
+        <div className="panel" style={{ marginTop: '1.25rem' }} aria-hidden="true">
+          <Esqueleto ancho="30%" alto="1.15rem" />
+          <div style={{ marginTop: '0.75rem', display: 'grid', gap: '0.5rem' }}>
+            <Esqueleto ancho="90%" />
+            <Esqueleto ancho="60%" />
+            <Esqueleto ancho="40%" />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>

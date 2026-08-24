@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PAC — Plataforma de Seguimiento y Monitoreo</title>
+    <script>
+      // Aplica el tema guardado antes de pintar la página, para evitar un
+      // parpadeo de claro→oscuro (o viceversa) al cargar.
+      (function () {
+        try {
+          var t = localStorage.getItem('pac-tema');
+          if (t === 'claro' || t === 'oscuro') {
+            document.documentElement.setAttribute('data-tema', t);
+          }
+        } catch (e) {
+          // localStorage no disponible: se usa el esquema del sistema.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

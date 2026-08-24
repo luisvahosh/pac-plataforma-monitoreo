@@ -36,6 +36,15 @@
      anillo de foco, --primario-oscuro cumple 5.6:1 en modo claro pero cae
      bajo 3:1 en modo oscuro, así que también se invierte más abajo. */
   --enlace-color: var(--primario-oscuro);
+  /* Tono para :hover de enlaces (siempre en la misma dirección que mejora
+     contraste: más oscuro en modo claro, más claro en modo oscuro — no se
+     puede usar --primario tal cual como color de hover porque da 2.5:1
+     sobre fondo claro). */
+  --enlace-color-hover: #004d6b;
+  /* Color "peligro" (eliminar, etc.) fuera de --vencida porque se usa como
+     texto sobre --superficie, no como fondo con texto blanco. */
+  --peligro-color: #c0392b;
+  --peligro-color-hover: #8f281c;
 
   /* Escala tipográfica (base 16px = --fs-base). */
   --fs-xs: 0.75rem; /* 12px — metadatos, leyendas, fechas */
@@ -61,6 +70,11 @@
   --radio-sm: 8px; /* controles: input, botón, chip interior */
   --radio-md: 10px; /* tarjetas internas: actividad, hito, aviso */
   --radio-caja: 12px; /* contenedores principales: kpi, fase, panel, diálogo */
+
+  /* Duración/curva únicas para toda transición de UI (RN-duration-timing:
+     150-300ms, ease-out). Un solo token evita que cada componente invente
+     su propio ritmo. */
+  --transicion: 160ms ease-out;
 }
 
 * {
@@ -124,6 +138,10 @@ body {
   color: #cdd8ee;
   font-size: var(--fs-sm);
   text-decoration: underline;
+  transition: color var(--transicion);
+}
+.enlace-guia:hover {
+  color: #fff;
 }
 .enlace-guia-boton {
   background: none;
@@ -136,6 +154,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  color: var(--enlace-color);
+  text-decoration: underline;
+  transition: color var(--transicion);
+}
+.enlace-volver:hover {
+  color: var(--enlace-color-hover);
 }
 .boton-acceso {
   display: inline-flex;
@@ -152,6 +176,37 @@ body {
 }
 .boton-acceso:hover {
   transform: translateY(-1px);
+}
+.boton-acceso:active {
+  transform: translateY(0);
+}
+
+/* Switch de modo claro/oscuro: mismo tamaño de objetivo táctil que el
+   resto de botones-ícono (44x44px, RN-touch-target-size). */
+.tema-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  color: var(--texto);
+  cursor: pointer;
+  padding: 0;
+}
+.tema-boton:hover {
+  background: var(--primario-suave);
+  border-color: var(--enlace-color);
+}
+.tema-boton-cabecera {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.tema-boton-cabecera:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #fff;
 }
 
 .resumen {
@@ -407,6 +462,9 @@ body {
   color: var(--texto-tenue);
   cursor: pointer;
 }
+.tab:hover:not(.activo) {
+  color: var(--texto);
+}
 .tab.activo {
   color: var(--primario-oscuro);
   border-bottom-color: var(--primario);
@@ -428,6 +486,14 @@ body {
   font: inherit;
   color: var(--texto);
   cursor: pointer;
+}
+.chip:hover:not(.activo) {
+  /* var(--enlace-color), no var(--primario): este último da 2.5:1 sobre
+     fondo blanco, bajo el mínimo de 3:1 para bordes de control (WCAG
+     1.4.11); --enlace-color ya está calibrado para cumplirlo en ambos
+     modos. */
+  border-color: var(--enlace-color);
+  background: var(--primario-suave);
 }
 .chip.activo {
   background: var(--primario-oscuro);
@@ -593,6 +659,11 @@ body {
   color: var(--texto);
   cursor: pointer;
   text-align: left;
+  border-radius: var(--radio-sm);
+  transition: background-color var(--transicion);
+}
+.bitacora-actividad-cabecera:hover {
+  background: var(--primario-suave);
 }
 .bitacora-actividad-cuerpo {
   margin-top: 0.6rem;
@@ -634,6 +705,10 @@ body {
   font-size: 0.8rem;
   padding: 0;
   cursor: pointer;
+  transition: color var(--transicion);
+}
+.enlace-evidencia-boton:hover {
+  color: var(--enlace-color-hover);
 }
 .evidencia-lista {
   list-style: none;
@@ -703,6 +778,11 @@ body {
   font-size: 0.82rem;
   color: var(--primario-oscuro);
   cursor: pointer;
+  transition: background-color var(--transicion), border-color var(--transicion);
+}
+.guia-boton:hover {
+  background: var(--primario-suave);
+  border-color: var(--enlace-color);
 }
 .guia-icono {
   display: inline-flex;
@@ -711,7 +791,10 @@ body {
   width: 16px;
   height: 16px;
   border-radius: 999px;
-  background: var(--primario);
+  /* var(--primario-oscuro), no var(--primario): el ícono blanco sobre
+     --primario da 2.5:1 (bajo el 3:1 de objetos gráficos, WCAG 1.4.11);
+     --primario-oscuro da 5.6:1 y no varía entre modo claro/oscuro. */
+  background: var(--primario-oscuro);
   color: #fff;
 }
 .guia-caja {
@@ -758,7 +841,9 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* :not([data-tema="claro"]) para que, si el usuario fijó "claro" a mano
+     con el switch de tema, eso gane sobre la preferencia del sistema. */
+  :root:not([data-tema="claro"]) {
     --fondo: #0f1420;
     --superficie: #161d2e;
     --borde: #2a3547;
@@ -769,6 +854,63 @@ body {
        (más claro) da >= 6.6:1 sobre --fondo/--superficie oscuros. */
     --anillo-foco: var(--primario);
     --enlace-color: var(--primario);
+    --enlace-color-hover: #4fd2ff;
+    /* #c0392b cae a 3.1:1 sobre --superficie oscuro (bajo AA); este tono
+       más claro del mismo rojo da 6:1. */
+    --peligro-color: #ff6b57;
+    --peligro-color-hover: #ff8a78;
+  }
+}
+/* Switch manual de tema (independiente del sistema operativo): mismos
+   valores que arriba, aplicados vía atributo en <html> en vez de la media
+   query. Ver hooks/useTema.ts. */
+:root[data-tema="oscuro"] {
+  --fondo: #0f1420;
+  --superficie: #161d2e;
+  --borde: #2a3547;
+  --texto: #e6ebf5;
+  --texto-tenue: #9aa6bb;
+  --primario-suave: #16233d;
+  --anillo-foco: var(--primario);
+  --enlace-color: var(--primario);
+  --enlace-color-hover: #4fd2ff;
+  --peligro-color: #ff6b57;
+  --peligro-color-hover: #ff8a78;
+}
+
+/* Transición base para todo elemento interactivo o que cambia de fondo con
+   el tema, para que el cambio de claro↔oscuro (y los estados hover/foco)
+   se sientan como una transición y no un salto (RN-state-transition). */
+a,
+button,
+input,
+select,
+textarea,
+.chip,
+.tab,
+.kpi,
+.fase,
+.actividad,
+.toast,
+.tabla tbody tr {
+  transition:
+    background-color var(--transicion),
+    border-color var(--transicion),
+    color var(--transicion),
+    box-shadow var(--transicion),
+    transform var(--transicion);
+}
+body {
+  transition: background-color var(--transicion), color var(--transicion);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -822,13 +964,194 @@ body {
   background: var(--primario);
   color: #fff;
 }
+.boton-primario:hover {
+  background: var(--primario-oscuro);
+}
 .boton-secundario {
   border: 1px solid var(--borde);
   background: var(--superficie);
   color: var(--texto);
 }
+.boton-secundario:hover {
+  background: var(--primario-suave);
+  border-color: var(--enlace-color);
+}
 .boton-peligro {
   border: none;
   background: var(--vencida);
   color: #fff;
+}
+.boton-peligro:hover {
+  background: #8f0000;
+}
+.boton-primario:active,
+.boton-secundario:active,
+.boton-peligro:active {
+  transform: scale(0.97);
+}
+
+/* Toasts: feedback no bloqueante que se autodescarta (a diferencia del
+   diálogo modal, que exige una decisión). Apilados abajo a la derecha en
+   escritorio; ancho completo abajo en móvil para no tapar contenido. */
+.toasts-contenedor {
+  position: fixed;
+  bottom: var(--sp-4);
+  right: var(--sp-4);
+  left: var(--sp-4);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  max-width: 380px;
+  width: 100%;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--primario);
+  border-radius: var(--radio-sm);
+  padding: var(--sp-3) var(--sp-3);
+  box-shadow: 0 8px 24px rgba(15, 20, 32, 0.18);
+  font-size: var(--fs-sm);
+  animation: toast-entrada 0.2s ease-out;
+}
+.toast-exito {
+  border-left-color: var(--finalizada);
+}
+.toast-exito svg {
+  color: var(--finalizada);
+}
+.toast-error {
+  border-left-color: var(--vencida);
+}
+.toast-error svg {
+  color: var(--vencida);
+}
+.toast-info svg {
+  color: var(--primario-oscuro);
+}
+.toast span {
+  flex: 1;
+}
+.toast-cerrar {
+  background: none;
+  border: none;
+  padding: var(--sp-1);
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-tenue);
+  border-radius: var(--radio-sm);
+}
+.toast-cerrar:hover {
+  background: var(--fondo);
+}
+@keyframes toast-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+@media (max-width: 480px) {
+  .toasts-contenedor {
+    align-items: stretch;
+  }
+  .toast {
+    max-width: none;
+  }
+}
+
+/* Skeletons de carga: comunican "esto ya casi está" en vez de un bloque de
+   texto plano, y dan una idea de la forma del contenido que va a aparecer. */
+.esqueleto {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--borde) 25%,
+    color-mix(in srgb, var(--borde) 45%, var(--superficie)) 50%,
+    var(--borde) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radio-sm);
+  animation: esqueleto-brillo 1.4s ease-in-out infinite;
+}
+@keyframes esqueleto-brillo {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto {
+    animation: none;
+    background: var(--borde);
+  }
+}
+.esqueleto-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+/* Variante para usar sobre el fondo oscuro de la cabecera (donde el brillo
+   por defecto, basado en --borde, no tendría contraste suficiente). */
+.esqueleto-en-cabecera {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.18) 25%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.18) 75%
+  );
+  background-size: 200% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto-en-cabecera {
+    animation: none;
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* Estado vacío: icono + mensaje explicando qué falta y (cuando aplica) qué
+   se puede hacer, en vez de una sola línea de texto suelta. */
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--texto-tenue);
+}
+.estado-vacio svg {
+  color: var(--texto-tenue);
+  margin-bottom: var(--sp-1);
+}
+.estado-vacio-titulo {
+  font-weight: 600;
+  color: var(--texto);
+  margin: 0;
+}
+.estado-vacio-descripcion {
+  margin: 0;
+  font-size: var(--fs-sm);
+  max-width: 40ch;
 }

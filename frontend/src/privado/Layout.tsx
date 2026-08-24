@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { List, X } from '@phosphor-icons/react';
+import { TemaBoton } from '../components/TemaBoton';
 import { useAuth } from './auth-contexto';
 
 export function Layout() {
@@ -53,6 +54,7 @@ export function Layout() {
           </nav>
           <span className="nav-usuario">
             {usuario?.email}
+            <TemaBoton />
             <button type="button" onClick={salir}>
               Salir
             </button>

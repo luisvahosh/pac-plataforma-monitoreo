@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FolderOpen } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
+import { Esqueleto } from '../../../components/Esqueleto';
+import { EstadoVacio } from '../../../components/EstadoVacio';
 
 interface Proyecto {
   id: string;
@@ -29,7 +32,9 @@ interface ActividadResumen {
  */
 export function Actividades() {
   const [fases, setFases] = useState<Fase[]>([]);
-  const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadResumen[]>>({});
+  const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadResumen[]>>(
+    {},
+  );
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
 
@@ -49,7 +54,12 @@ export function Actividades() {
         const pares = await Promise.all(
           listaFases.map(
             async (f) =>
-              [f.id, await apiJson<ActividadResumen[]>(`/api/actividades?faseId=${encodeURIComponent(f.id)}`)] as const,
+              [
+                f.id,
+                await apiJson<ActividadResumen[]>(
+                  `/api/actividades?faseId=${encodeURIComponent(f.id)}`,
+                ),
+              ] as const,
           ),
         );
         setActividadesPorFase(Object.fromEntries(pares));
@@ -62,7 +72,25 @@ export function Actividades() {
     void cargar();
   }, []);
 
-  if (cargando) return <p>Cargando…</p>;
+  if (cargando) {
+    return (
+      <section>
+        <h2>Actividades</h2>
+        <div role="status" aria-label="Cargando actividades">
+          <span className="sr-solo">Cargando…</span>
+          {[0, 1, 2].map((i) => (
+            <div className="panel" key={i} aria-hidden="true">
+              <Esqueleto ancho="40%" alto="1.15rem" />
+              <div style={{ marginTop: '0.75rem', display: 'grid', gap: '0.5rem' }}>
+                <Esqueleto ancho="70%" />
+                <Esqueleto ancho="55%" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>
@@ -71,8 +99,18 @@ export function Actividades() {
         Entra a una actividad para registrar avances, ver evidencias o asignar responsables (peso de
         trabajo por colaborador).
       </p>
-      {error && <div className="form-error" role="alert">{error}</div>}
-      {fases.length === 0 && !error && <p className="tenue">No hay fases registradas todavía.</p>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {fases.length === 0 && !error && (
+        <EstadoVacio
+          icono={FolderOpen}
+          titulo="No hay fases registradas todavía"
+          descripcion="Cuando se publique el proyecto, aquí aparecerán sus componentes y actividades."
+        />
+      )}
 
       {fases.map((fase) => (
         <div className="panel" key={fase.id}>

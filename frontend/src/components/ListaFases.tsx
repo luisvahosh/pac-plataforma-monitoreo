@@ -1,13 +1,20 @@
-import { CheckCircle, Circle } from '@phosphor-icons/react';
+import { CheckCircle, Circle, FolderOpen } from '@phosphor-icons/react';
 import type { Fase } from '../tipos';
 import { BarraAvance } from './BarraAvance';
 import { EstadoBadge } from './EstadoBadge';
 import { DesviacionBadge } from './DesviacionBadge';
+import { EstadoVacio } from './EstadoVacio';
 import { formatearFecha, redondear } from '../api';
 
 export function ListaFases({ fases }: { fases: Fase[] }) {
   if (fases.length === 0) {
-    return <p>No hay fases registradas todavía.</p>;
+    return (
+      <EstadoVacio
+        icono={FolderOpen}
+        titulo="No hay fases registradas todavía"
+        descripcion="Cuando se publique el proyecto, aquí aparecerán sus componentes y actividades."
+      />
+    );
   }
 
   return (

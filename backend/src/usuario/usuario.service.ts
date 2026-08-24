@@ -38,6 +38,33 @@ export class UsuarioService {
     return rol.id;
   }
 
+  /**
+   * Crea el token de activación y envía el correo. Si el envío falla, deja
+   * el enlace registrado en el log del servidor (para entrega manual) y
+   * relanza el error: cada llamador decide si eso debe fallar la petición.
+   */
+  private async enviarActivacion(usuario: { id: string; email: string; nombre: string }): Promise<void> {
+    const token = randomBytes(32).toString('hex');
+    await this.prisma.tokenCuenta.create({
+      data: {
+        usuarioId: usuario.id,
+        tipo: 'activacion',
+        tokenHash: createHash('sha256').update(token).digest('hex'),
+        expiraEn: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      },
+    });
+    try {
+      await this.correo.enviarActivacion(usuario.email, usuario.nombre, token);
+    } catch (error) {
+      const enlace = `${process.env.APP_URL ?? 'http://localhost'}/activar?token=${token}`;
+      this.logger.error(
+        `No se pudo enviar el correo de activación a ${usuario.email}: ${(error as Error).message}. ` +
+          `Enlace de activación (válido 48 h): ${enlace}`,
+      );
+      throw error;
+    }
+  }
+
   async crear(dto: CrearUsuarioDto) {
     const rolId = await this.rolId(dto.rol);
     const existe = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
@@ -54,32 +81,41 @@ export class UsuarioService {
       select: SELECT_SEGURO,
     });
 
-    // Token de activación: se guarda su hash; el token en claro solo va por correo.
-    const token = randomBytes(32).toString('hex');
-    await this.prisma.tokenCuenta.create({
-      data: {
-        usuarioId: usuario.id,
-        tipo: 'activacion',
-        tokenHash: createHash('sha256').update(token).digest('hex'),
-        expiraEn: new Date(Date.now() + 48 * 60 * 60 * 1000),
-      },
-    });
-
-    // El envío de correo no debe hacer fallar la creación del usuario (ya quedó
-    // guardado en la base de datos): si el SMTP falla, se deja constancia en el
-    // log y se imprime el enlace para que un administrador con acceso al
-    // servidor pueda entregarlo manualmente.
+    // El envío de correo no debe hacer fallar la creación del usuario (ya
+    // quedó guardado en la base de datos); el error ya se registró en el log.
     try {
-      await this.correo.enviarActivacion(usuario.email, usuario.nombre, token);
-    } catch (error) {
-      const enlace = `${process.env.APP_URL ?? 'http://localhost'}/activar?token=${token}`;
-      this.logger.error(
-        `No se pudo enviar el correo de activación a ${usuario.email}: ${(error as Error).message}. ` +
-          `Enlace de activación (válido 48 h): ${enlace}`,
-      );
+      await this.enviarActivacion(usuario);
+    } catch {
+      /* registrado en el log dentro de enviarActivacion */
     }
 
     return usuario;
+  }
+
+  /**
+   * Reenvía el correo de activación con un token nuevo (por ejemplo, tras
+   * reemplazar un correo provisional por el real). Solo aplica mientras la
+   * cuenta siga sin activar.
+   */
+  async reenviarActivacion(id: string) {
+    const usuario = await this.obtener(id);
+    if (usuario.estado !== 'pendiente_activacion') {
+      throw new ConflictException('El usuario ya activó su cuenta; no aplica reenviar la activación.');
+    }
+    // Invalida los tokens de activación previos sin usar.
+    await this.prisma.tokenCuenta.updateMany({
+      where: { usuarioId: id, tipo: 'activacion', usado: false },
+      data: { usado: true },
+    });
+    try {
+      await this.enviarActivacion(usuario);
+    } catch (error) {
+      throw new BadRequestException(
+        `No se pudo enviar el correo a ${usuario.email}: ${(error as Error).message}. ` +
+          'Revisa el registro del servidor: ahí queda el enlace para entregarlo manualmente.',
+      );
+    }
+    return { mensaje: `Correo de activación reenviado a ${usuario.email}` };
   }
 
   listar() {
@@ -114,6 +150,22 @@ export class UsuarioService {
     return this.prisma.usuario.update({
       where: { id },
       data: { estado: 'inactivo' },
+      select: SELECT_SEGURO,
+    });
+  }
+
+  /**
+   * Reactiva una cuenta desactivada: conserva su contraseña y 2FA tal como
+   * estaban (RN-14), solo restaura el acceso.
+   */
+  async reactivar(id: string) {
+    const usuario = await this.obtener(id);
+    if (usuario.estado !== 'inactivo') {
+      throw new ConflictException('El usuario no está desactivado.');
+    }
+    return this.prisma.usuario.update({
+      where: { id },
+      data: { estado: 'activo' },
       select: SELECT_SEGURO,
     });
   }

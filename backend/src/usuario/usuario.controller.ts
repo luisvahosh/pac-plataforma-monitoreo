@@ -38,6 +38,16 @@ export class UsuarioController {
     return this.usuarios.desactivar(id);
   }
 
+  @Post(':id/reactivar')
+  reactivar(@Param('id') id: string) {
+    return this.usuarios.reactivar(id);
+  }
+
+  @Post(':id/reenviar-activacion')
+  reenviarActivacion(@Param('id') id: string) {
+    return this.usuarios.reenviarActivacion(id);
+  }
+
   @Delete(':id')
   eliminar(@Param('id') id: string) {
     return this.usuarios.eliminar(id);

@@ -58,6 +58,28 @@ export function Usuarios() {
     await cargar();
   }
 
+  async function reactivar(id: string) {
+    setError(null);
+    try {
+      await apiJson(`/api/usuarios/${id}/reactivar`, { method: 'POST' });
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function reenviarActivacion(u: Usuario) {
+    setError(null);
+    try {
+      const r = await apiJson<{ mensaje: string }>(`/api/usuarios/${u.id}/reenviar-activacion`, {
+        method: 'POST',
+      });
+      window.alert(r.mensaje);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   function iniciarEdicion(u: Usuario) {
     setError(null);
     setEditandoId(u.id);
@@ -195,10 +217,24 @@ export function Usuarios() {
                   <button type="button" className="enlace" onClick={() => iniciarEdicion(u)}>
                     editar
                   </button>{' '}
+                  {u.estado === 'inactivo' && (
+                    <>
+                      <button type="button" className="enlace" onClick={() => reactivar(u.id)}>
+                        reactivar
+                      </button>{' '}
+                    </>
+                  )}
                   {u.estado !== 'inactivo' && (
                     <>
                       <button type="button" className="enlace" onClick={() => desactivar(u.id)}>
                         desactivar
+                      </button>{' '}
+                    </>
+                  )}
+                  {u.estado === 'pendiente_activacion' && (
+                    <>
+                      <button type="button" className="enlace" onClick={() => reenviarActivacion(u)}>
+                        reenviar activación
                       </button>{' '}
                     </>
                   )}

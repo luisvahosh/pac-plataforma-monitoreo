@@ -1,6 +1,23 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { apiJson } from '../../api-cliente';
 
+interface Proyecto {
+  id: string;
+  nombre: string;
+}
+interface Fase {
+  id: string;
+  nombre: string;
+}
+interface ActividadOpcion {
+  id: string;
+  nombre: string;
+}
+interface HitoOpcion {
+  id: string;
+  nombre: string;
+  fechaObjetivo: string | null;
+}
 interface Cambio {
   id: string;
   campo: string;
@@ -11,8 +28,16 @@ interface Cambio {
 }
 
 export function LineaBase() {
+  const [fases, setFases] = useState<Fase[]>([]);
+  const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadOpcion[]>>({});
+  const [cargandoLista, setCargandoLista] = useState(true);
+
+  // Selección: primero la actividad del proyecto; el hito (si aplica) sale de esa actividad.
+  const [actividadId, setActividadId] = useState('');
+  const [hitos, setHitos] = useState<HitoOpcion[]>([]);
   const [entidadTipo, setEntidadTipo] = useState<'actividad' | 'hito'>('actividad');
-  const [entidadId, setEntidadId] = useState('');
+  const [hitoId, setHitoId] = useState('');
+
   const [campo, setCampo] = useState('fecha_fin');
   const [fechaNueva, setFechaNueva] = useState('');
   const [justificacion, setJustificacion] = useState('');
@@ -20,13 +45,54 @@ export function LineaBase() {
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
 
-  const camposDisponibles =
-    entidadTipo === 'actividad' ? ['fecha_inicio', 'fecha_fin'] : ['fecha_objetivo'];
+  const camposDisponibles = entidadTipo === 'actividad' ? ['fecha_inicio', 'fecha_fin'] : ['fecha_objetivo'];
+  const entidadId = entidadTipo === 'actividad' ? actividadId : hitoId;
+
+  // Carga Fase → Actividades del proyecto, igual que la página "Actividades".
+  useEffect(() => {
+    async function cargar() {
+      try {
+        const proyectos = await apiJson<Proyecto[]>('/api/proyectos');
+        if (proyectos.length === 0) return;
+        const listaFases = await apiJson<Fase[]>(`/api/fases?proyectoId=${encodeURIComponent(proyectos[0].id)}`);
+        setFases(listaFases);
+        const pares = await Promise.all(
+          listaFases.map(
+            async (f) => [f.id, await apiJson<ActividadOpcion[]>(`/api/actividades?faseId=${encodeURIComponent(f.id)}`)] as const,
+          ),
+        );
+        setActividadesPorFase(Object.fromEntries(pares));
+      } catch (e) {
+        setError((e as Error).message);
+      } finally {
+        setCargandoLista(false);
+      }
+    }
+    void cargar();
+  }, []);
+
+  // Al elegir una actividad, trae sus hitos (por si el cambio es sobre un hito).
+  useEffect(() => {
+    setHitoId('');
+    setHitos([]);
+    if (!actividadId) return;
+    apiJson<HitoOpcion[]>(`/api/hitos?actividadId=${encodeURIComponent(actividadId)}`)
+      .then(setHitos)
+      .catch((e: Error) => setError(e.message));
+  }, [actividadId]);
+
+  useEffect(() => {
+    setHistorial([]);
+  }, [entidadId, entidadTipo]);
 
   async function cambiar(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setOk(null);
+    if (!entidadId) {
+      setError('Elige primero una actividad' + (entidadTipo === 'hito' ? ' y un hito' : '') + '.');
+      return;
+    }
     try {
       await apiJson('/api/linea-base/cambios', {
         method: 'POST',
@@ -62,12 +128,36 @@ export function LineaBase() {
   return (
     <section>
       <h2>Línea base — cambio autorizado</h2>
+      <p className="tenue">
+        Las fechas planeadas no se editan libremente: todo cambio queda registrado con quién lo
+        hizo, cuándo y por qué, sin borrar el dato original (RN-07).
+      </p>
       {error && <div className="form-error">{error}</div>}
       {ok && <div className="form-ok">{ok}</div>}
 
       <form onSubmit={cambiar} className="form">
         <label>
-          Entidad
+          Actividad
+          {cargandoLista ? (
+            <span className="tenue">Cargando…</span>
+          ) : (
+            <select value={actividadId} onChange={(e) => setActividadId(e.target.value)} required>
+              <option value="">— Elige una actividad —</option>
+              {fases.map((f) => (
+                <optgroup label={f.nombre} key={f.id}>
+                  {(actividadesPorFase[f.id] ?? []).map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.nombre}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          )}
+        </label>
+
+        <label>
+          ¿Qué se cambia?
           <select
             value={entidadTipo}
             onChange={(e) => {
@@ -75,15 +165,31 @@ export function LineaBase() {
               setEntidadTipo(v);
               setCampo(v === 'actividad' ? 'fecha_fin' : 'fecha_objetivo');
             }}
+            disabled={!actividadId}
           >
-            <option value="actividad">Actividad</option>
-            <option value="hito">Hito</option>
+            <option value="actividad">Una fecha de la actividad (inicio o fin)</option>
+            <option value="hito">La fecha objetivo de un hito de la actividad</option>
           </select>
         </label>
-        <label>
-          ID de la entidad
-          <input value={entidadId} onChange={(e) => setEntidadId(e.target.value)} required />
-        </label>
+
+        {entidadTipo === 'hito' && (
+          <label>
+            Hito
+            <select value={hitoId} onChange={(e) => setHitoId(e.target.value)} required disabled={!actividadId}>
+              <option value="">— Elige un hito —</option>
+              {hitos.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.nombre}
+                  {h.fechaObjetivo ? ` (${new Date(h.fechaObjetivo).toLocaleDateString('es-CO')})` : ''}
+                </option>
+              ))}
+            </select>
+            {actividadId && hitos.length === 0 && (
+              <span className="tenue">Esta actividad no tiene hitos.</span>
+            )}
+          </label>
+        )}
+
         <label>
           Campo
           <select value={campo} onChange={(e) => setCampo(e.target.value)}>
@@ -103,8 +209,10 @@ export function LineaBase() {
           <textarea value={justificacion} onChange={(e) => setJustificacion(e.target.value)} required />
         </label>
         <div className="acciones">
-          <button type="submit">Registrar cambio</button>
-          <button type="button" onClick={consultar}>
+          <button type="submit" disabled={!entidadId}>
+            Registrar cambio
+          </button>
+          <button type="button" onClick={consultar} disabled={!entidadId}>
             Ver historial
           </button>
         </div>

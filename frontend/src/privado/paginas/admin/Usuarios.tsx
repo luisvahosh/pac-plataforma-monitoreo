@@ -15,7 +15,13 @@ interface Usuario {
 // (que no son accesibles ni consistentes visualmente) por un modal propio.
 type DialogoPendiente =
   | { tipo: 'alerta'; titulo: string; mensaje: string }
-  | { tipo: 'confirmar'; titulo: string; mensaje: string; peligro?: boolean; onConfirmar: () => void };
+  | {
+      tipo: 'confirmar';
+      titulo: string;
+      mensaje: string;
+      peligro?: boolean;
+      onConfirmar: () => void;
+    };
 
 export function Usuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -207,137 +213,139 @@ export function Usuarios() {
         <button type="submit">Crear (envía activación)</button>
       </form>
 
-      <table className="tabla">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Celular</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map((u) =>
-            editandoId === u.id ? (
-              <tr key={u.id}>
-                <td>
-                  <input
-                    value={editNombre}
-                    onChange={(e) => setEditNombre(e.target.value)}
-                    aria-label={`Nombre de ${u.nombre}`}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="email"
-                    value={editEmail}
-                    onChange={(e) => setEditEmail(e.target.value)}
-                    aria-label={`Correo de ${u.nombre}`}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="tel"
-                    value={editCelular}
-                    onChange={(e) => setEditCelular(e.target.value)}
-                    placeholder="+57 300 000 0000"
-                    aria-label={`Celular de ${u.nombre}`}
-                  />
-                </td>
-                <td>
-                  <select
-                    value={editRol}
-                    onChange={(e) => setEditRol(e.target.value)}
-                    aria-label={`Rol de ${u.nombre}`}
-                  >
-                    <option value="colaborador">Colaborador</option>
-                    <option value="administrador">Administrador</option>
-                  </select>
-                </td>
-                <td>{u.estado}</td>
-                <td>
-                  <div className="acciones-tabla">
-                    <button type="button" className="enlace" onClick={() => guardarEdicion(u.id)}>
-                      guardar
-                    </button>
-                    <button type="button" className="enlace" onClick={cancelarEdicion}>
-                      cancelar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              <tr key={u.id}>
-                <td>{u.nombre}</td>
-                <td>{u.email}</td>
-                <td>{u.celular ?? <span className="tenue">—</span>}</td>
-                <td>{u.rol.nombre}</td>
-                <td>{u.estado}</td>
-                <td>
-                  <div className="acciones-tabla">
-                    <button
-                      type="button"
-                      className="enlace"
-                      onClick={() => iniciarEdicion(u)}
-                      aria-label={`Editar a ${u.nombre}`}
+      <div className="tabla-scroll">
+        <table className="tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Celular</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuarios.map((u) =>
+              editandoId === u.id ? (
+                <tr key={u.id}>
+                  <td>
+                    <input
+                      value={editNombre}
+                      onChange={(e) => setEditNombre(e.target.value)}
+                      aria-label={`Nombre de ${u.nombre}`}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="email"
+                      value={editEmail}
+                      onChange={(e) => setEditEmail(e.target.value)}
+                      aria-label={`Correo de ${u.nombre}`}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="tel"
+                      value={editCelular}
+                      onChange={(e) => setEditCelular(e.target.value)}
+                      placeholder="+57 300 000 0000"
+                      aria-label={`Celular de ${u.nombre}`}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={editRol}
+                      onChange={(e) => setEditRol(e.target.value)}
+                      aria-label={`Rol de ${u.nombre}`}
                     >
-                      editar
-                    </button>
-                    {u.estado === 'inactivo' && (
+                      <option value="colaborador">Colaborador</option>
+                      <option value="administrador">Administrador</option>
+                    </select>
+                  </td>
+                  <td>{u.estado}</td>
+                  <td>
+                    <div className="acciones-tabla">
+                      <button type="button" className="enlace" onClick={() => guardarEdicion(u.id)}>
+                        guardar
+                      </button>
+                      <button type="button" className="enlace" onClick={cancelarEdicion}>
+                        cancelar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                <tr key={u.id}>
+                  <td>{u.nombre}</td>
+                  <td>{u.email}</td>
+                  <td>{u.celular ?? <span className="tenue">—</span>}</td>
+                  <td>{u.rol.nombre}</td>
+                  <td>{u.estado}</td>
+                  <td>
+                    <div className="acciones-tabla">
                       <button
                         type="button"
                         className="enlace"
-                        onClick={() => void reactivar(u.id)}
-                        aria-label={`Reactivar a ${u.nombre}`}
+                        onClick={() => iniciarEdicion(u)}
+                        aria-label={`Editar a ${u.nombre}`}
                       >
-                        reactivar
+                        editar
                       </button>
-                    )}
-                    {u.estado !== 'inactivo' && (
+                      {u.estado === 'inactivo' && (
+                        <button
+                          type="button"
+                          className="enlace"
+                          onClick={() => void reactivar(u.id)}
+                          aria-label={`Reactivar a ${u.nombre}`}
+                        >
+                          reactivar
+                        </button>
+                      )}
+                      {u.estado !== 'inactivo' && (
+                        <button
+                          type="button"
+                          className="enlace"
+                          onClick={() => void desactivar(u.id)}
+                          aria-label={`Desactivar a ${u.nombre}`}
+                        >
+                          desactivar
+                        </button>
+                      )}
+                      {u.estado === 'pendiente_activacion' && (
+                        <button
+                          type="button"
+                          className="enlace"
+                          onClick={() => void reenviarActivacion(u)}
+                          aria-label={`Reenviar activación a ${u.nombre}`}
+                        >
+                          reenviar activación
+                        </button>
+                      )}
                       <button
                         type="button"
-                        className="enlace"
-                        onClick={() => void desactivar(u.id)}
-                        aria-label={`Desactivar a ${u.nombre}`}
+                        className="enlace enlace-peligro"
+                        onClick={() => pedirReiniciarActivacion(u)}
+                        aria-label={`Reiniciar activación de ${u.nombre}`}
                       >
-                        desactivar
+                        reiniciar activación
                       </button>
-                    )}
-                    {u.estado === 'pendiente_activacion' && (
                       <button
                         type="button"
-                        className="enlace"
-                        onClick={() => void reenviarActivacion(u)}
-                        aria-label={`Reenviar activación a ${u.nombre}`}
+                        className="enlace enlace-peligro"
+                        onClick={() => pedirEliminar(u)}
+                        aria-label={`Eliminar a ${u.nombre}`}
                       >
-                        reenviar activación
+                        eliminar
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      className="enlace enlace-peligro"
-                      onClick={() => pedirReiniciarActivacion(u)}
-                      aria-label={`Reiniciar activación de ${u.nombre}`}
-                    >
-                      reiniciar activación
-                    </button>
-                    <button
-                      type="button"
-                      className="enlace enlace-peligro"
-                      onClick={() => pedirEliminar(u)}
-                      aria-label={`Eliminar a ${u.nombre}`}
-                    >
-                      eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
+                    </div>
+                  </td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <Dialogo
         abierto={dialogo !== null}

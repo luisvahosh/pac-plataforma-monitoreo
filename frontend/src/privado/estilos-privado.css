@@ -15,6 +15,36 @@
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
+.nav-marca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+/* Botón hamburguesa: solo visible en pantallas angostas (ver media query). */
+.nav-menu-boton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  color: var(--texto);
+  padding: 0;
+}
+.sr-solo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .nav-enlaces {
   display: flex;
   gap: 1rem;
@@ -33,8 +63,47 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--texto-tenue);
+}
+
+/* Nav colapsable en móvil: la marca + el botón hamburguesa quedan en la
+   fila de arriba; los enlaces y el usuario se apilan debajo, ocultos hasta
+   que se abre el menú. */
+@media (max-width: 760px) {
+  .nav-inner {
+    align-items: stretch;
+  }
+  .nav-marca {
+    width: 100%;
+  }
+  .nav-menu-boton {
+    display: inline-flex;
+  }
+  .nav-enlaces {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    border-top: 1px solid var(--borde);
+    margin-top: 0.5rem;
+    padding-top: 0.25rem;
+  }
+  .nav-enlaces.abierto {
+    display: flex;
+  }
+  .nav-enlaces a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.25rem;
+    border-bottom: 1px solid var(--borde);
+  }
+  .nav-usuario {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .login-caja {
@@ -42,7 +111,7 @@
   margin: 4rem auto;
   background: var(--superficie);
   border: 1px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1.75rem;
 }
 
@@ -61,7 +130,7 @@
 .form-inline label {
   display: grid;
   gap: 0.25rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--texto-tenue);
 }
 .form label.checkbox {
@@ -76,7 +145,7 @@ textarea {
   font: inherit;
   padding: 0.5rem 0.6rem;
   border: 1px solid var(--borde);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   background: var(--superficie);
   color: var(--texto);
 }
@@ -88,7 +157,7 @@ button {
   font: inherit;
   cursor: pointer;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 0.55rem 1rem;
   background: var(--primario);
   color: #fff;
@@ -145,7 +214,7 @@ button.enlace.enlace-peligro {
 .panel {
   background: var(--superficie);
   border: 1px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 }
@@ -157,6 +226,21 @@ button.enlace.enlace-peligro {
 @media (max-width: 760px) {
   .grid-2 {
     grid-template-columns: 1fr;
+  }
+  /* Un formulario en línea con varios campos angostos uno junto al otro no
+     cabe en un teléfono: se apila en columna y cada campo usa el ancho
+     completo, igual que un formulario vertical normal. */
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-inline label {
+    width: 100%;
+  }
+  .form-inline input,
+  .form-inline select,
+  .form-inline textarea {
+    width: 100%;
   }
 }
 
@@ -177,8 +261,16 @@ button.enlace.enlace-peligro {
   font-size: 0.8rem;
 }
 
+/* La tabla se envuelve en este contenedor (no el <body>) para que en
+   pantallas angostas se pueda desplazar horizontalmente sin romper el
+   layout de la página. */
+.tabla-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .tabla {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   margin-top: 1rem;
   font-size: 0.9rem;
@@ -189,12 +281,15 @@ button.enlace.enlace-peligro {
   padding: 0.5rem 0.6rem;
   border-bottom: 1px solid var(--borde);
 }
+.tabla th {
+  white-space: nowrap;
+}
 
 .form-error {
   background: #fdecea;
   color: #a12a1f;
   border: 1px solid #f1b0a8;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 0.6rem 0.85rem;
   margin: 0.75rem 0;
   font-size: 0.9rem;
@@ -204,7 +299,7 @@ button.enlace.enlace-peligro {
   /* #1a7f4b daba 4.49:1 sobre este fondo, justo bajo el mínimo AA (4.5:1). */
   color: #146b3d;
   border: 1px solid #a6ddbb;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 0.6rem 0.85rem;
   margin: 0.75rem 0;
   font-size: 0.9rem;

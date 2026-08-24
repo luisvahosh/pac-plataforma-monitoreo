@@ -29,7 +29,9 @@ interface Cambio {
 
 export function LineaBase() {
   const [fases, setFases] = useState<Fase[]>([]);
-  const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadOpcion[]>>({});
+  const [actividadesPorFase, setActividadesPorFase] = useState<Record<string, ActividadOpcion[]>>(
+    {},
+  );
   const [cargandoLista, setCargandoLista] = useState(true);
 
   // Selección: primero la actividad del proyecto; el hito (si aplica) sale de esa actividad.
@@ -45,7 +47,8 @@ export function LineaBase() {
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
 
-  const camposDisponibles = entidadTipo === 'actividad' ? ['fecha_inicio', 'fecha_fin'] : ['fecha_objetivo'];
+  const camposDisponibles =
+    entidadTipo === 'actividad' ? ['fecha_inicio', 'fecha_fin'] : ['fecha_objetivo'];
   const entidadId = entidadTipo === 'actividad' ? actividadId : hitoId;
 
   // Carga Fase → Actividades del proyecto, igual que la página "Actividades".
@@ -54,11 +57,19 @@ export function LineaBase() {
       try {
         const proyectos = await apiJson<Proyecto[]>('/api/proyectos');
         if (proyectos.length === 0) return;
-        const listaFases = await apiJson<Fase[]>(`/api/fases?proyectoId=${encodeURIComponent(proyectos[0].id)}`);
+        const listaFases = await apiJson<Fase[]>(
+          `/api/fases?proyectoId=${encodeURIComponent(proyectos[0].id)}`,
+        );
         setFases(listaFases);
         const pares = await Promise.all(
           listaFases.map(
-            async (f) => [f.id, await apiJson<ActividadOpcion[]>(`/api/actividades?faseId=${encodeURIComponent(f.id)}`)] as const,
+            async (f) =>
+              [
+                f.id,
+                await apiJson<ActividadOpcion[]>(
+                  `/api/actividades?faseId=${encodeURIComponent(f.id)}`,
+                ),
+              ] as const,
           ),
         );
         setActividadesPorFase(Object.fromEntries(pares));
@@ -132,8 +143,16 @@ export function LineaBase() {
         Las fechas planeadas no se editan libremente: todo cambio queda registrado con quién lo
         hizo, cuándo y por qué, sin borrar el dato original (RN-07).
       </p>
-      {error && <div className="form-error" role="alert">{error}</div>}
-      {ok && <div className="form-ok" role="status">{ok}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {ok && (
+        <div className="form-ok" role="status">
+          {ok}
+        </div>
+      )}
 
       <form onSubmit={cambiar} className="form">
         <label>
@@ -175,12 +194,19 @@ export function LineaBase() {
         {entidadTipo === 'hito' && (
           <label>
             Hito
-            <select value={hitoId} onChange={(e) => setHitoId(e.target.value)} required disabled={!actividadId}>
+            <select
+              value={hitoId}
+              onChange={(e) => setHitoId(e.target.value)}
+              required
+              disabled={!actividadId}
+            >
               <option value="">— Elige un hito —</option>
               {hitos.map((h) => (
                 <option key={h.id} value={h.id}>
                   {h.nombre}
-                  {h.fechaObjetivo ? ` (${new Date(h.fechaObjetivo).toLocaleDateString('es-CO')})` : ''}
+                  {h.fechaObjetivo
+                    ? ` (${new Date(h.fechaObjetivo).toLocaleDateString('es-CO')})`
+                    : ''}
                 </option>
               ))}
             </select>
@@ -202,11 +228,20 @@ export function LineaBase() {
         </label>
         <label>
           Nueva fecha
-          <input type="date" value={fechaNueva} onChange={(e) => setFechaNueva(e.target.value)} required />
+          <input
+            type="date"
+            value={fechaNueva}
+            onChange={(e) => setFechaNueva(e.target.value)}
+            required
+          />
         </label>
         <label>
           Justificación
-          <textarea value={justificacion} onChange={(e) => setJustificacion(e.target.value)} required />
+          <textarea
+            value={justificacion}
+            onChange={(e) => setJustificacion(e.target.value)}
+            required
+          />
         </label>
         <div className="acciones">
           <button type="submit" disabled={!entidadId}>
@@ -219,28 +254,32 @@ export function LineaBase() {
       </form>
 
       {historial.length > 0 && (
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>Campo</th>
-              <th>Original</th>
-              <th>Nueva</th>
-              <th>Justificación</th>
-              <th>Fecha del cambio</th>
-            </tr>
-          </thead>
-          <tbody>
-            {historial.map((c) => (
-              <tr key={c.id}>
-                <td>{c.campo}</td>
-                <td>{c.fechaOriginal ? new Date(c.fechaOriginal).toLocaleDateString('es-CO') : '—'}</td>
-                <td>{c.fechaNueva ? new Date(c.fechaNueva).toLocaleDateString('es-CO') : '—'}</td>
-                <td>{c.justificacion}</td>
-                <td>{new Date(c.fechaHoraCambio).toLocaleString('es-CO')}</td>
+        <div className="tabla-scroll">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Original</th>
+                <th>Nueva</th>
+                <th>Justificación</th>
+                <th>Fecha del cambio</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {historial.map((c) => (
+                <tr key={c.id}>
+                  <td>{c.campo}</td>
+                  <td>
+                    {c.fechaOriginal ? new Date(c.fechaOriginal).toLocaleDateString('es-CO') : '—'}
+                  </td>
+                  <td>{c.fechaNueva ? new Date(c.fechaNueva).toLocaleDateString('es-CO') : '—'}</td>
+                  <td>{c.justificacion}</td>
+                  <td>{new Date(c.fechaHoraCambio).toLocaleString('es-CO')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

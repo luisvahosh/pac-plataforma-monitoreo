@@ -1,3 +1,12 @@
+import type { ComponentType } from 'react';
+import {
+  Circle,
+  CheckCircle,
+  TrendUp,
+  WarningCircle,
+  TrendDown,
+  type IconProps,
+} from '@phosphor-icons/react';
 import type { EstadoCronograma } from '../tipos';
 
 const ETIQUETAS: Record<EstadoCronograma, string> = {
@@ -8,12 +17,15 @@ const ETIQUETAS: Record<EstadoCronograma, string> = {
   atrasada: 'Atrasada según cronograma',
 };
 
-const SIMBOLO: Record<EstadoCronograma, string> = {
-  sin_iniciar: '○',
-  completada: '✓',
-  en_tiempo: '↗',
-  en_riesgo: '⚠',
-  atrasada: '↓',
+// Iconos SVG (Phosphor) en vez de símbolos de texto (○ ✓ ↗ ⚠ ↓): escalan
+// limpio, mantienen un mismo grosor de trazo y no dependen de la fuente del
+// sistema operativo.
+const ICONO: Record<EstadoCronograma, ComponentType<IconProps>> = {
+  sin_iniciar: Circle,
+  completada: CheckCircle,
+  en_tiempo: TrendUp,
+  en_riesgo: WarningCircle,
+  atrasada: TrendDown,
 };
 
 interface Props {
@@ -28,16 +40,18 @@ interface Props {
  */
 export function DesviacionBadge({ estadoCronograma, desviacion }: Props) {
   if (desviacion === null) return null; // sin línea base suficiente para comparar
-  const texto =
+  const Icono = ICONO[estadoCronograma];
+  const detalle =
     estadoCronograma === 'en_tiempo' && desviacion > 0
-      ? `${SIMBOLO[estadoCronograma]} +${Math.round(desviacion)} pts`
+      ? `+${Math.round(desviacion)} pts`
       : estadoCronograma === 'atrasada' || estadoCronograma === 'en_riesgo'
-        ? `${SIMBOLO[estadoCronograma]} ${Math.round(desviacion)} pts`
+        ? `${Math.round(desviacion)} pts`
         : ETIQUETAS[estadoCronograma];
 
   return (
     <span className={`desviacion ${estadoCronograma}`} title={ETIQUETAS[estadoCronograma]}>
-      {texto}
+      <Icono size={13} weight="bold" aria-hidden="true" />
+      {detalle}
     </span>
   );
 }

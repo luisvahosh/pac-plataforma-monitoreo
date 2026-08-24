@@ -1,11 +1,11 @@
 import { useAuth } from '../auth-contexto';
 
-export function Ayuda() {
+export function Guia() {
   const { esAdmin } = useAuth();
 
   return (
     <section>
-      <h2>Ayuda</h2>
+      <h2>Guía</h2>
 
       <div className="panel">
         <h3>Mis actividades y avances</h3>
@@ -26,9 +26,9 @@ export function Ayuda() {
             enlace a la evidencia. "ver historial" muestra los reportes anteriores de esa tarea.
           </li>
           <li>
-            <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que respalde
-            el avance — a un documento en Drive, SharePoint, etc. No se suben archivos adjuntos,
-            solo enlaces a donde ya vive el archivo real.
+            <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que
+            respalde el avance — a un documento en Drive, SharePoint, etc. No se suben archivos
+            adjuntos, solo enlaces a donde ya vive el archivo real.
           </li>
         </ul>
       </div>
@@ -58,8 +58,8 @@ export function Ayuda() {
             <h3>Administrador — Usuarios</h3>
             <ul className="lista-simple">
               <li>
-                <strong>Crear</strong>: nombre, correo, celular (opcional) y rol. Al guardar se envía
-                automáticamente el correo de activación.
+                <strong>Crear</strong>: nombre, correo, celular (opcional) y rol. Al guardar se
+                envía automáticamente el correo de activación.
               </li>
               <li>
                 <strong>Editar</strong>: "editar" en la fila del usuario permite cambiar nombre,
@@ -67,8 +67,15 @@ export function Ayuda() {
               </li>
               <li>
                 <strong>Desactivar</strong> conserva todo el historial de esa persona (avances,
-                evidencias) pero le revoca el acceso — es la opción recomendada para alguien que sale
-                del equipo.
+                evidencias) pero le revoca el acceso — es la opción recomendada para alguien que
+                sale del equipo. <strong>Reactivar</strong> le devuelve el acceso con la misma
+                contraseña y 2FA que tenía.
+              </li>
+              <li>
+                <strong>Reiniciar activación</strong> borra la contraseña y el 2FA actuales y
+                reenvía el enlace de activación, sin importar el estado de la cuenta — úsalo si
+                alguien perdió su Microsoft Authenticator o hay que resetear credenciales por
+                seguridad.
               </li>
               <li>
                 <strong>Eliminar</strong> borra la cuenta por completo. Solo funciona si esa persona
@@ -85,11 +92,12 @@ export function Ayuda() {
                 En <strong>Actividades</strong> ves las 7 fases con sus actividades, sin necesitar
                 ningún identificador de antemano. Entra a una y baja hasta "Asignaciones (admin)"
                 para agregar un colaborador con su peso de trabajo (%). La suma de pesos de una
-                actividad debe llegar a 100 %; la pantalla muestra la suma actual.
+                actividad no puede superar 100 %; la pantalla muestra la suma actual.
               </li>
               <li>
-                El botón "editar" junto al título de la actividad permite cambiar nombre, descripción
-                y marcarla como finalizada. Las fechas planeadas no se editan ahí — ver Línea base.
+                El botón "editar" junto al título de la actividad permite cambiar nombre,
+                descripción y marcarla como finalizada. Las fechas planeadas no se editan ahí — ver
+                Línea base.
               </li>
             </ul>
           </div>
@@ -97,11 +105,12 @@ export function Ayuda() {
           <div className="panel">
             <h3>Administrador — Línea base</h3>
             <p className="tenue">
-              Las fechas de inicio/fin de una actividad, o la fecha objetivo de un hito, no se editan
-              libremente: todo cambio queda registrado con quién lo hizo, cuándo y por qué, sin
-              borrar el dato original. Entra a <strong>Línea base</strong>, elige si es una actividad
-              o un hito, pega su identificador, el campo a cambiar, la nueva fecha y una
-              justificación (obligatoria). "Ver historial" muestra los cambios anteriores.
+              Las fechas de inicio/fin de una actividad, o la fecha objetivo de un hito, no se
+              editan libremente: todo cambio queda registrado con quién lo hizo, cuándo y por qué,
+              sin borrar el dato original. Entra a <strong>Línea base</strong>, elige la actividad
+              de la lista (agrupada por componente), si el cambio es sobre la actividad o sobre uno
+              de sus hitos, el campo a cambiar, la nueva fecha y una justificación (obligatoria).
+              "Ver historial" muestra los cambios anteriores.
             </p>
           </div>
 
@@ -109,8 +118,10 @@ export function Ayuda() {
             <h3>Administrador — Alertas y Auditoría</h3>
             <ul className="lista-simple">
               <li>
-                <strong>Alertas</strong> define con cuántos días de anticipación se avisa antes de
-                que una actividad venza, y si el envío está activo.
+                <strong>Alertas</strong> define con cuántos días de anticipación se avisa por correo
+                antes de que una actividad venza (revisión diaria automática a las 7 a. m.), con un
+                botón "Evaluar ahora" para probarlo sin esperar, y muestra las últimas
+                notificaciones realmente enviadas.
               </li>
               <li>
                 <strong>Auditoría</strong> es un registro de solo lectura de qué se creó, editó o
@@ -127,7 +138,7 @@ export function Ayuda() {
               correos provisionales (formato{' '}
               <code>nombre.apellido@centrodepensamientoitm.cloud</code>). Antes de que esas personas
               puedan activar su cuenta, entra a Usuarios y reemplaza cada correo provisional por el
-              real.
+              real (o usa "reiniciar activación" si ya intentaron activarla con el correo viejo).
             </p>
           </div>
         </>

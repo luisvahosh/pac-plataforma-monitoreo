@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { App as DashboardPublico } from './App';
-import { Ayuda as AyudaPublica } from './Ayuda';
+import { Guia as GuiaPublica } from './Guia';
 import './estilos.css';
 import './privado/estilos-privado.css';
 import { AuthProvider } from './privado/auth-contexto';
@@ -13,7 +13,7 @@ import { OlvidePassword } from './privado/OlvidePassword';
 import { Layout } from './privado/Layout';
 import { RutaProtegida } from './privado/RutaProtegida';
 import { MisActividades } from './privado/paginas/MisActividades';
-import { Ayuda } from './privado/paginas/Ayuda';
+import { Guia } from './privado/paginas/Guia';
 import { DetalleActividad } from './privado/paginas/DetalleActividad';
 import { Usuarios } from './privado/paginas/admin/Usuarios';
 import { Actividades } from './privado/paginas/admin/Actividades';
@@ -27,7 +27,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<DashboardPublico />} />
-          <Route path="/ayuda" element={<AyudaPublica />} />
+          <Route path="/guia" element={<GuiaPublica />} />
           <Route path="/login" element={<Login />} />
           <Route path="/activar" element={<Activar />} />
           <Route path="/restablecer" element={<Restablecer />} />
@@ -42,7 +42,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           >
             <Route index element={<MisActividades />} />
             <Route path="actividad/:id" element={<DetalleActividad />} />
-            <Route path="ayuda" element={<Ayuda />} />
+            <Route path="guia" element={<Guia />} />
             <Route
               path="admin/actividades"
               element={

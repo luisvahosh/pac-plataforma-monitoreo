@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { CheckCircle } from '@phosphor-icons/react';
 import { apiFetch, apiJson } from '../api-cliente';
 import { useAuth } from '../auth-contexto';
 
@@ -115,7 +116,10 @@ export function DetalleActividad() {
     try {
       await apiJson(`/api/actividades/${id}/avances`, {
         method: 'POST',
-        body: JSON.stringify({ porcentaje: Number(porcentaje), observaciones: obsAvance || undefined }),
+        body: JSON.stringify({
+          porcentaje: Number(porcentaje),
+          observaciones: obsAvance || undefined,
+        }),
       });
       setPorcentaje('');
       setObsAvance('');
@@ -160,7 +164,12 @@ export function DetalleActividad() {
     URL.revokeObjectURL(url);
   }
 
-  if (error && !actividad) return <div className="form-error" role="alert">{error}</div>;
+  if (error && !actividad)
+    return (
+      <div className="form-error" role="alert">
+        {error}
+      </div>
+    );
   if (!actividad) return <p>Cargando…</p>;
 
   return (
@@ -206,7 +215,8 @@ export function DetalleActividad() {
           </h2>
           <p className="tenue">
             Avance actual: {Math.round(actividad.avancePorcentaje)}%
-            {actividad.tramoPago && ` · ${actividad.tramoPago} del contrato (${actividad.tramoPagoPorcentaje}%)`}
+            {actividad.tramoPago &&
+              ` · ${actividad.tramoPago} del contrato (${actividad.tramoPagoPorcentaje}%)`}
           </p>
         </>
       )}
@@ -237,7 +247,11 @@ export function DetalleActividad() {
           )}
         </p>
       )}
-      {error && <div className="form-error" role="alert">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="grid-2">
         {subactividades.length > 0 ? (
@@ -312,7 +326,8 @@ export function DetalleActividad() {
                   {ev.tipo === 'enlace' ? ev.url : ev.nombreArchivo}
                 </button>
                 <span className="tenue">
-                  {ev.tipo} · {ev.autor.nombre} · {new Date(ev.fechaHora).toLocaleDateString('es-CO')}
+                  {ev.tipo} · {ev.autor.nombre} ·{' '}
+                  {new Date(ev.fechaHora).toLocaleDateString('es-CO')}
                 </span>
               </li>
             ))}
@@ -379,7 +394,9 @@ function SubactividadFila({
       return;
     }
     try {
-      setHistorial(await apiJson<AvanceSubactividad[]>(`/api/subactividades/${subactividad.id}/avances`));
+      setHistorial(
+        await apiJson<AvanceSubactividad[]>(`/api/subactividades/${subactividad.id}/avances`),
+      );
     } catch (e) {
       setError((e as Error).message);
     }
@@ -395,7 +412,11 @@ function SubactividadFila({
       <button type="button" className="enlace" onClick={alternarHistorial}>
         {historial ? 'ocultar historial' : 'ver historial'}
       </button>
-      {error && <div className="form-error" role="alert">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
@@ -411,7 +432,12 @@ function SubactividadFila({
           </label>
           <label>
             Enlace de evidencia
-            <input type="url" value={enlace} onChange={(e) => setEnlace(e.target.value)} placeholder="https://…" />
+            <input
+              type="url"
+              value={enlace}
+              onChange={(e) => setEnlace(e.target.value)}
+              placeholder="https://…"
+            />
           </label>
           <label>
             Observaciones
@@ -523,10 +549,24 @@ function AsignacionesAdmin({
           {descripcion}
         </p>
       )}
-      {error && <div className="form-error" role="alert">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
       {datos && (
         <p className="tenue">
-          Suma de pesos: {Math.round(datos.sumaPesos)}% {datos.pesosValidos ? '✓' : '(debe ser 100%)'}
+          Suma de pesos: {Math.round(datos.sumaPesos)}%{' '}
+          {datos.pesosValidos ? (
+            <CheckCircle
+              size={13}
+              weight="bold"
+              color="var(--finalizada)"
+              aria-label="Suma correcta"
+            />
+          ) : (
+            '(debe ser 100%)'
+          )}
         </p>
       )}
       <ul className="lista-simple">

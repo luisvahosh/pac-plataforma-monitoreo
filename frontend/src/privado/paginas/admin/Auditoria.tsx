@@ -32,7 +32,6 @@ export function Auditoria() {
 
   useEffect(() => {
     void consultar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -42,7 +41,11 @@ export function Auditoria() {
       <form onSubmit={consultar} className="form-inline">
         <label>
           Entidad
-          <input value={entidadTipo} onChange={(e) => setEntidadTipo(e.target.value)} placeholder="actividades" />
+          <input
+            value={entidadTipo}
+            onChange={(e) => setEntidadTipo(e.target.value)}
+            placeholder="actividades"
+          />
         </label>
         <label>
           Acción
@@ -56,38 +59,40 @@ export function Auditoria() {
         <button type="submit">Filtrar</button>
       </form>
 
-      <table className="tabla">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Acción</th>
-            <th>Entidad</th>
-            <th>IP</th>
-          </tr>
-        </thead>
-        <tbody>
-          {eventos.map((ev) => (
-            <tr key={ev.id}>
-              <td>{new Date(ev.fechaHora).toLocaleString('es-CO')}</td>
-              <td>{ev.usuarioId ?? '—'}</td>
-              <td>{ev.accion}</td>
-              <td>
-                {ev.entidadTipo ?? '—'}
-                {ev.entidadId ? ` (${ev.entidadId.slice(0, 8)}…)` : ''}
-              </td>
-              <td>{ev.ip ?? '—'}</td>
-            </tr>
-          ))}
-          {eventos.length === 0 && (
+      <div className="tabla-scroll">
+        <table className="tabla">
+          <thead>
             <tr>
-              <td colSpan={5} className="tenue">
-                Sin eventos.
-              </td>
+              <th>Fecha</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Entidad</th>
+              <th>IP</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {eventos.map((ev) => (
+              <tr key={ev.id}>
+                <td>{new Date(ev.fechaHora).toLocaleString('es-CO')}</td>
+                <td>{ev.usuarioId ?? '—'}</td>
+                <td>{ev.accion}</td>
+                <td>
+                  {ev.entidadTipo ?? '—'}
+                  {ev.entidadId ? ` (${ev.entidadId.slice(0, 8)}…)` : ''}
+                </td>
+                <td>{ev.ip ?? '—'}</td>
+              </tr>
+            ))}
+            {eventos.length === 0 && (
+              <tr>
+                <td colSpan={5} className="tenue">
+                  Sin eventos.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

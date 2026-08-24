@@ -1,3 +1,4 @@
+import { CheckCircle, Circle } from '@phosphor-icons/react';
 import type { Fase } from '../tipos';
 import { BarraAvance } from './BarraAvance';
 import { EstadoBadge } from './EstadoBadge';
@@ -44,7 +45,11 @@ export function ListaFases({ fases }: { fases: Fase[] }) {
                   <ul className="hitos">
                     {actividad.hitos.map((hito) => (
                       <li className={`hito ${hito.cumplido ? 'cumplido' : ''}`} key={hito.id}>
-                        {hito.cumplido ? '✓ ' : '○ '}
+                        {hito.cumplido ? (
+                          <CheckCircle size={13} weight="bold" aria-hidden="true" />
+                        ) : (
+                          <Circle size={13} weight="bold" aria-hidden="true" />
+                        )}
                         {hito.nombre} ({formatearFecha(hito.fechaObjetivo)})
                       </li>
                     ))}
@@ -55,7 +60,9 @@ export function ListaFases({ fases }: { fases: Fase[] }) {
                     {actividad.subactividades.map((sub) => (
                       <li className="subactividad" key={sub.id}>
                         <span className="subactividad-nombre">{sub.descripcion}</span>
-                        <span className="subactividad-avance">{redondear(sub.avancePorcentaje)}%</span>
+                        <span className="subactividad-avance">
+                          {redondear(sub.avancePorcentaje)}%
+                        </span>
                         <BarraAvance valor={sub.avancePorcentaje} />
                       </li>
                     ))}

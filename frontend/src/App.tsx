@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { obtenerDashboard, redondear } from './api';
 import type { DashboardResp } from './tipos';
 import { Donut } from './components/Donut';
@@ -57,21 +58,23 @@ export function App() {
       <header className="cabecera">
         <div className="contenedor">
           <div className="cabecera-acciones">
-            <a href="/ayuda" className="enlace-ayuda">
+            <a href="/guia" className="enlace-guia">
               ¿Cómo se lee esto?
             </a>
             {usuario ? (
               <>
-                <button type="button" className="enlace-ayuda enlace-ayuda-boton" onClick={logout}>
+                <button type="button" className="enlace-guia enlace-guia-boton" onClick={logout}>
                   Cerrar sesión
                 </button>
                 <a href="/app" className="boton-acceso">
                   Ir a mi panel
+                  <ArrowRight size={14} weight="bold" aria-hidden="true" />
                 </a>
               </>
             ) : (
               <a href="/login" className="boton-acceso">
                 Acceso colaboradores
+                <ArrowRight size={14} weight="bold" aria-hidden="true" />
               </a>
             )}
           </div>
@@ -90,7 +93,8 @@ export function App() {
       <main className="contenedor">
         {!proyecto.pesosValidos && (
           <div className="aviso">
-            Nota: los pesos de las fases aún no suman 100 %, por lo que el avance global es aproximado.
+            Nota: los pesos de las fases aún no suman 100 %, por lo que el avance global es
+            aproximado.
           </div>
         )}
         <TarjetasIndicadores indicadores={indicadores} />
@@ -137,7 +141,10 @@ export function App() {
               su periodo planeado y el relleno interno cuánto lleva de avance.
             </p>
             <h4>Colores</h4>
-            <p>Gris = no iniciada · Azul = en tiempo · Naranja = en riesgo · Rojo = atrasada · Verde = completada.</p>
+            <p>
+              Gris = no iniciada · Azul = en tiempo · Naranja = en riesgo · Rojo = atrasada · Verde
+              = completada.
+            </p>
             <p>La línea roja vertical marca la fecha de hoy.</p>
           </GuiaTab>
         )}
@@ -164,13 +171,19 @@ export function App() {
               niveles:
             </p>
             <ul>
-              <li><strong>Vencidas</strong>: ya pasó su fecha límite planeada y no está finalizada.</li>
-              <li><strong>Próximas a vencer</strong>: se acercan a su fecha límite.</li>
+              <li>
+                <strong>Vencidas</strong>: ya pasó su fecha límite planeada y no está finalizada.
+              </li>
+              <li>
+                <strong>Próximas a vencer</strong>: se acercan a su fecha límite.
+              </li>
               <li>
                 <strong>Atrasadas por cronograma</strong>: el avance real está muy por debajo del
                 esperado a hoy, aunque su fecha límite todavía no haya llegado.
               </li>
-              <li><strong>En riesgo por cronograma</strong>: señal temprana de lo anterior.</li>
+              <li>
+                <strong>En riesgo por cronograma</strong>: señal temprana de lo anterior.
+              </li>
             </ul>
           </GuiaTab>
         )}

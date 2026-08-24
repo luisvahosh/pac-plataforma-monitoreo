@@ -75,9 +75,12 @@ export function Alertas() {
     setOk(null);
     setEvaluando(true);
     try {
-      const r = await apiJson<{ actividades: number; enviadas: number }>('/api/notificaciones/evaluar', {
-        method: 'POST',
-      });
+      const r = await apiJson<{ actividades: number; enviadas: number }>(
+        '/api/notificaciones/evaluar',
+        {
+          method: 'POST',
+        },
+      );
       setOk(
         `Revisadas ${r.actividades} actividades sin finalizar; se enviaron ${r.enviadas} correos de alerta ` +
           `(no se reenvía dos veces el mismo aviso a la misma persona).`,
@@ -100,8 +103,16 @@ export function Alertas() {
         último día). Si ya venció, envía un aviso de "vencida" en su lugar. Cada aviso se envía una
         sola vez por persona.
       </p>
-      {error && <div className="form-error" role="alert">{error}</div>}
-      {ok && <div className="form-ok" role="status">{ok}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {ok && (
+        <div className="form-ok" role="status">
+          {ok}
+        </div>
+      )}
 
       <form onSubmit={guardar} className="form">
         <label>
@@ -121,31 +132,33 @@ export function Alertas() {
       </form>
 
       <h3>Últimas notificaciones enviadas</h3>
-      <table className="tabla">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Días de anticipación</th>
-            <th>Fecha de envío</th>
-          </tr>
-        </thead>
-        <tbody>
-          {enviadas.map((n) => (
-            <tr key={n.id}>
-              <td>{ETIQUETA_TIPO[n.tipo] ?? n.tipo}</td>
-              <td>{n.umbralDias ?? '—'}</td>
-              <td>{new Date(n.fechaHora).toLocaleString('es-CO')}</td>
-            </tr>
-          ))}
-          {enviadas.length === 0 && (
+      <div className="tabla-scroll">
+        <table className="tabla">
+          <thead>
             <tr>
-              <td colSpan={3} className="tenue">
-                Aún no se ha enviado ninguna alerta de vencimiento.
-              </td>
+              <th>Tipo</th>
+              <th>Días de anticipación</th>
+              <th>Fecha de envío</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {enviadas.map((n) => (
+              <tr key={n.id}>
+                <td>{ETIQUETA_TIPO[n.tipo] ?? n.tipo}</td>
+                <td>{n.umbralDias ?? '—'}</td>
+                <td>{new Date(n.fechaHora).toLocaleString('es-CO')}</td>
+              </tr>
+            ))}
+            {enviadas.length === 0 && (
+              <tr>
+                <td colSpan={3} className="tenue">
+                  Aún no se ha enviado ninguna alerta de vencimiento.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

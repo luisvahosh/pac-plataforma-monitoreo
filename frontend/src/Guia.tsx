@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { ArrowLeft } from '@phosphor-icons/react';
 
-export function Ayuda() {
+export function Guia() {
   return (
     <>
       <header className="cabecera">
@@ -12,7 +13,10 @@ export function Ayuda() {
 
       <main className="contenedor">
         <p>
-          <Link to="/">← Volver al tablero</Link>
+          <Link to="/" className="enlace-volver">
+            <ArrowLeft size={14} weight="bold" aria-hidden="true" />
+            Volver al tablero
+          </Link>
         </p>
 
         <section className="fase">
@@ -25,8 +29,8 @@ export function Ayuda() {
             </li>
             <li>
               <strong>Cuatro pestañas</strong>: "Resumen por componente", "Cronograma (Gantt)",
-              "Actividades" y "Alertas". Cada una tiene su propio botón "Guía" que explica qué
-              estás viendo.
+              "Actividades" y "Alertas". Cada una tiene su propio botón "Guía" que explica qué estás
+              viendo.
             </li>
           </ul>
         </section>
@@ -74,9 +78,9 @@ export function Ayuda() {
           <h3>Pestaña "Actividades"</h3>
           <p>
             La bitácora del proyecto: cada actividad (o cada tarea puntual, si las tiene) con el
-            historial completo de sus reportes de avance — porcentaje, fecha, quién lo registró y
-            su observación en texto libre. Haz clic en una actividad para desplegar su historial.
-            El enlace de evidencia de cada reporte solo aparece (botón "ver evidencia") si iniciaste
+            historial completo de sus reportes de avance — porcentaje, fecha, quién lo registró y su
+            observación en texto libre. Haz clic en una actividad para desplegar su historial. El
+            enlace de evidencia de cada reporte solo aparece (botón "ver evidencia") si iniciaste
             sesión y tienes acceso a esa actividad — nunca es visible sin iniciar sesión.
           </p>
         </section>

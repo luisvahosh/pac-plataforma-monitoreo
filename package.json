@@ -5,13 +5,12 @@
   "description": "Plataforma de Seguimiento y Monitoreo del PAC de Medellín — andamiaje (Fase 2)",
   "workspaces": [
     "backend",
-    "worker",
     "frontend"
   ],
   "scripts": {
-    "lint": "eslint \"{backend,worker,frontend}/src/**/*.{ts,tsx}\"",
-    "format": "prettier --write \"{backend,worker,frontend}/src/**/*.{ts,tsx}\"",
-    "format:check": "prettier --check \"{backend,worker,frontend}/src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"{backend,frontend}/src/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"{backend,frontend}/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"{backend,frontend}/src/**/*.{ts,tsx}\"",
     "prepare": "husky"
   },
   "devDependencies": {

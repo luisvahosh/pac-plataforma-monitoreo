@@ -36,6 +36,31 @@
      anillo de foco, --primario-oscuro cumple 5.6:1 en modo claro pero cae
      bajo 3:1 en modo oscuro, así que también se invierte más abajo. */
   --enlace-color: var(--primario-oscuro);
+
+  /* Escala tipográfica (base 16px = --fs-base). */
+  --fs-xs: 0.75rem; /* 12px — metadatos, leyendas, fechas */
+  --fs-sm: 0.85rem; /* 13.6px — texto secundario, etiquetas de formulario */
+  --fs-base: 1rem; /* 16px — cuerpo de texto */
+  --fs-md: 1.15rem; /* 18.4px — subtítulos (h3 de fase/panel) */
+  --fs-lg: 1.6rem; /* 25.6px — título principal (h1) */
+  --fs-xl: 1.8rem; /* 28.8px — cifra destacada (valor de KPI) */
+
+  /* Escala de espaciado (base 4px), para que el ritmo vertical/horizontal
+     sea el mismo en tarjetas, paneles y formularios en vez de valores
+     sueltos por componente. */
+  --sp-1: 0.25rem; /* 4px */
+  --sp-2: 0.5rem; /* 8px */
+  --sp-3: 0.75rem; /* 12px */
+  --sp-4: 1rem; /* 16px */
+  --sp-5: 1.25rem; /* 20px */
+  --sp-6: 1.5rem; /* 24px */
+  --sp-8: 2rem; /* 32px */
+
+  /* Radios de borde: los 3 valores que ya se usaban en el sitio, ahora
+     nombrados y centralizados en vez de repetidos como números sueltos. */
+  --radio-sm: 8px; /* controles: input, botón, chip interior */
+  --radio-md: 10px; /* tarjetas internas: actividad, hito, aviso */
+  --radio-caja: 12px; /* contenedores principales: kpi, fase, panel, diálogo */
 }
 
 * {
@@ -80,7 +105,7 @@ body {
 }
 .cabecera h1 {
   margin: 0 0 0.25rem;
-  font-size: 1.6rem;
+  font-size: var(--fs-lg);
 }
 .cabecera p {
   margin: 0;
@@ -95,17 +120,22 @@ body {
   gap: 1rem;
   margin-bottom: 0.75rem;
 }
-.enlace-ayuda {
+.enlace-guia {
   color: #cdd8ee;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   text-decoration: underline;
 }
-.enlace-ayuda-boton {
+.enlace-guia-boton {
   background: none;
   border: none;
   padding: 0;
   font: inherit;
   cursor: pointer;
+}
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 .boton-acceso {
   display: inline-flex;
@@ -114,14 +144,11 @@ body {
   background: var(--institucional-amarillo);
   color: #1a2233;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 999px;
   transition: transform 0.1s ease;
-}
-.boton-acceso::after {
-  content: '→';
 }
 .boton-acceso:hover {
   transform: translateY(-1px);
@@ -160,16 +187,16 @@ body {
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-left: 4px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1rem 1.25rem;
 }
 .kpi .valor {
-  font-size: 1.8rem;
+  font-size: var(--fs-xl);
   font-weight: 700;
 }
 .kpi .etiqueta {
   color: var(--texto-tenue);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 /* Acento por tono (misma paleta institucional que los estados). */
 .kpi-info {
@@ -192,7 +219,7 @@ body {
 .fase {
   background: var(--superficie);
   border: 1px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 }
@@ -205,11 +232,11 @@ body {
 }
 .fase-cabecera h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: var(--fs-md);
 }
 .fase-peso {
   color: var(--texto-tenue);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .barra {
@@ -235,7 +262,7 @@ body {
 }
 .actividad {
   border: 1px solid var(--borde);
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   padding: 0.85rem 1rem;
 }
 .actividad-cabecera {
@@ -259,7 +286,7 @@ body {
   display: inline-block;
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: #fff;
   white-space: nowrap;
@@ -320,9 +347,12 @@ body {
   gap: 0.4rem;
 }
 .hito {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--fs-xs);
   border: 1px solid var(--borde);
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 0.15rem 0.5rem;
   color: var(--texto-tenue);
 }
@@ -443,7 +473,7 @@ body {
   overflow-x: auto;
   background: var(--superficie);
   border: 1px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1rem;
 }
 .gantt-eje {
@@ -459,7 +489,7 @@ body {
 }
 .gantt-mes {
   flex: 0 0 90px;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--texto-tenue);
   text-transform: uppercase;
 }
@@ -609,7 +639,7 @@ body {
   list-style: none;
   margin: 0.4rem 0 0;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 /* Pestaña Alertas */
@@ -617,7 +647,7 @@ body {
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-left: 4px solid var(--borde);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1rem 1.25rem;
   margin-bottom: 1.25rem;
 }
@@ -634,7 +664,7 @@ body {
   gap: 0.5rem;
 }
 .alerta-contador {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: 999px;
@@ -683,21 +713,18 @@ body {
   border-radius: 999px;
   background: var(--primario);
   color: #fff;
-  font-size: 0.7rem;
-  font-style: italic;
-  font-weight: 700;
 }
 .guia-caja {
   background: var(--primario-suave);
   border: 1px solid var(--borde);
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   padding: 1rem 1.25rem;
   margin-top: 0.6rem;
   font-size: 0.88rem;
 }
 .guia-caja h4 {
   margin: 0.9rem 0 0.3rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 .guia-caja h4:first-child {
   margin-top: 0;
@@ -724,7 +751,7 @@ body {
   background: #fff7e6;
   border: 1px solid #f0c36d;
   color: #7a5300;
-  border-radius: 10px;
+  border-radius: var(--radio-md);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
   font-size: 0.9rem;
@@ -758,7 +785,7 @@ body {
 }
 .dialogo-caja {
   background: var(--superficie);
-  border-radius: 12px;
+  border-radius: var(--radio-caja);
   padding: 1.5rem;
   max-width: 420px;
   width: 100%;
@@ -766,7 +793,7 @@ body {
 }
 .dialogo-titulo {
   margin: 0 0 0.6rem;
-  font-size: 1.15rem;
+  font-size: var(--fs-md);
 }
 .dialogo-mensaje {
   margin: 0;
@@ -785,7 +812,7 @@ body {
 .boton-peligro {
   font: inherit;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radio-sm);
   padding: 0.55rem 1.1rem;
   font-weight: 600;
   min-height: 44px;

@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { List, X } from '@phosphor-icons/react';
 import { useAuth } from './auth-contexto';
 
 export function Layout() {
   const { usuario, esAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   function salir() {
     logout();
@@ -14,10 +17,30 @@ export function Layout() {
     <>
       <header className="barra-nav">
         <div className="contenedor nav-inner">
-          <strong>PAC · Panel</strong>
-          <nav className="nav-enlaces">
+          <div className="nav-marca">
+            <strong>PAC · Panel</strong>
+            <button
+              type="button"
+              className="nav-menu-boton"
+              aria-expanded={menuAbierto}
+              aria-controls="nav-enlaces"
+              onClick={() => setMenuAbierto((v) => !v)}
+            >
+              {menuAbierto ? (
+                <X size={20} weight="bold" aria-hidden="true" />
+              ) : (
+                <List size={20} weight="bold" aria-hidden="true" />
+              )}
+              <span className="sr-solo">{menuAbierto ? 'Cerrar menú' : 'Abrir menú'}</span>
+            </button>
+          </div>
+          <nav
+            className={`nav-enlaces ${menuAbierto ? 'abierto' : ''}`}
+            id="nav-enlaces"
+            onClick={() => setMenuAbierto(false)}
+          >
             <Link to="/app">Mis actividades</Link>
-            <Link to="/app/ayuda">Ayuda</Link>
+            <Link to="/app/guia">Guía</Link>
             {esAdmin && (
               <>
                 <Link to="/app/admin/actividades">Actividades</Link>

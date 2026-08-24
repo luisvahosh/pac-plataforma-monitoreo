@@ -24,8 +24,9 @@ export function Ayuda() {
               cronograma, e hitos cumplidos.
             </li>
             <li>
-              <strong>Dos pestañas</strong>: "Resumen por componente" (fases, actividades, hitos y
-              tareas) y "Cronograma (Gantt)" (línea de tiempo completa).
+              <strong>Cuatro pestañas</strong>: "Resumen por componente", "Cronograma (Gantt)",
+              "Actividades" y "Alertas". Cada una tiene su propio botón "Guía" que explica qué
+              estás viendo.
             </li>
           </ul>
         </section>
@@ -66,6 +67,28 @@ export function Ayuda() {
             iniciada, azul = en tiempo, naranja = en riesgo, rojo = atrasada, verde = completada. La
             línea roja vertical marca la fecha de hoy. Pasa el cursor sobre una barra para ver el
             nombre completo, las fechas y el % exacto.
+          </p>
+        </section>
+
+        <section className="fase">
+          <h3>Pestaña "Actividades"</h3>
+          <p>
+            La bitácora del proyecto: cada actividad (o cada tarea puntual, si las tiene) con el
+            historial completo de sus reportes de avance — porcentaje, fecha, quién lo registró y
+            su observación en texto libre. Haz clic en una actividad para desplegar su historial.
+            El enlace de evidencia de cada reporte solo aparece (botón "ver evidencia") si iniciaste
+            sesión y tienes acceso a esa actividad — nunca es visible sin iniciar sesión.
+          </p>
+        </section>
+
+        <section className="fase">
+          <h3>Pestaña "Alertas"</h3>
+          <p>
+            Las actividades que están pendientes de atención según su fecha, agrupadas en cuatro
+            niveles: <strong>vencidas</strong> (ya pasó su fecha límite y no está finalizada),
+            <strong> próximas a vencer</strong>, <strong>atrasadas por cronograma</strong> (el
+            avance real está muy por debajo del esperado a hoy, aunque la fecha límite aún no haya
+            llegado) y <strong>en riesgo por cronograma</strong> (señal temprana de lo anterior).
           </p>
         </section>
 

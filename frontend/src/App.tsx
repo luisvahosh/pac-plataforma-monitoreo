@@ -7,6 +7,7 @@ import { ListaFases } from './components/ListaFases';
 import { Gantt } from './components/Gantt';
 import { ActividadesBitacora } from './components/ActividadesBitacora';
 import { AlertasPublicas } from './components/AlertasPublicas';
+import { GuiaTab } from './components/GuiaTab';
 import { useAuth } from './privado/auth-contexto';
 
 type Pestana = 'resumen' | 'cronograma' | 'actividades' | 'alertas';
@@ -97,6 +98,73 @@ export function App() {
             </button>
           ))}
         </nav>
+
+        {pestana === 'resumen' && (
+          <GuiaTab>
+            <h4>Qué estás viendo</h4>
+            <p>
+              El componente seleccionado arriba (o los 7, con "Todos los componentes"), con sus
+              actividades, hitos y tareas puntuales.
+            </p>
+            <h4>Dos indicadores por actividad, no uno</h4>
+            <ul>
+              <li>
+                <strong>Estado por fecha límite</strong> (a la derecha): pendiente, en ejecución,
+                próxima a vencer, vencida o finalizada.
+              </li>
+              <li>
+                <strong>Desviación de cronograma</strong> (debajo de las fechas): compara el avance
+                real contra el esperado a hoy. Responde "¿vamos al ritmo planeado?", una pregunta
+                distinta a "¿ya se venció?".
+              </li>
+            </ul>
+          </GuiaTab>
+        )}
+        {pestana === 'cronograma' && (
+          <GuiaTab>
+            <h4>Qué estás viendo</h4>
+            <p>
+              La línea de tiempo completa del proyecto. Cada fila es una actividad; la barra marca
+              su periodo planeado y el relleno interno cuánto lleva de avance.
+            </p>
+            <h4>Colores</h4>
+            <p>Gris = no iniciada · Azul = en tiempo · Naranja = en riesgo · Rojo = atrasada · Verde = completada.</p>
+            <p>La línea roja vertical marca la fecha de hoy.</p>
+          </GuiaTab>
+        )}
+        {pestana === 'actividades' && (
+          <GuiaTab>
+            <h4>Qué estás viendo</h4>
+            <p>
+              Una bitácora: cada actividad (o cada tarea puntual, si las tiene) con el historial
+              completo de sus reportes de avance — porcentaje, fecha, quién lo registró y su
+              observación en texto libre. Haz clic en una actividad para desplegar su historial.
+            </p>
+            <h4>El enlace de evidencia</h4>
+            <p>
+              Está siempre protegido: solo aparece un botón "ver evidencia" si iniciaste sesión, y
+              solo si tienes acceso a esa actividad.
+            </p>
+          </GuiaTab>
+        )}
+        {pestana === 'alertas' && (
+          <GuiaTab>
+            <h4>Qué estás viendo</h4>
+            <p>
+              Las actividades que están pendientes de atención según su fecha, agrupadas en cuatro
+              niveles:
+            </p>
+            <ul>
+              <li><strong>Vencidas</strong>: ya pasó su fecha límite planeada y no está finalizada.</li>
+              <li><strong>Próximas a vencer</strong>: se acercan a su fecha límite.</li>
+              <li>
+                <strong>Atrasadas por cronograma</strong>: el avance real está muy por debajo del
+                esperado a hoy, aunque su fecha límite todavía no haya llegado.
+              </li>
+              <li><strong>En riesgo por cronograma</strong>: señal temprana de lo anterior.</li>
+            </ul>
+          </GuiaTab>
+        )}
 
         {pestana === 'resumen' && (
           <>

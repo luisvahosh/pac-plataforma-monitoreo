@@ -59,7 +59,7 @@ export function App() {
         <div className="contenedor">
           <div className="cabecera-acciones">
             <a href="/guia" className="enlace-guia">
-              ¿Cómo se lee esto?
+              Guía
             </a>
             {usuario ? (
               <>

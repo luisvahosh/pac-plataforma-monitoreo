@@ -65,6 +65,31 @@ body {
   max-width: 60ch;
 }
 
+.cabecera-acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+.boton-acceso {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--institucional-amarillo);
+  color: #1a2233;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  transition: transform 0.1s ease;
+}
+.boton-acceso::after {
+  content: '→';
+}
+.boton-acceso:hover {
+  transform: translateY(-1px);
+}
+
 .resumen {
   display: flex;
   flex-wrap: wrap;

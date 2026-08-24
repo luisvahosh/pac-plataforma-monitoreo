@@ -40,9 +40,9 @@ export function App() {
     <>
       <header className="cabecera">
         <div className="contenedor">
-          <div style={{ textAlign: 'right' }}>
-            <a href="/login" style={{ color: '#cdd8ee', fontSize: '0.85rem' }}>
-              Acceso colaboradores →
+          <div className="cabecera-acciones">
+            <a href="/login" className="boton-acceso">
+              Acceso colaboradores
             </a>
           </div>
           <h1>{proyecto.nombre}</h1>

@@ -41,6 +41,9 @@ export function App() {
       <header className="cabecera">
         <div className="contenedor">
           <div className="cabecera-acciones">
+            <a href="/ayuda" className="enlace-ayuda">
+              ¿Cómo se lee esto?
+            </a>
             <a href="/login" className="boton-acceso">
               Acceso colaboradores
             </a>

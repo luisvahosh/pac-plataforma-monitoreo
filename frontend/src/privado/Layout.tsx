@@ -17,6 +17,7 @@ export function Layout() {
           <strong>PAC · Panel</strong>
           <nav className="nav-enlaces">
             <Link to="/app">Mis actividades</Link>
+            <Link to="/app/ayuda">Ayuda</Link>
             {esAdmin && (
               <>
                 <Link to="/app/admin/actividades">Actividades</Link>

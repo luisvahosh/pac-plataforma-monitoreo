@@ -68,7 +68,14 @@ body {
 .cabecera-acciones {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 0.75rem;
+}
+.enlace-ayuda {
+  color: #cdd8ee;
+  font-size: 0.85rem;
+  text-decoration: underline;
 }
 .boton-acceso {
   display: inline-flex;

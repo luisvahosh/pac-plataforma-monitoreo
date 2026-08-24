@@ -1,4 +1,39 @@
+import type { ComponentType, ReactNode } from 'react';
+import {
+  ClipboardText,
+  LockKey,
+  Users,
+  FolderOpen,
+  CalendarCheck,
+  Bell,
+  EnvelopeSimple,
+  type IconProps,
+} from '@phosphor-icons/react';
 import { useAuth } from '../auth-contexto';
+
+function GuiaPanel({
+  icono: Icono,
+  titulo,
+  id,
+  children,
+}: {
+  icono: ComponentType<IconProps>;
+  titulo: string;
+  id: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="panel guia-panel" id={id}>
+      <h3 className="guia-panel-titulo">
+        <span className="guia-panel-icono">
+          <Icono size={18} weight="bold" aria-hidden="true" />
+        </span>
+        {titulo}
+      </h3>
+      {children}
+    </div>
+  );
+}
 
 export function Guia() {
   const { esAdmin } = useAuth();
@@ -25,8 +60,7 @@ export function Guia() {
       <div className="guia-grupo guia-grupo-colaborador">
         <span className="guia-grupo-rotulo">Para todos los colaboradores</span>
 
-        <div className="panel" id="mis-actividades">
-          <h3>Mis actividades y avances</h3>
+        <GuiaPanel icono={ClipboardText} titulo="Mis actividades y avances" id="mis-actividades">
           <ul className="lista-simple">
             <li>
               <strong>Mis actividades</strong> muestra las actividades que un administrador te
@@ -50,10 +84,9 @@ export function Guia() {
               adjuntos, solo enlaces a donde ya vive el archivo real.
             </li>
           </ul>
-        </div>
+        </GuiaPanel>
 
-        <div className="panel" id="sesion">
-          <h3>Iniciar sesión y recuperar acceso</h3>
+        <GuiaPanel icono={LockKey} titulo="Iniciar sesión y recuperar acceso" id="sesion">
           <ul className="lista-simple">
             <li>
               El código que pide el segundo paso del inicio de sesión lo genera la app{' '}
@@ -69,15 +102,14 @@ export function Guia() {
               activación.
             </li>
           </ul>
-        </div>
+        </GuiaPanel>
       </div>
 
       {esAdmin && (
         <div className="guia-grupo guia-grupo-admin">
           <span className="guia-grupo-rotulo">Solo administrador</span>
 
-          <div className="panel" id="usuarios">
-            <h3>Usuarios</h3>
+          <GuiaPanel icono={Users} titulo="Usuarios" id="usuarios">
             <ul className="lista-simple">
               <li>
                 <strong>Crear</strong>: nombre, correo, celular (opcional) y rol. Al guardar se
@@ -105,10 +137,13 @@ export function Guia() {
                 rechaza y sugiere desactivar en su lugar, para no perder trazabilidad.
               </li>
             </ul>
-          </div>
+          </GuiaPanel>
 
-          <div className="panel" id="actividades-responsables">
-            <h3>Actividades y responsables</h3>
+          <GuiaPanel
+            icono={FolderOpen}
+            titulo="Actividades y responsables"
+            id="actividades-responsables"
+          >
             <ul className="lista-simple">
               <li>
                 En <strong>Actividades</strong> hay un formulario arriba para crear una actividad
@@ -132,10 +167,9 @@ export function Guia() {
                 Línea base.
               </li>
             </ul>
-          </div>
+          </GuiaPanel>
 
-          <div className="panel" id="linea-base">
-            <h3>Línea base</h3>
+          <GuiaPanel icono={CalendarCheck} titulo="Línea base" id="linea-base">
             <p className="tenue">
               Las fechas de inicio/fin de una actividad, o la fecha objetivo de un hito, no se
               editan libremente: todo cambio queda registrado con quién lo hizo, cuándo y por qué,
@@ -144,10 +178,9 @@ export function Guia() {
               de sus hitos, el campo a cambiar, la nueva fecha y una justificación (obligatoria).
               "Ver historial" muestra los cambios anteriores.
             </p>
-          </div>
+          </GuiaPanel>
 
-          <div className="panel" id="alertas-auditoria">
-            <h3>Alertas y auditoría</h3>
+          <GuiaPanel icono={Bell} titulo="Alertas y auditoría" id="alertas-auditoria">
             <ul className="lista-simple">
               <li>
                 <strong>Alertas</strong> define con cuántos días de anticipación se avisa por correo
@@ -161,10 +194,13 @@ export function Guia() {
                 modificar ni borrar desde ahí.
               </li>
             </ul>
-          </div>
+          </GuiaPanel>
 
-          <div className="panel" id="correos-provisionales">
-            <h3>Correos provisionales del equipo</h3>
+          <GuiaPanel
+            icono={EnvelopeSimple}
+            titulo="Correos provisionales del equipo"
+            id="correos-provisionales"
+          >
             <p className="tenue">
               Si el equipo técnico cargó datos nuevos del proyecto, puede haber creado cuentas con
               correos provisionales (formato{' '}
@@ -172,7 +208,7 @@ export function Guia() {
               puedan activar su cuenta, entra a Usuarios y reemplaza cada correo provisional por el
               real (o usa "reiniciar activación" si ya intentaron activarla con el correo viejo).
             </p>
-          </div>
+          </GuiaPanel>
         </div>
       )}
     </section>

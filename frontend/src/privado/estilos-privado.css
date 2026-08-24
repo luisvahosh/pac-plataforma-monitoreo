@@ -278,6 +278,48 @@ button.enlace.enlace-peligro:hover:not(:disabled) {
 .guia-grupo .panel {
   scroll-margin-top: 1rem;
 }
+.guia-panel {
+  scroll-margin-top: 1rem;
+  border-left: 4px solid var(--primario);
+}
+.guia-grupo-colaborador .panel {
+  border-left-color: var(--finalizada);
+}
+.guia-grupo-admin .panel {
+  border-left-color: var(--proxima);
+}
+.guia-panel-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+}
+.guia-panel-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--primario-suave);
+  color: var(--primario-oscuro);
+}
+.guia-grupo-admin .guia-panel-icono {
+  background: color-mix(in srgb, var(--proxima) 14%, white);
+  color: var(--proxima);
+}
+.guia-panel .lista-simple li {
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.65rem;
+  border-bottom: 1px dashed var(--borde);
+}
+.guia-panel .lista-simple li:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Maestro PMDI 2026·1 — Tablero</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-alt: #ffffff;
+    --panel: #ffffff;
+    --line: #e8e6df;
+    --line-soft: #f0eee7;
+    --ink: #1a1d1f;
+    --ink-mid: #565b60;
+    --ink-soft: #8b9096;
+    --ink-faint: #b8bdc2;
+
+    --brand: #1d3557;
+    --brand-2: #2a4d7a;
+    --accent: #e63946;
+
+    --ok: #2a9d8f;
+    --warn: #f4a261;
+    --danger: #e63946;
+    --gray: #8b9096;
+    --info: #457b9d;
+
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at top right, rgba(29,53,87,0.04), transparent 60%),
+      radial-gradient(ellipse at bottom left, rgba(244,162,97,0.03), transparent 60%);
+  }
+
+  /* ============ LOADING SCREEN ============ */
+  .loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+  .loading-card {
+    max-width: 580px;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 56px 48px;
+    text-align: center;
+  }
+  .loading-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .loading-card h1 {
+    font-family: var(--serif);
+    font-size: 38px;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .loading-card h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .loading-card .desc {
+    color: var(--ink-mid);
+    margin-bottom: 32px;
+    font-size: 14px;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--line);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    margin: 24px auto;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    margin-top: 16px;
+  }
+
+  /* DROP ZONE (fallback) */
+  .drop-zone {
+    border: 2px dashed var(--line);
+    border-radius: 4px;
+    padding: 40px 32px;
+    margin-top: 24px;
+    cursor: pointer;
+    background: var(--bg);
+    transition: all 0.2s;
+    display: none;
+  }
+  .drop-zone.show { display: block; }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--brand);
+    background: rgba(29,53,87,0.03);
+  }
+  .drop-icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 12px;
+    color: var(--brand);
+  }
+  .drop-text {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .drop-hint { color: var(--ink-soft); font-size: 12px; }
+  .drop-hint b { color: var(--brand); cursor: pointer; }
+
+  .err-box {
+    display: none;
+    background: #fff5f5;
+    border: 1px solid #ffd6d6;
+    color: var(--danger);
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .err-box.show { display: block; }
+  .err-box strong { display: block; margin-bottom: 4px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; }
+
+  /* ============ DASHBOARD ============ */
+  .dashboard { display: none; }
+  .dashboard.active { display: block; }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+  }
+  .header-left { display: flex; align-items: center; gap: 24px; }
+  .logo {
+    line-height: 1;
+  }
+  .logo-main {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .logo-main em { color: var(--accent); font-style: italic; font-weight: 400; }
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-top: 4px;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .date-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mid);
+    background: var(--bg);
+    padding: 6px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    letter-spacing: 0.05em;
+  }
+  .btn {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--brand); color: var(--brand); }
+
+  /* TABS */
+  .tabs {
+    border-bottom: 1px solid var(--line);
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 65px;
+    z-index: 90;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+  }
+  .tab {
+    padding: 14px 18px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-mid);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab:hover { color: var(--brand); }
+  .tab.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+  .tab-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+  .tab.active .tab-num { color: var(--accent); }
+  .tab .badge {
+    background: var(--accent);
+    color: white;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* PANELS */
+  .panel-area {
+    padding: 28px 32px;
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+  }
+  .panel-area.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title { margin-bottom: 24px; }
+  .section-title h2 {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .section-title h2 em { font-style: italic; color: var(--accent); }
+  .section-title p { color: var(--ink-mid); font-size: 13px; max-width: 720px; }
+
+  .grid { display: grid; gap: 16px; margin-bottom: 16px; }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-2-1 { grid-template-columns: 2fr 1fr; }
+  .grid-1-2 { grid-template-columns: 1fr 2fr; }
+
+  @media (max-width: 1100px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px;
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .panel-head h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .panel-head .pill {
+    background: var(--bg);
+    color: var(--ink-mid);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    letter-spacing: 0.05em;
+  }
+
+  /* KPI CARDS */
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .kpi-value {
+    font-family: var(--serif);
+    font-size: 40px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+  .kpi-value .pct { font-size: 22px; opacity: 0.5; font-weight: 400; }
+  .kpi-trend {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+  .kpi-trend.danger { color: var(--danger); }
+  .kpi-trend.warn { color: var(--warn); }
+  .kpi-trend.ok { color: var(--ok); }
+  .kpi-trend.info { color: var(--info); }
+  .kpi.danger { border-left: 3px solid var(--danger); }
+  .kpi.warn { border-left: 3px solid var(--warn); }
+  .kpi.ok { border-left: 3px solid var(--ok); }
+  .kpi.info { border-left: 3px solid var(--info); }
+
+  /* PROGRESS BARS */
+  .bar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 70px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 6px 8px;
+    border-radius: 3px;
+    transition: background 0.15s;
+  }
+  .bar-row:hover { background: var(--bg); }
+  .bar-row .lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+  .bar-track {
+    height: 22px;
+    background: var(--line-soft);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .bar-fill.ok { background: var(--ok); }
+  .bar-fill.warn { background: var(--warn); }
+  .bar-fill.danger { background: var(--danger); }
+  .bar-fill.gray { background: var(--gray); }
+  .bar-target {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--ink);
+    z-index: 2;
+  }
+  .bar-value {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: right;
+  }
+  .bar-value .small {
+    font-size: 10px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    font-family: var(--mono);
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-color { width: 12px; height: 8px; border-radius: 1px; }
+  .legend-line { width: 14px; height: 2px; background: var(--ink); }
+
+  /* DONUT */
+  .donut-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .donut-canvas-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 18px;
+  }
+  .donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .donut-center .num {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .donut-center .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .donut-legend { width: 100%; display: grid; gap: 6px; }
+  .donut-legend-item {
+    display: grid;
+    grid-template-columns: 14px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+    padding: 5px 6px;
+    border-radius: 2px;
+  }
+  .donut-legend-item .swatch { width: 12px; height: 12px; border-radius: 2px; }
+  .donut-legend-item .lbl { color: var(--ink); }
+  .donut-legend-item .val {
+    font-family: var(--mono);
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* GANTT */
+  .gantt-wrap { overflow-x: auto; }
+  .gantt {
+    min-width: 1000px;
+    position: relative;
+    padding-top: 36px;
+  }
+  .gantt-axis {
+    position: absolute;
+    top: 0;
+    left: 240px;
+    right: 12px;
+    height: 28px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+  }
+  .gantt-month {
+    flex: 1;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-right: 1px solid var(--line-soft);
+    padding-top: 8px;
+  }
+  .gantt-row {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: center;
+    min-height: 30px;
+    transition: background 0.1s;
+  }
+  .gantt-row:hover { background: var(--bg); }
+  .gantt-label {
+    padding: 6px 12px 6px 0;
+    font-size: 12px;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gantt-row.l1 .gantt-label {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--brand);
+  }
+  .gantt-row.l1 { background: rgba(29,53,87,0.03); }
+  .gantt-row.l2 .gantt-label { 
+    padding-left: 16px; 
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .gantt-row.l3 .gantt-label { 
+    padding-left: 32px; 
+    color: var(--ink-mid);
+    font-size: 11.5px;
+  }
+  .gantt-bar-area {
+    position: relative;
+    height: 24px;
+    background: linear-gradient(to right, var(--line-soft) 1px, transparent 1px);
+    background-size: calc(100% / 7) 100%;
+  }
+  .gantt-bar {
+    position: absolute;
+    top: 5px;
+    height: 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .gantt-bar:hover { transform: scaleY(1.2); z-index: 5; }
+  .gantt-bar.ok { background: var(--ok); }
+  .gantt-bar.warn { background: var(--warn); }
+  .gantt-bar.danger { background: var(--danger); }
+  .gantt-bar.gray { background: var(--gray); opacity: 0.5; }
+  .gantt-bar.l1 { height: 18px; top: 3px; opacity: 0.85; }
+  .gantt-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    border-radius: 2px 0 0 2px;
+  }
+  .gantt-today {
+    position: absolute;
+    top: -36px;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    z-index: 10;
+  }
+  .gantt-today::before {
+    content: 'HOY';
+    position: absolute;
+    top: -18px;
+    left: -16px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    background: var(--bg-alt);
+    padding: 2px 4px;
+  }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table thead th {
+    background: var(--bg);
+    padding: 12px 14px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+  }
+  .data-table tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-mid);
+    vertical-align: top;
+  }
+  .data-table tbody tr:hover { background: var(--bg); }
+  .data-table tbody td.strong { color: var(--ink); font-weight: 500; }
+  .data-table tbody td.code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mid);
+  }
+  .data-table tbody td.num {
+    font-family: var(--serif);
+    font-weight: 600;
+    text-align: right;
+  }
+  .data-table .nota-cell {
+    max-width: 280px;
+    font-style: italic;
+    color: var(--ink-mid);
+    line-height: 1.5;
+    font-size: 12px;
+  }
+  .data-table .entregable-cell {
+    max-width: 280px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .estado-tag {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .estado-tag.completado { background: rgba(42,157,143,0.15); color: var(--ok); }
+  .estado-tag.entiempo { background: rgba(69,123,157,0.15); color: var(--info); }
+  .estado-tag.enriesgo { background: rgba(244,162,97,0.2); color: var(--warn); }
+  .estado-tag.atrasado { background: rgba(230,57,70,0.15); color: var(--danger); }
+  .estado-tag.noiniciado { background: rgba(139,144,150,0.15); color: var(--gray); }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--brand);
+    text-decoration: none;
+    font-size: 12px;
+    border-bottom: 1px dotted var(--brand);
+    padding-bottom: 1px;
+  }
+  .link-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* OBJECTIVE SELECTOR */
+  .obj-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1100px) {
+    .obj-selector { grid-template-columns: repeat(2, 1fr); }
+  }
+  .obj-btn {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    padding: 14px 14px;
+    border-radius: 4px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .obj-btn:hover {
+    border-color: var(--brand);
+    transform: translateY(-1px);
+  }
+  .obj-btn.active {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: white;
+  }
+  .obj-btn .obj-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .obj-btn.active .obj-num { color: rgba(255,255,255,0.7); }
+  .obj-btn .obj-name {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .obj-btn.active .obj-name { color: white; }
+  .obj-btn .obj-progress {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mid);
+  }
+  .obj-btn.active .obj-progress { color: rgba(255,255,255,0.85); }
+
+  /* DETAIL MATRIX */
+  .matrix {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .matrix-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 80px 110px;
+    gap: 16px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .matrix-row:hover { background: var(--bg); }
+  .matrix-row.l2 {
+    background: var(--bg);
+    font-weight: 600;
+  }
+  .matrix-row.l2 .matrix-name {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--brand);
+    font-size: 14px;
+  }
+  .matrix-row.l3 {
+    padding-left: 36px;
+  }
+  .matrix-row.l3 .matrix-name {
+    color: var(--ink-mid);
+    font-size: 12.5px;
+  }
+  .matrix-name { line-height: 1.4; }
+  .matrix-mini-bar {
+    height: 6px;
+    background: var(--line-soft);
+    border-radius: 1px;
+    overflow: hidden;
+    position: relative;
+  }
+  .matrix-mini-fill { height: 100%; border-radius: 1px; }
+  .matrix-pct {
+    font-family: var(--serif);
+    font-weight: 600;
+    text-align: right;
+    font-size: 14px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 32px;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* TOOLTIP */
+  .gantt-bar { position: relative; }
+  .tooltip {
+    position: fixed;
+    background: var(--ink);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 3px;
+    font-size: 12px;
+    line-height: 1.5;
+    z-index: 200;
+    pointer-events: none;
+    max-width: 320px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    display: none;
+  }
+  .tooltip.show { display: block; }
+  .tooltip strong { display: block; margin-bottom: 4px; font-family: var(--serif); font-size: 13px; }
+  .tooltip .meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+  }
+
+  /* SUMMARY BANNER */
+  .summary-banner {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    color: white;
+    padding: 24px 28px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 24px;
+  }
+  .summary-banner .summary-text {
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 400;
+    font-style: italic;
+  }
+  .summary-banner .summary-text strong {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--accent);
+    background: white;
+    padding: 0 6px;
+    border-radius: 2px;
+  }
+  .summary-banner .summary-num {
+    font-family: var(--serif);
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* ALERTS */
+  .alert-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .alert-row:hover { background: var(--bg); }
+  .alert-row .alert-name {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .alert-row .alert-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+  .alert-row .alert-days {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 18px;
+    text-align: right;
+  }
+  .alert-row .alert-days.danger { color: var(--danger); }
+  .alert-row .alert-days.warn { color: var(--warn); }
+
+  /* SEARCH */
+  .search-box {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 13px;
+    background: var(--bg-alt);
+    transition: border-color 0.15s;
+  }
+  .search-box:focus {
+    outline: none;
+    border-color: var(--brand);
+  }
+
+  @media print {
+    header, .tabs { position: static; }
+    .panel-area { display: block !important; page-break-after: always; }
+    .guia-box, .guia-toggle { display: none !important; }
+  }
+
+  /* ============ GUÍA EXPLICATIVA ============ */
+  .section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .section-title-text { flex: 1; }
+  .guia-toggle {
+    flex-shrink: 0;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    color: var(--ink-mid);
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .guia-toggle:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+  .guia-toggle.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+  }
+  .guia-toggle .icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .guia-toggle.active .icon {
+    background: white;
+    color: var(--brand);
+  }
+
+  .guia-box {
+    display: none;
+    background: linear-gradient(135deg, #fffbf2 0%, #fff8e7 100%);
+    border: 1px solid #f4d99c;
+    border-left: 3px solid #f4a261;
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+  }
+  .guia-box.show { display: block; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .guia-box::before {
+    content: '¿CÓMO LEER ESTA SECCIÓN?';
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #b8842a;
+    letter-spacing: 0.25em;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .guia-box h4 {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 16px 0 8px 0;
+    letter-spacing: -0.01em;
+  }
+  .guia-box h4:first-of-type { margin-top: 0; }
+  .guia-box h4 em { color: var(--accent); font-style: italic; font-weight: 400; }
+
+  .guia-box p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-mid);
+    margin-bottom: 10px;
+    max-width: 920px;
+  }
+  .guia-box p strong { color: var(--ink); font-weight: 600; }
+  .guia-box p code {
+    background: rgba(244,162,97,0.15);
+    color: #8c5a18;
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .guia-box ul {
+    margin: 6px 0 12px 0;
+    padding-left: 20px;
+  }
+  .guia-box ul li {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-mid);
+    margin-bottom: 6px;
+  }
+  .guia-box ul li strong { color: var(--ink); font-weight: 600; }
+
+  .guia-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 14px;
+  }
+  @media (max-width: 900px) { .guia-grid { grid-template-columns: 1fr; } }
+
+  .guia-card {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(244,162,97,0.3);
+    border-radius: 3px;
+    padding: 14px 16px;
+  }
+  .guia-card .ttl {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #b8842a;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .guia-card p { font-size: 12.5px; margin-bottom: 0; }
+
+  .guia-color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--ink-mid);
+  }
+  .guia-color-row .swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .guia-color-row strong { color: var(--ink); margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOADING / DROP SCREEN ============ -->
+<div class="loading" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-eyebrow">PMDI · 2026·1 · ALCALDÍA DE MEDELLÍN</div>
+    <h1>Plan Maestro <em>PMDI</em></h1>
+    <p class="desc">Tablero de seguimiento de Objetivos, Key Results y Actividades.</p>
+
+    <div class="spinner" id="spinner"></div>
+    <div class="status" id="status">Buscando archivo de datos…</div>
+
+    <div class="drop-zone" id="dropZone">
+      <svg class="drop-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+      </svg>
+      <div class="drop-text">Arrastra el Excel aquí o haz clic para seleccionarlo</div>
+      <div class="drop-hint">Plan_Maestro_PMDI_PowerBI.xlsx · <b>Seleccionar archivo</b></div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
+    </div>
+
+    <div class="err-box" id="errBox"></div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="dashboard" id="dashboard">
+
+  <header>
+    <div class="header-left">
+      <div class="logo">
+        <div class="logo-main">PMDI <em>2026·1</em></div>
+        <div class="logo-sub">PLAN MAESTRO · ALCALDÍA DE MEDELLÍN</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="date-pill" id="dateNow">—</div>
+      <button class="btn" onclick="reloadData()">↻ Actualizar</button>
+      <button class="btn" onclick="window.print()">Imprimir</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-panel="resumen">
+      <span class="tab-num">01</span>Resumen Ejecutivo
+    </button>
+    <button class="tab" data-panel="cronograma">
+      <span class="tab-num">02</span>Cronograma
+    </button>
+    <button class="tab" data-panel="detalle">
+      <span class="tab-num">03</span>Detalle por Objetivo
+    </button>
+    <button class="tab" data-panel="pendientes">
+      <span class="tab-num">04</span>Pendientes y Notas
+    </button>
+    <button class="tab" data-panel="alertas">
+      <span class="tab-num">05</span>Alertas <span class="badge" id="alertCount">0</span>
+    </button>
+  </nav>
+
+  <!-- ========== PANEL: RESUMEN ========== -->
+  <div class="panel-area active" id="panel-resumen">
+    <div class="section-title">
+      <div class="section-title-text">
+        <h2>Resumen <em>ejecutivo</em></h2>
+        <p>Estado general del Plan Maestro al día de hoy. Avance ponderado por duración de actividades.</p>
+      </div>
+      <button class="guia-toggle" data-guia="resumen">
+        <span class="icon">i</span>Guía
+      </button>
+    </div>
+
+    <div class="guia-box" id="guia-resumen">
+      <h4>Qué estás <em>viendo</em></h4>
+      <p>
+        Esta es la <strong>foto general del Plan Maestro</strong> al día de hoy. La pregunta que
+        contesta es: <em>¿cómo vamos en general?</em> Diseñada para abrir reuniones de seguimiento.
+      </p>
+
+      <h4>Banner azul superior</h4>
+      <p>
+        Resumen narrativo en una sola frase: avance real vs tiempo transcurrido del cronograma. 
+        Si dice <strong>"atrasado"</strong> es porque hemos avanzado menos de lo que esperaríamos
+        para esta fecha. El número grande a la derecha es el <strong>% de avance global</strong>.
+      </p>
+
+      <h4>Las 4 tarjetas de KPIs</h4>
+      <div class="guia-grid">
+        <div class="guia-card">
+          <div class="ttl">Avance Global</div>
+          <p>% de avance ponderado por la duración de las actividades. Una actividad de 30 días pesa más que una de 5 días en este cálculo.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Atrasadas</div>
+          <p>Actividades cuyo avance real está por debajo del % de tiempo transcurrido en su cronograma.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Vencidas</div>
+          <p>Actividades cuya fecha de fin ya pasó pero su avance no llegó al 100%. Las más críticas.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Completadas</div>
+          <p>Actividades con avance al 100%. Incluye porcentaje sobre el total de actividades.</p>
+        </div>
+      </div>
+
+      <h4>Gráfico de barras por <em>Objetivo</em></h4>
+      <p>
+        Cada barra horizontal representa el avance real de uno de los 5 Objetivos estratégicos.
+        La <strong>línea vertical negra dentro de cada barra</strong> marca dónde debería estar
+        ese objetivo según su cronograma. Si la barra de color queda <strong>antes</strong> de la
+        línea negra → estamos atrasados. Si queda <strong>después</strong> → estamos al día o adelantados.
+      </p>
+
+      <h4>Donut de estados</h4>
+      <p>
+        Distribución de las 43 actividades según su estado actual. El número del centro es el total.
+        Los colores se interpretan así:
+      </p>
+      <div style="margin-top:10px">
+        <div class="guia-color-row"><span class="swatch" style="background:#2a9d8f"></span><strong>Completado</strong> · avance 100%</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#457b9d"></span><strong>En tiempo</strong> · avance ≥ % tiempo transcurrido</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#f4a261"></span><strong>En riesgo</strong> · hasta 15 puntos por debajo del cronograma</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#e63946"></span><strong>Atrasado</strong> · más de 15 puntos por debajo</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#8b9096"></span><strong>No iniciado</strong> · la fecha de inicio aún no llega</div>
+      </div>
+    </div>
+
+    <div class="summary-banner">
+      <div class="summary-text" id="summaryText">Cargando…</div>
+      <div class="summary-num" id="summaryNum">—</div>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="kpi info">
+        <div class="kpi-label">Avance Global</div>
+        <div class="kpi-value" id="kpiAvance">—<span class="pct">%</span></div>
+        <div class="kpi-trend" id="kpiAvanceTrend">—</div>
+      </div>
+      <div class="kpi danger">
+        <div class="kpi-label">Atrasadas</div>
+        <div class="kpi-value" id="kpiAtrasadas">—</div>
+        <div class="kpi-trend" id="kpiAtrasadasTrend">de — actividades</div>
+      </div>
+      <div class="kpi warn">
+        <div class="kpi-label">Vencidas</div>
+        <div class="kpi-value" id="kpiVencidas">—</div>
+        <div class="kpi-trend">requieren acción</div>
+      </div>
+      <div class="kpi ok">
+        <div class="kpi-label">Completadas</div>
+        <div class="kpi-value" id="kpiCompletadas">—</div>
+        <div class="kpi-trend" id="kpiCompletadasTrend">—%</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2-1">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Avance por Objetivo</h3>
+          <span class="pill" id="objCount">5 OBJETIVOS</span>
+        </div>
+        <div id="objBars"></div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-color" style="background:var(--ok)"></span>EN TIEMPO</div>
+          <div class="legend-item"><span class="legend-color" style="background:var(--warn)"></span>EN RIESGO</div>
+          <div class="legend-item"><span class="legend-color" style="background:var(--danger)"></span>ATRASADO</div>
+          <div class="legend-item"><span class="legend-line"></span>% TIEMPO TRANSCURRIDO</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Estado Actividades</h3>
+          <span class="pill" id="actTotal">— TAREAS</span>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut-canvas-wrap">
+            <canvas id="donutChart" width="180" height="180"></canvas>
+            <div class="donut-center">
+              <div class="num" id="donutTotal">—</div>
+              <div class="lbl">Actividades</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PANEL: CRONOGRAMA ========== -->
+  <div class="panel-area" id="panel-cronograma">
+    <div class="section-title">
+      <div class="section-title-text">
+        <h2>Cronograma <em>tipo Gantt</em></h2>
+        <p>Línea de tiempo del Plan. La línea roja vertical marca la fecha de hoy. Pasa el mouse sobre las barras para ver detalles.</p>
+      </div>
+      <button class="guia-toggle" data-guia="cronograma">
+        <span class="icon">i</span>Guía
+      </button>
+    </div>
+
+    <div class="guia-box" id="guia-cronograma">
+      <h4>Qué estás <em>viendo</em></h4>
+      <p>
+        Diagrama de Gantt completo del Plan Maestro. La pregunta que contesta es: 
+        <em>¿qué se está haciendo cuándo y qué está atrasado?</em> Diseñado para detectar
+        rápidamente actividades que están corriendo el riesgo de no cumplirse.
+      </p>
+
+      <h4>Cómo se organiza</h4>
+      <p>Cada fila es un elemento del plan. La jerarquía de arriba hacia abajo es:</p>
+      <ul>
+        <li><strong>Filas en azul oscuro y negrita</strong> · son los 5 Objetivos estratégicos. La barra agregada muestra el rango total de fechas y avance promedio.</li>
+        <li><strong>Filas con sangría</strong> · son los Key Results (KRs) — los resultados medibles de cada Objetivo.</li>
+        <li><strong>Filas con doble sangría y texto gris</strong> · son las Actividades concretas que se ejecutan.</li>
+      </ul>
+
+      <h4>Cómo leer las barras</h4>
+      <p>
+        Cada barra representa el periodo planeado de la actividad. La <strong>posición horizontal</strong>
+        indica las fechas de inicio y fin. El <strong>color</strong> indica el estado:
+      </p>
+      <div style="margin-top:10px">
+        <div class="guia-color-row"><span class="swatch" style="background:#2a9d8f"></span><strong>Verde</strong> · completado al 100%</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#f4a261"></span><strong>Naranja</strong> · en riesgo, va atrasada</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#e63946"></span><strong>Rojo</strong> · atrasada, requiere atención</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#8b9096;opacity:0.5"></span><strong>Gris</strong> · aún no inicia</div>
+      </div>
+      <p style="margin-top:10px">
+        Una <strong>zona oscura interna en la barra</strong> indica el % de avance ya completado.
+        Si una barra está medio oscura, significa que vamos por la mitad de esa actividad.
+      </p>
+
+      <h4>La línea roja vertical = HOY</h4>
+      <p>
+        La línea roja punteada que cruza todo el cronograma marca <strong>la fecha de hoy</strong>.
+        Es la regla más rápida para diagnosticar:
+      </p>
+      <ul>
+        <li>Si una barra está <strong>completamente a la izquierda</strong> de la línea roja y no es verde → debería estar terminada y no lo está. <strong>Está vencida.</strong></li>
+        <li>Si la línea roja <strong>cruza una barra</strong> y la zona oscura no llega hasta donde debería → la actividad va atrasada.</li>
+        <li>Si una barra está <strong>completamente a la derecha</strong> de la línea roja → es trabajo futuro, no hay que preocuparse aún.</li>
+      </ul>
+
+      <h4>Tooltip al pasar el mouse</h4>
+      <p>
+        Pasa el cursor sobre cualquier barra para ver el <strong>nombre completo</strong> de la actividad,
+        sus fechas, su % de avance y las <strong>notas asociadas</strong> (si tiene). Los detalles más
+        completos están en la sección "Pendientes y Notas".
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Línea de tiempo</h3>
+        <span class="pill" id="ganttRange">—</span>
+      </div>
+      <div class="gantt-wrap">
+        <div class="gantt" id="ganttArea"></div>
+      </div>
+      <div class="legend" style="margin-top:20px">
+        <div class="legend-item"><span class="legend-color" style="background:var(--ok)"></span>COMPLETADO</div>
+        <div class="legend-item"><span class="legend-color" style="background:var(--warn)"></span>EN RIESGO</div>
+        <div class="legend-item"><span class="legend-color" style="background:var(--danger)"></span>ATRASADO</div>
+        <div class="legend-item"><span class="legend-color" style="background:var(--gray);opacity:0.5"></span>NO INICIADO</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PANEL: DETALLE ========== -->
+  <div class="panel-area" id="panel-detalle">
+    <div class="section-title">
+      <div class="section-title-text">
+        <h2>Detalle <em>por objetivo</em></h2>
+        <p>Selecciona un Objetivo arriba para ver sus KRs y actividades asociadas.</p>
+      </div>
+      <button class="guia-toggle" data-guia="detalle">
+        <span class="icon">i</span>Guía
+      </button>
+    </div>
+
+    <div class="guia-box" id="guia-detalle">
+      <h4>Qué estás <em>viendo</em></h4>
+      <p>
+        Vista profunda <strong>de un solo Objetivo a la vez</strong>. La pregunta que contesta es:
+        <em>¿qué está pasando dentro del Objetivo X?</em> Útil cuando alguien pregunta por un
+        Objetivo en particular y necesitas mostrar el detalle.
+      </p>
+
+      <h4>Cómo navegar</h4>
+      <p>
+        Arriba ves <strong>los 5 botones de Objetivos</strong> con su número, nombre, % de avance
+        y cantidad de actividades. Haz clic en uno y la tabla de abajo se actualiza con los Key
+        Results y actividades de ese Objetivo. El botón seleccionado queda en azul oscuro.
+      </p>
+
+      <h4>Cómo leer la tabla</h4>
+      <p>La tabla está organizada en dos niveles:</p>
+      <ul>
+        <li><strong>Filas con fondo gris claro y texto azul (KR)</strong> · son los Key Results del Objetivo. Muestran el avance promedio de sus actividades hijas.</li>
+        <li><strong>Filas con sangría y texto más claro (Actividad)</strong> · son las actividades concretas dentro de cada KR.</li>
+      </ul>
+
+      <h4>Las barras de progreso</h4>
+      <p>
+        Cada fila tiene una <strong>mini barra horizontal</strong> que muestra visualmente el avance.
+        Su color indica qué tan saludable está:
+      </p>
+      <div style="margin-top:10px">
+        <div class="guia-color-row"><span class="swatch" style="background:#2a9d8f"></span><strong>Verde</strong> · 80% o más de avance</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#f4a261"></span><strong>Naranja</strong> · entre 40% y 80%</div>
+        <div class="guia-color-row"><span class="swatch" style="background:#e63946"></span><strong>Rojo</strong> · menos del 40%</div>
+      </div>
+
+      <h4>La etiqueta de estado</h4>
+      <p>
+        A la derecha de cada actividad hay una <strong>etiqueta con el estado</strong> en mayúsculas
+        (Completado, En tiempo, En riesgo, Atrasado, No iniciado). Es el mismo cálculo que en el
+        Resumen Ejecutivo: compara el avance real con el % de tiempo transcurrido del cronograma.
+      </p>
+    </div>
+
+    <div class="obj-selector" id="objSelector"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3 id="detalleTitle">Selecciona un objetivo</h3>
+        <span class="pill" id="detallePill">—</span>
+      </div>
+      <div class="matrix" id="detalleMatrix"></div>
+    </div>
+  </div>
+
+  <!-- ========== PANEL: PENDIENTES Y NOTAS ========== -->
+  <div class="panel-area" id="panel-pendientes">
+    <div class="section-title">
+      <div class="section-title-text">
+        <h2>Pendientes <em>y notas</em></h2>
+        <p>Todas las actividades con sus notas, entregables y links a evidencias. Usa el buscador para filtrar.</p>
+      </div>
+      <button class="guia-toggle" data-guia="pendientes">
+        <span class="icon">i</span>Guía
+      </button>
+    </div>
+
+    <div class="guia-box" id="guia-pendientes">
+      <h4>Qué estás <em>viendo</em></h4>
+      <p>
+        <strong>Listado completo de las 43 actividades</strong> del plan con todas sus columnas
+        importantes. La pregunta que contesta es: <em>¿dónde busco información específica de una
+        actividad?</em> Es la sección que más se usa en el día a día operativo.
+      </p>
+
+      <h4>Buscador en vivo</h4>
+      <p>
+        El campo de búsqueda arriba de la tabla filtra <strong>en tiempo real</strong> a medida
+        que escribes. Busca en <strong>cinco lugares simultáneamente</strong>:
+      </p>
+      <ul>
+        <li>El <strong>nombre de la actividad</strong></li>
+        <li>El <strong>nombre del KR</strong> al que pertenece</li>
+        <li>El <strong>contenido de las notas</strong></li>
+        <li>La <strong>descripción del entregable</strong></li>
+        <li>El <strong>ID de la actividad</strong> (ej. <code>1.2.3</code>)</li>
+      </ul>
+      <p>
+        Por ejemplo, si escribes <code>plataforma</code> verás todas las actividades, KRs o notas
+        que mencionen esa palabra. Si escribes <code>1.5</code> verás solo las actividades del KR 1.5.
+      </p>
+
+      <h4>Las 8 columnas</h4>
+      <div class="guia-grid">
+        <div class="guia-card">
+          <div class="ttl">ID</div>
+          <p>Código jerárquico de la actividad (Objetivo.KR.Actividad). Ejemplo: 1.2.3 = Objetivo 1, KR 2, Actividad 3.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Actividad</div>
+          <p>Nombre completo de la actividad. Es la descripción de lo que se debe hacer.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Avance</div>
+          <p>Porcentaje de avance reportado en el Excel para esta actividad.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Estado</div>
+          <p>Etiqueta calculada automáticamente: Completado, En tiempo, En riesgo, Atrasado, No iniciado.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Fecha Fin</div>
+          <p>Fecha planeada de cierre de la actividad. Si ya pasó y no está en 100%, está vencida.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Notas</div>
+          <p><strong>Lo que está pendiente</strong> de la actividad o cualquier observación operativa que se haya escrito en el Excel.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Entregable</div>
+          <p>Descripción de qué se debe entregar al final de la actividad (informe, evidencia, sistema operativo, etc.).</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Link</div>
+          <p>Si la actividad tiene un enlace a SharePoint, Power Apps, Power BI u otro sistema, aparece aquí como botón <strong>Abrir ↗</strong>.</p>
+        </div>
+      </div>
+
+      <h4>Consejo de uso</h4>
+      <p>
+        Esta sección es ideal para <strong>preparar agendas de seguimiento</strong>: filtra por
+        un KR específico, lee las notas, identifica qué está pendiente, y arma la lista de temas
+        a discutir con el responsable.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <input type="text" class="search-box" id="searchPendientes" placeholder="🔍 Buscar por nombre, KR, nota o entregable…">
+      </div>
+      <div style="overflow-x:auto;max-height:75vh;overflow-y:auto">
+        <table class="data-table" id="tablaPendientes">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Actividad</th>
+              <th style="width:90px">Avance</th>
+              <th style="width:90px">Estado</th>
+              <th style="width:90px">Fecha Fin</th>
+              <th>Notas</th>
+              <th>Entregable</th>
+              <th style="width:60px">Link</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyPendientes"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PANEL: ALERTAS ========== -->
+  <div class="panel-area" id="panel-alertas">
+    <div class="section-title">
+      <div class="section-title-text">
+        <h2>Alertas <em>activas</em></h2>
+        <p>Tareas que requieren atención inmediata: vencidas sin completar, o con desviación crítica.</p>
+      </div>
+      <button class="guia-toggle" data-guia="alertas">
+        <span class="icon">i</span>Guía
+      </button>
+    </div>
+
+    <div class="guia-box" id="guia-alertas">
+      <h4>Qué estás <em>viendo</em></h4>
+      <p>
+        Tablero de <strong>gestión operativa diaria</strong>. La pregunta que contesta es:
+        <em>¿qué tengo que destrabar esta semana?</em> Concentra solo lo crítico para que no
+        tengas que filtrar el resto. Es la sección que conviene revisar todos los lunes en la
+        mañana.
+      </p>
+
+      <h4>Las 3 tarjetas superiores</h4>
+      <div class="guia-grid">
+        <div class="guia-card">
+          <div class="ttl">Vencidas no completadas</div>
+          <p>Actividades cuya fecha de fin ya pasó y aún no llegan al 100%. <strong>Las más críticas</strong> porque se incumplió el cronograma original.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Desviación &gt; 20 pts</div>
+          <p>Actividades en curso donde el avance real está más de 20 puntos por debajo del % de tiempo transcurrido. Aún no vencen pero van rumbo a vencer.</p>
+        </div>
+        <div class="guia-card">
+          <div class="ttl">Próximos 14 días</div>
+          <p>Actividades con fecha de fin en las próximas dos semanas que aún no están al 100%. Atención preventiva para evitar que entren a "vencidas".</p>
+        </div>
+      </div>
+
+      <h4>Listado de Vencidas (izquierda)</h4>
+      <p>
+        Cada fila muestra una actividad vencida ordenada por <strong>cuánto hace que venció</strong>.
+        El número rojo grande a la derecha es el <strong>número de días pasados</strong> desde que
+        debió cerrarse. Mientras más alto, más vieja la deuda. Estas son las primeras a destrabar.
+      </p>
+
+      <h4>Listado de Próximos hitos (derecha)</h4>
+      <p>
+        Mismo formato pero con días <strong>restantes hacia adelante</strong>. Las que están en
+        naranja son las de los próximos 7 días, las azules son de los siguientes 7. Sirve para
+        priorizar el trabajo de la semana.
+      </p>
+
+      <h4>Tabla de Desviación crítica</h4>
+      <p>
+        Detalle de las actividades cuya desviación es <strong>peor que -20 puntos</strong>. Cada
+        columna te dice por qué cada actividad está en problemas: cuánto avance tiene, cuánto
+        tiempo se ha consumido, y la diferencia. Las <strong>notas asociadas</strong> aparecen
+        en la última columna para que sepas si ya hay un plan de remediación documentado.
+      </p>
+
+      <h4>Cómo usar esta sección en una reunión</h4>
+      <ul>
+        <li>Empieza por las <strong>vencidas más antiguas</strong>: pregunta por qué siguen abiertas y define cierre o reprogramación.</li>
+        <li>Sigue con las <strong>desviaciones críticas</strong>: identifica el bloqueo real (recursos, decisiones, dependencias).</li>
+        <li>Cierra con los <strong>próximos hitos</strong>: confirma compromiso de cada responsable.</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="kpi danger">
+        <div class="kpi-label">Vencidas no completadas</div>
+        <div class="kpi-value" id="alertVencidas">—</div>
+        <div class="kpi-trend danger">FECHA FIN PASÓ + AVANCE < 100</div>
+      </div>
+      <div class="kpi warn">
+        <div class="kpi-label">Desviación &gt; 20 pts</div>
+        <div class="kpi-value" id="alertDesv">—</div>
+        <div class="kpi-trend warn">AVANCE LEJOS DEL CRONOGRAMA</div>
+      </div>
+      <div class="kpi info">
+        <div class="kpi-label">Próximos 14 días</div>
+        <div class="kpi-value" id="alertProximos">—</div>
+        <div class="kpi-trend info">FECHAS DE FIN CERCANAS</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Vencidas sin completar</h3>
+          <span class="pill" id="alertVencidasCount">—</span>
+        </div>
+        <div id="listaVencidas"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Próximos hitos · 14 días</h3>
+          <span class="pill" id="alertProximosCount">—</span>
+        </div>
+        <div id="listaProximos"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Desviación crítica (&gt; 20 pts atrás del cronograma)</h3>
+        <span class="pill" id="alertDesvCount">—</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Actividad</th>
+              <th>KR</th>
+              <th>Avance</th>
+              <th>% Tiempo</th>
+              <th>Desviación</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDesv"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Plan Maestro PMDI 2026·1 · Alcaldía de Medellín · Datos del Excel en SharePoint</p>
+  </footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ============ STATE ============
+let DATA = null;
+const NOMBRE_EXCEL = 'Plan_Maestro_PMDI_PowerBI.xlsx';
+
+// ============ UTILITIES ============
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt)) return '—';
+  return dt.toISOString().slice(0,10);
+}
+function fmtDateLong(d) {
+  if (!d) return '—';
+  const dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt)) return '—';
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${dt.getDate()} ${meses[dt.getMonth()]} ${dt.getFullYear()}`;
+}
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  if (typeof v === 'number') {
+    // Excel serial date
+    return new Date((v - 25569) * 86400 * 1000);
+  }
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
+}
+function daysBetween(a, b) {
+  return Math.round((b - a) / (1000 * 60 * 60 * 24));
+}
+
+function calcEstado(av, fi, ff, hoy) {
+  if (av >= 100) return 'Completado';
+  if (!fi || hoy < fi) return 'No iniciado';
+  if (!ff) return 'En tiempo';
+  const total = daysBetween(fi, ff) + 1;
+  if (total <= 0) return 'En tiempo';
+  let pctTiempo;
+  if (hoy >= ff) pctTiempo = 100;
+  else pctTiempo = Math.round((daysBetween(fi, hoy) / total) * 10000) / 100;
+  if (av >= pctTiempo) return 'En tiempo';
+  if (av >= pctTiempo - 15) return 'En riesgo';
+  return 'Atrasado';
+}
+
+const COLOR = {
+  'Completado': { bg: 'rgba(42,157,143,1)', cls: 'ok' },
+  'En tiempo': { bg: 'rgba(69,123,157,1)', cls: 'info' },
+  'En riesgo': { bg: 'rgba(244,162,97,1)', cls: 'warn' },
+  'Atrasado': { bg: 'rgba(230,57,70,1)', cls: 'danger' },
+  'No iniciado': { bg: 'rgba(139,144,150,1)', cls: 'gray' }
+};
+
+// ============ LOADERS ============
+async function tryLoadFromSharePoint() {
+  const status = document.getElementById('status');
+  const errBox = document.getElementById('errBox');
+  const dropZone = document.getElementById('dropZone');
+  const spinner = document.getElementById('spinner');
+
+  try {
+    status.textContent = 'Conectando con el Excel en la carpeta…';
+    const response = await fetch('./' + NOMBRE_EXCEL, { cache: 'no-cache' });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    status.textContent = 'Descargando datos…';
+    const buffer = await response.arrayBuffer();
+    status.textContent = 'Procesando…';
+    processExcel(buffer);
+  } catch (err) {
+    spinner.style.display = 'none';
+    status.textContent = '';
+    errBox.classList.add('show');
+    errBox.innerHTML = `
+      <strong>NO SE ENCONTRÓ EL ARCHIVO AUTOMÁTICAMENTE</strong>
+      Asegúrate de que el archivo <code>${NOMBRE_EXCEL}</code> esté en la misma carpeta que este HTML.
+      Si lo abriste fuera de SharePoint o como archivo local, puedes arrastrar el Excel aquí abajo:
+    `;
+    dropZone.classList.add('show');
+  }
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => processExcel(ev.target.result);
+  reader.readAsArrayBuffer(file);
+});
+
+document.getElementById('dropZone').addEventListener('click', e => {
+  if (e.target.tagName !== 'INPUT') document.getElementById('fileInput').click();
+});
+
+['dragover','dragenter'].forEach(evt => {
+  document.getElementById('dropZone').addEventListener(evt, e => {
+    e.preventDefault();
+    e.currentTarget.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(evt => {
+  document.getElementById('dropZone').addEventListener(evt, e => {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+  });
+});
+document.getElementById('dropZone').addEventListener('drop', e => {
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => processExcel(ev.target.result);
+  reader.readAsArrayBuffer(file);
+});
+
+function processExcel(buffer) {
+  try {
+    const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
+    const sheet = wb.Sheets['Datos'];
+    if (!sheet) throw new Error('Hoja "Datos" no encontrada');
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: null });
+
+    // Normalizar nombres de columnas (varios pueden venir con tildes)
+    const normalized = rows.map(r => {
+      const n = {};
+      Object.keys(r).forEach(k => {
+        const key = k.replace('Número de esquema', 'NumeroEsquema')
+                     .replace('Fecha_Inicio', 'FechaInicio')
+                     .replace('Fecha_Fin', 'FechaFin');
+        n[key] = r[k];
+      });
+      return n;
+    });
+
+    DATA = normalized.map(r => {
+      const fi = parseDate(r.FechaInicio);
+      const ff = parseDate(r.FechaFin);
+      const av = parseFloat(r.Avance) || 0;
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0);
+      return {
+        id: String(r.NumeroEsquema || ''),
+        nivel: parseInt(r.Nivel) || 0,
+        tipo: r.Tipo || '',
+        objId: String(r.Objetivo_ID || ''),
+        objNom: r.Objetivo_Nombre || '',
+        krId: String(r.KR_ID || ''),
+        krNom: r.KR_Nombre || '',
+        nombre: (r.Nombre || '').trim(),
+        fi: fi,
+        ff: ff,
+        dur: parseInt(r.Duracion_Dias) || 0,
+        avance: av,
+        avanceAct: parseFloat(r.Avance_Actividad) || null,
+        estado: calcEstado(av, fi, ff, hoy),
+        notas: r.Notas || '',
+        entregable: r.Entregable || '',
+        link: r.Link || '',
+        diasRest: ff ? daysBetween(hoy, ff) : null,
+        vencido: ff ? (ff < hoy && av < 100) : false
+      };
+    });
+
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+    renderAll();
+  } catch (err) {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('errBox').classList.add('show');
+    document.getElementById('errBox').innerHTML = `
+      <strong>ERROR PROCESANDO EL EXCEL</strong>
+      ${err.message}<br>
+      Verifica que el archivo tenga la hoja "Datos" con la estructura esperada.
+    `;
+    document.getElementById('dropZone').classList.add('show');
+  }
+}
+
+function reloadData() {
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('loadingScreen').style.display = 'flex';
+  document.getElementById('errBox').classList.remove('show');
+  document.getElementById('dropZone').classList.remove('show');
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('status').textContent = 'Recargando datos…';
+  tryLoadFromSharePoint();
+}
+
+// ============ RENDER ============
+function renderAll() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  document.getElementById('dateNow').textContent = 
+    'HOY · ' + fmtDateLong(hoy).toUpperCase();
+
+  renderResumen(hoy);
+  renderCronograma(hoy);
+  renderDetalle(hoy);
+  renderPendientes();
+  renderAlertas(hoy);
+}
+
+function renderResumen(hoy) {
+  const acts = DATA.filter(d => d.nivel === 3);
+  const total = acts.length;
+
+  const totalDur = acts.reduce((s,a) => s + a.dur, 0);
+  const avancePond = totalDur > 0
+    ? acts.reduce((s,a) => s + (a.avance * a.dur), 0) / totalDur
+    : 0;
+
+  // Estado distribution
+  const stCount = {};
+  acts.forEach(a => stCount[a.estado] = (stCount[a.estado] || 0) + 1);
+  const completadas = stCount['Completado'] || 0;
+  const atrasadas = stCount['Atrasado'] || 0;
+  const vencidas = acts.filter(a => a.vencido).length;
+  const enTiempo = (stCount['En tiempo'] || 0) + (stCount['En riesgo'] || 0);
+
+  // % tiempo plan
+  let pctTiempo = 0;
+  if (acts.length > 0) {
+    const fi = new Date(Math.min(...acts.filter(a => a.fi).map(a => a.fi)));
+    const ff = new Date(Math.max(...acts.filter(a => a.ff).map(a => a.ff)));
+    const tot = daysBetween(fi, ff) + 1;
+    const trans = daysBetween(fi, hoy);
+    if (hoy < fi) pctTiempo = 0;
+    else if (hoy > ff) pctTiempo = 100;
+    else pctTiempo = (trans / tot) * 100;
+  }
+
+  // KPIs
+  document.getElementById('kpiAvance').innerHTML = avancePond.toFixed(1) + '<span class="pct">%</span>';
+  const desv = avancePond - pctTiempo;
+  const trendEl = document.getElementById('kpiAvanceTrend');
+  if (desv < 0) {
+    trendEl.className = 'kpi-trend danger';
+    trendEl.textContent = '▼ ' + Math.abs(desv).toFixed(1) + ' pts vs cronograma';
+  } else {
+    trendEl.className = 'kpi-trend ok';
+    trendEl.textContent = '▲ ' + desv.toFixed(1) + ' pts vs cronograma';
+  }
+
+  document.getElementById('kpiAtrasadas').textContent = atrasadas;
+  document.getElementById('kpiAtrasadasTrend').textContent = `de ${total} actividades`;
+  document.getElementById('kpiVencidas').textContent = vencidas;
+  document.getElementById('kpiCompletadas').textContent = completadas;
+  document.getElementById('kpiCompletadasTrend').textContent = 
+    total > 0 ? ((completadas / total) * 100).toFixed(0) + '% del total' : '—';
+
+  // Summary banner
+  const verbo = desv < 0 ? 'atrasado' : 'al día';
+  document.getElementById('summaryText').innerHTML = 
+    `El plan está <strong>${verbo}</strong>. Avance real ${avancePond.toFixed(1)}% · ` +
+    `tiempo transcurrido ${pctTiempo.toFixed(1)}% · ` +
+    `${vencidas} actividades vencidas requieren atención.`;
+  document.getElementById('summaryNum').textContent = avancePond.toFixed(0) + '%';
+
+  // Alert badge
+  document.getElementById('alertCount').textContent = vencidas + atrasadas;
+
+  // Bars por objetivo
+  const objs = DATA.filter(d => d.nivel === 1);
+  const barsHtml = objs.map(obj => {
+    const objActs = acts.filter(a => a.objId === obj.objId);
+    const objDur = objActs.reduce((s,a) => s + a.dur, 0);
+    const objAv = objDur > 0 
+      ? objActs.reduce((s,a) => s + (a.avance * a.dur), 0) / objDur
+      : 0;
+    let objPctT = 0;
+    if (obj.fi && obj.ff) {
+      const tot = daysBetween(obj.fi, obj.ff) + 1;
+      if (hoy < obj.fi) objPctT = 0;
+      else if (hoy > obj.ff) objPctT = 100;
+      else objPctT = (daysBetween(obj.fi, hoy) / tot) * 100;
+    }
+    const cls = objAv >= objPctT ? 'ok' : (objAv >= objPctT - 15 ? 'warn' : 'danger');
+    return `
+      <div class="bar-row" data-obj="${obj.objId}">
+        <div class="lbl">OBJ ${obj.objId}</div>
+        <div class="bar-track">
+          <div class="bar-fill ${cls}" style="width:${objAv}%"></div>
+          <div class="bar-target" style="left:${objPctT}%"></div>
+        </div>
+        <div class="bar-value">${objAv.toFixed(0)}<span class="small">%</span></div>
+      </div>`;
+  }).join('');
+  document.getElementById('objBars').innerHTML = barsHtml;
+  document.getElementById('objCount').textContent = objs.length + ' OBJETIVOS';
+  document.getElementById('actTotal').textContent = total + ' TAREAS';
+
+  // Donut
+  renderDonut(stCount, total);
+}
+
+function renderDonut(stCount, total) {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  const labels = ['Completado','En tiempo','En riesgo','Atrasado','No iniciado'];
+  const data = labels.map(l => stCount[l] || 0);
+  const colors = labels.map(l => COLOR[l].bg);
+
+  if (window._donut) window._donut.destroy();
+  window._donut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderColor: '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      responsive: true,
+      maintainAspectRatio: true
+    }
+  });
+
+  document.getElementById('donutTotal').textContent = total;
+  const legendHtml = labels.map((l,i) => {
+    if (data[i] === 0) return '';
+    return `
+      <div class="donut-legend-item">
+        <span class="swatch" style="background:${colors[i]}"></span>
+        <span class="lbl">${l}</span>
+        <span class="val">${data[i]}</span>
+      </div>`;
+  }).join('');
+  document.getElementById('donutLegend').innerHTML = legendHtml;
+}
+
+function renderCronograma(hoy) {
+  const acts = DATA.filter(d => d.nivel === 3);
+  if (acts.length === 0) return;
+  const fi = new Date(Math.min(...acts.filter(a => a.fi).map(a => a.fi)));
+  const ff = new Date(Math.max(...acts.filter(a => a.ff).map(a => a.ff)));
+  const totalDays = daysBetween(fi, ff) + 1;
+
+  // Header con meses
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const startMonth = fi.getMonth();
+  const endMonth = ff.getMonth();
+  const numMonths = endMonth - startMonth + 1;
+  let monthsHtml = '';
+  for (let i = 0; i < numMonths; i++) {
+    monthsHtml += `<div class="gantt-month">${meses[(startMonth + i) % 12]}</div>`;
+  }
+
+  // Filas: nivel 1, 2, 3 ordenado por orden original
+  const rowsHtml = DATA.map(d => {
+    if (!d.fi || !d.ff) return '';
+    const offset = (daysBetween(fi, d.fi) / totalDays) * 100;
+    const width = ((daysBetween(d.fi, d.ff) + 1) / totalDays) * 100;
+    const cls = COLOR[d.estado] ? COLOR[d.estado].cls : 'gray';
+    const progressW = d.avance;
+    const isL1 = d.nivel === 1 ? 'l1' : '';
+    const labelTrunc = d.nombre.length > 32 ? d.nombre.substring(0,32) + '…' : d.nombre;
+    const tooltipData = JSON.stringify({
+      n: d.nombre,
+      e: d.estado,
+      av: d.avance.toFixed(1),
+      fi: fmtDate(d.fi),
+      ff: fmtDate(d.ff),
+      notas: d.notas
+    }).replace(/'/g, '&apos;');
+    return `
+      <div class="gantt-row l${d.nivel}">
+        <div class="gantt-label">${d.nivel === 1 ? 'OBJ ' + d.objId + ' · ' : ''}${labelTrunc}</div>
+        <div class="gantt-bar-area">
+          <div class="gantt-bar ${cls} ${isL1}" style="left:${offset}%;width:${width}%"
+               data-tip='${tooltipData}'>
+            <div class="gantt-progress" style="width:${progressW}%"></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Today line
+  const todayPct = (daysBetween(fi, hoy) / totalDays) * 100;
+  const todayHtml = (todayPct >= 0 && todayPct <= 100) 
+    ? `<div class="gantt-today" style="left:calc(240px + ${todayPct}% * (100% - 240px) / 100)"></div>`
+    : '';
+  // Mejor poner today line como elemento absoluto sobre el área
+  document.getElementById('ganttArea').innerHTML = `
+    <div class="gantt-axis">${monthsHtml}</div>
+    ${rowsHtml}
+  `;
+  // Posicionar línea today
+  const ganttArea = document.getElementById('ganttArea');
+  if (todayPct >= 0 && todayPct <= 100) {
+    const rect = ganttArea.getBoundingClientRect();
+    const labelW = 240;
+    const usableW = ganttArea.offsetWidth - labelW;
+    const todayLine = document.createElement('div');
+    todayLine.className = 'gantt-today';
+    todayLine.style.left = (labelW + (todayPct / 100) * usableW) + 'px';
+    todayLine.style.height = (ganttArea.offsetHeight) + 'px';
+    todayLine.style.top = '0';
+    ganttArea.appendChild(todayLine);
+  }
+
+  document.getElementById('ganttRange').textContent = 
+    fmtDateLong(fi).toUpperCase() + ' — ' + fmtDateLong(ff).toUpperCase();
+
+  // Tooltips
+  setupGanttTooltips();
+}
+
+function setupGanttTooltips() {
+  const tip = document.getElementById('tooltip');
+  document.querySelectorAll('.gantt-bar').forEach(bar => {
+    bar.addEventListener('mousemove', e => {
+      const data = JSON.parse(bar.dataset.tip.replace(/&apos;/g, "'"));
+      let html = `<strong>${data.n}</strong>
+        <div>${data.fi} — ${data.ff}</div>
+        <div class="meta">${data.e.toUpperCase()} · AVANCE ${data.av}%</div>`;
+      if (data.notas) {
+        html += `<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.2);padding-top:8px;font-style:italic">${data.notas.substring(0,180)}${data.notas.length > 180 ? '…' : ''}</div>`;
+      }
+      tip.innerHTML = html;
+      tip.classList.add('show');
+      tip.style.left = Math.min(e.clientX + 12, window.innerWidth - 340) + 'px';
+      tip.style.top = (e.clientY + 12) + 'px';
+    });
+    bar.addEventListener('mouseleave', () => {
+      tip.classList.remove('show');
+    });
+  });
+}
+
+function renderDetalle(hoy) {
+  const objs = DATA.filter(d => d.nivel === 1);
+  const acts = DATA.filter(d => d.nivel === 3);
+
+  const selHtml = objs.map(obj => {
+    const objActs = acts.filter(a => a.objId === obj.objId);
+    const objDur = objActs.reduce((s,a) => s + a.dur, 0);
+    const objAv = objDur > 0
+      ? objActs.reduce((s,a) => s + (a.avance * a.dur), 0) / objDur
+      : 0;
+    return `
+      <button class="obj-btn" data-obj="${obj.objId}">
+        <div class="obj-num">OBJETIVO ${obj.objId}</div>
+        <div class="obj-name">${obj.nombre.length > 60 ? obj.nombre.substring(0,60)+'…' : obj.nombre}</div>
+        <div class="obj-progress">${objAv.toFixed(0)}% · ${objActs.length} actividades</div>
+      </button>`;
+  }).join('');
+  document.getElementById('objSelector').innerHTML = selHtml;
+
+  document.querySelectorAll('.obj-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.obj-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderObjDetail(btn.dataset.obj);
+    });
+  });
+
+  // Auto seleccionar primero
+  if (objs.length > 0) {
+    document.querySelector('.obj-btn').classList.add('active');
+    renderObjDetail(objs[0].objId);
+  }
+}
+
+function renderObjDetail(objId) {
+  const obj = DATA.find(d => d.nivel === 1 && d.objId === objId);
+  if (!obj) return;
+
+  const krs = DATA.filter(d => d.nivel === 2 && d.objId === objId);
+  const acts = DATA.filter(d => d.nivel === 3 && d.objId === objId);
+
+  const objDur = acts.reduce((s,a) => s + a.dur, 0);
+  const objAv = objDur > 0
+    ? acts.reduce((s,a) => s + (a.avance * a.dur), 0) / objDur
+    : 0;
+
+  document.getElementById('detalleTitle').textContent = obj.nombre.toUpperCase();
+  document.getElementById('detallePill').textContent = 
+    `${objAv.toFixed(1)}% · ${acts.length} ACTIVIDADES`;
+
+  // Construir matrix
+  let html = '';
+  krs.forEach(kr => {
+    const krActs = acts.filter(a => a.krId === kr.krId);
+    const krDur = krActs.reduce((s,a) => s + a.dur, 0);
+    const krAv = krDur > 0
+      ? krActs.reduce((s,a) => s + (a.avance * a.dur), 0) / krDur
+      : 0;
+    const krCls = krAv >= 80 ? 'ok' : (krAv >= 40 ? 'warn' : 'danger');
+    html += `
+      <div class="matrix-row l2">
+        <div class="matrix-name">${kr.nombre.trim()}</div>
+        <div class="matrix-mini-bar">
+          <div class="matrix-mini-fill" style="width:${krAv}%;background:var(--${krCls})"></div>
+        </div>
+        <div class="matrix-pct">${krAv.toFixed(0)}%</div>
+        <div><span class="estado-tag ${krCls === 'ok' ? 'completado' : (krCls === 'warn' ? 'enriesgo' : 'atrasado')}">${krActs.length} acts</span></div>
+      </div>`;
+    krActs.forEach(a => {
+      const aCls = COLOR[a.estado] ? COLOR[a.estado].cls : 'gray';
+      const aClsTag = a.estado.toLowerCase().replace(/\s/g,'').replace('ñ','n');
+      html += `
+        <div class="matrix-row l3">
+          <div class="matrix-name">${a.nombre.trim()}</div>
+          <div class="matrix-mini-bar">
+            <div class="matrix-mini-fill" style="width:${a.avance}%;background:var(--${aCls})"></div>
+          </div>
+          <div class="matrix-pct">${a.avance.toFixed(0)}%</div>
+          <div><span class="estado-tag ${aClsTag}">${a.estado}</span></div>
+        </div>`;
+    });
+  });
+  document.getElementById('detalleMatrix').innerHTML = html || '<div style="padding:30px;text-align:center;color:var(--ink-soft)">Sin actividades para este objetivo</div>';
+}
+
+function renderPendientes() {
+  const acts = DATA.filter(d => d.nivel === 3);
+  
+  function buildRows(filterText = '') {
+    const ft = filterText.toLowerCase();
+    const filtered = ft ? acts.filter(a => 
+      a.nombre.toLowerCase().includes(ft) ||
+      a.krNom.toLowerCase().includes(ft) ||
+      (a.notas || '').toLowerCase().includes(ft) ||
+      (a.entregable || '').toLowerCase().includes(ft) ||
+      a.id.includes(ft)
+    ) : acts;
+
+    const html = filtered.map(a => {
+      const cls = a.estado.toLowerCase().replace(/\s/g,'').replace('ñ','n');
+      const linkBtn = a.link 
+        ? `<a class="link-btn" href="${a.link}" target="_blank">Abrir ↗</a>`
+        : '<span style="color:var(--ink-faint)">—</span>';
+      return `
+        <tr>
+          <td class="code">${a.id}</td>
+          <td class="strong">${a.nombre.trim()}</td>
+          <td class="num">${a.avance.toFixed(0)}%</td>
+          <td><span class="estado-tag ${cls}">${a.estado}</span></td>
+          <td class="code">${fmtDate(a.ff)}</td>
+          <td class="nota-cell">${a.notas || '<span style="color:var(--ink-faint)">—</span>'}</td>
+          <td class="entregable-cell">${a.entregable || '<span style="color:var(--ink-faint)">—</span>'}</td>
+          <td>${linkBtn}</td>
+        </tr>`;
+    }).join('');
+    document.getElementById('tbodyPendientes').innerHTML = html || 
+      '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink-soft)">Sin resultados</td></tr>';
+  }
+
+  buildRows();
+  const search = document.getElementById('searchPendientes');
+  search.value = '';
+  search.addEventListener('input', e => buildRows(e.target.value));
+}
+
+function renderAlertas(hoy) {
+  const acts = DATA.filter(d => d.nivel === 3);
+  
+  // Vencidas
+  const vencidas = acts.filter(a => a.vencido).sort((a,b) => a.ff - b.ff);
+  document.getElementById('alertVencidas').textContent = vencidas.length;
+  document.getElementById('alertVencidasCount').textContent = vencidas.length + ' TAREAS';
+
+  document.getElementById('listaVencidas').innerHTML = vencidas.length === 0 
+    ? '<div style="padding:24px;text-align:center;color:var(--ink-soft)">Sin tareas vencidas</div>'
+    : vencidas.map(a => {
+      const dias = Math.abs(a.diasRest);
+      return `
+        <div class="alert-row">
+          <div>
+            <div class="alert-name">${a.nombre.trim()}</div>
+            <div class="alert-meta">KR ${a.krId} · Avance ${a.avance.toFixed(0)}% · Fin ${fmtDate(a.ff)}</div>
+          </div>
+          <div class="alert-days danger">−${dias}<div class="alert-meta" style="text-align:right">DÍAS</div></div>
+        </div>`;
+    }).join('');
+
+  // Próximos 14 días
+  const proximos = acts.filter(a => 
+    a.avance < 100 && a.diasRest !== null && a.diasRest >= 0 && a.diasRest <= 14
+  ).sort((a,b) => a.diasRest - b.diasRest);
+  document.getElementById('alertProximos').textContent = proximos.length;
+  document.getElementById('alertProximosCount').textContent = proximos.length + ' HITOS';
+
+  document.getElementById('listaProximos').innerHTML = proximos.length === 0
+    ? '<div style="padding:24px;text-align:center;color:var(--ink-soft)">Sin hitos próximos</div>'
+    : proximos.map(a => {
+      const cls = a.diasRest <= 7 ? 'warn' : 'info';
+      return `
+        <div class="alert-row">
+          <div>
+            <div class="alert-name">${a.nombre.trim()}</div>
+            <div class="alert-meta">KR ${a.krId} · Avance ${a.avance.toFixed(0)}% · Fin ${fmtDate(a.ff)}</div>
+          </div>
+          <div class="alert-days ${cls}">${a.diasRest}<div class="alert-meta" style="text-align:right">DÍAS</div></div>
+        </div>`;
+    }).join('');
+
+  // Desviación crítica
+  const desviadas = acts.map(a => {
+    if (!a.fi || !a.ff || a.avance >= 100) return null;
+    const total = daysBetween(a.fi, a.ff) + 1;
+    let pctT;
+    if (hoy < a.fi) pctT = 0;
+    else if (hoy > a.ff) pctT = 100;
+    else pctT = (daysBetween(a.fi, hoy) / total) * 100;
+    const desv = a.avance - pctT;
+    return desv < -20 ? { ...a, pctT, desv } : null;
+  }).filter(Boolean).sort((a,b) => a.desv - b.desv);
+
+  document.getElementById('alertDesv').textContent = desviadas.length;
+  document.getElementById('alertDesvCount').textContent = desviadas.length + ' CRÍTICAS';
+  document.getElementById('tablaDesv').innerHTML = desviadas.length === 0
+    ? '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--ink-soft)">Sin desviaciones críticas</td></tr>'
+    : desviadas.map(a => `
+      <tr>
+        <td class="strong">${a.nombre.trim()}</td>
+        <td class="code">KR ${a.krId}</td>
+        <td class="num">${a.avance.toFixed(0)}%</td>
+        <td class="num">${a.pctT.toFixed(0)}%</td>
+        <td class="num" style="color:var(--danger);font-weight:700">${a.desv.toFixed(0)}</td>
+        <td class="nota-cell">${a.notas || '<span style="color:var(--ink-faint)">—</span>'}</td>
+      </tr>
+    `).join('');
+}
+
+// ============ TABS ============
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.panel-area').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+// ============ GUÍAS ============
+document.querySelectorAll('.guia-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.guia;
+    const box = document.getElementById('guia-' + id);
+    if (!box) return;
+    const isOpen = box.classList.toggle('show');
+    btn.classList.toggle('active', isOpen);
+    if (isOpen) {
+      btn.querySelector('.icon').textContent = '×';
+      btn.lastChild.textContent = ' Cerrar';
+    } else {
+      btn.querySelector('.icon').textContent = 'i';
+      btn.lastChild.textContent = ' Guía';
+    }
+  });
+});
+
+// ============ INIT ============
+tryLoadFromSharePoint();
+</script>
+</body>
+</html>

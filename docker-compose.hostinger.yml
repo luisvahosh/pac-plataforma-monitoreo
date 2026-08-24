@@ -7,7 +7,7 @@
 #   su PUERTO INTERNO (3000 / 4173) — no por IP pública ni puerto publicado.
 # - Los puertos 127.0.0.1 se mantienen solo para pruebas/depuración locales
 #   por SSH (curl); no son necesarios para que NPM funcione.
-# - PostgreSQL y worker permanecen SOLO en la red interna (nunca expuestos).
+# - PostgreSQL permanece SOLO en la red interna (nunca expuesta).
 #
 # En Nginx Proxy Manager, el Proxy Host debe usar:
 #   Forward Hostname/IP = pac-frontend   Forward Port = 4173
@@ -58,20 +58,6 @@ services:
     networks:
       - interna
       - red-de-sitios_red-web
-
-  worker:
-    build: ./worker
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      WORKER_INTERVALO_MS: ${WORKER_INTERVALO_MS:-30000}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - interna
 
   frontend:
     build: ./frontend

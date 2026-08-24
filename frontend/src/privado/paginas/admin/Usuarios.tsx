@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { apiFetch, apiJson } from '../../api-cliente';
+import { Dialogo } from '../../../components/Dialogo';
 
 interface Usuario {
   id: string;
@@ -10,6 +11,12 @@ interface Usuario {
   rol: { nombre: string };
 }
 
+// Diálogo pendiente de mostrar: reemplaza window.alert()/window.confirm()
+// (que no son accesibles ni consistentes visualmente) por un modal propio.
+type DialogoPendiente =
+  | { tipo: 'alerta'; titulo: string; mensaje: string }
+  | { tipo: 'confirmar'; titulo: string; mensaje: string; peligro?: boolean; onConfirmar: () => void };
+
 export function Usuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +24,7 @@ export function Usuarios() {
   const [email, setEmail] = useState('');
   const [celular, setCelular] = useState('');
   const [rol, setRol] = useState('colaborador');
+  const [dialogo, setDialogo] = useState<DialogoPendiente | null>(null);
 
   // Edición en línea
   const [editandoId, setEditandoId] = useState<string | null>(null);
@@ -74,27 +82,32 @@ export function Usuarios() {
       const r = await apiJson<{ mensaje: string }>(`/api/usuarios/${u.id}/reenviar-activacion`, {
         method: 'POST',
       });
-      window.alert(r.mensaje);
+      setDialogo({ tipo: 'alerta', titulo: 'Activación reenviada', mensaje: r.mensaje });
     } catch (e) {
       setError((e as Error).message);
     }
   }
 
+  function pedirReiniciarActivacion(u: Usuario) {
+    setError(null);
+    setDialogo({
+      tipo: 'confirmar',
+      titulo: 'Reiniciar activación',
+      mensaje:
+        `¿Reiniciar la activación de "${u.nombre}"? Esto borra su contraseña y su 2FA actuales ` +
+        '(dejará de poder iniciar sesión con lo que tenía) y le envía un enlace nuevo para configurar todo de cero.',
+      peligro: true,
+      onConfirmar: () => void reiniciarActivacion(u),
+    });
+  }
+
   async function reiniciarActivacion(u: Usuario) {
     setError(null);
-    if (
-      !window.confirm(
-        `¿Reiniciar la activación de "${u.nombre}"? Esto borra su contraseña y su 2FA actuales ` +
-          '(dejará de poder iniciar sesión con lo que tenía) y le envía un enlace nuevo para configurar todo de cero.',
-      )
-    ) {
-      return;
-    }
     try {
       const r = await apiJson<{ mensaje: string }>(`/api/usuarios/${u.id}/reiniciar-activacion`, {
         method: 'POST',
       });
-      window.alert(r.mensaje);
+      setDialogo({ tipo: 'alerta', titulo: 'Activación reiniciada', mensaje: r.mensaje });
       await cargar();
     } catch (e) {
       setError((e as Error).message);
@@ -133,11 +146,19 @@ export function Usuarios() {
     }
   }
 
+  function pedirEliminar(u: Usuario) {
+    setError(null);
+    setDialogo({
+      tipo: 'confirmar',
+      titulo: 'Eliminar usuario',
+      mensaje: `¿Eliminar definitivamente a "${u.nombre}" (${u.email})? Esta acción no se puede deshacer.`,
+      peligro: true,
+      onConfirmar: () => void eliminar(u),
+    });
+  }
+
   async function eliminar(u: Usuario) {
     setError(null);
-    if (!window.confirm(`¿Eliminar definitivamente a "${u.nombre}" (${u.email})? Esta acción no se puede deshacer.`)) {
-      return;
-    }
     try {
       await apiJson(`/api/usuarios/${u.id}`, { method: 'DELETE' });
       await cargar();
@@ -152,7 +173,11 @@ export function Usuarios() {
   return (
     <section>
       <h2>Usuarios</h2>
-      {error && <div className="form-error">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={crear} className="form-inline">
         <label>
@@ -198,10 +223,19 @@ export function Usuarios() {
             editandoId === u.id ? (
               <tr key={u.id}>
                 <td>
-                  <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} />
+                  <input
+                    value={editNombre}
+                    onChange={(e) => setEditNombre(e.target.value)}
+                    aria-label={`Nombre de ${u.nombre}`}
+                  />
                 </td>
                 <td>
-                  <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    aria-label={`Correo de ${u.nombre}`}
+                  />
                 </td>
                 <td>
                   <input
@@ -209,22 +243,29 @@ export function Usuarios() {
                     value={editCelular}
                     onChange={(e) => setEditCelular(e.target.value)}
                     placeholder="+57 300 000 0000"
+                    aria-label={`Celular de ${u.nombre}`}
                   />
                 </td>
                 <td>
-                  <select value={editRol} onChange={(e) => setEditRol(e.target.value)}>
+                  <select
+                    value={editRol}
+                    onChange={(e) => setEditRol(e.target.value)}
+                    aria-label={`Rol de ${u.nombre}`}
+                  >
                     <option value="colaborador">Colaborador</option>
                     <option value="administrador">Administrador</option>
                   </select>
                 </td>
                 <td>{u.estado}</td>
                 <td>
-                  <button type="button" className="enlace" onClick={() => guardarEdicion(u.id)}>
-                    guardar
-                  </button>{' '}
-                  <button type="button" className="enlace" onClick={cancelarEdicion}>
-                    cancelar
-                  </button>
+                  <div className="acciones-tabla">
+                    <button type="button" className="enlace" onClick={() => guardarEdicion(u.id)}>
+                      guardar
+                    </button>
+                    <button type="button" className="enlace" onClick={cancelarEdicion}>
+                      cancelar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -235,42 +276,79 @@ export function Usuarios() {
                 <td>{u.rol.nombre}</td>
                 <td>{u.estado}</td>
                 <td>
-                  <button type="button" className="enlace" onClick={() => iniciarEdicion(u)}>
-                    editar
-                  </button>{' '}
-                  {u.estado === 'inactivo' && (
-                    <>
-                      <button type="button" className="enlace" onClick={() => reactivar(u.id)}>
+                  <div className="acciones-tabla">
+                    <button
+                      type="button"
+                      className="enlace"
+                      onClick={() => iniciarEdicion(u)}
+                      aria-label={`Editar a ${u.nombre}`}
+                    >
+                      editar
+                    </button>
+                    {u.estado === 'inactivo' && (
+                      <button
+                        type="button"
+                        className="enlace"
+                        onClick={() => void reactivar(u.id)}
+                        aria-label={`Reactivar a ${u.nombre}`}
+                      >
                         reactivar
-                      </button>{' '}
-                    </>
-                  )}
-                  {u.estado !== 'inactivo' && (
-                    <>
-                      <button type="button" className="enlace" onClick={() => desactivar(u.id)}>
+                      </button>
+                    )}
+                    {u.estado !== 'inactivo' && (
+                      <button
+                        type="button"
+                        className="enlace"
+                        onClick={() => void desactivar(u.id)}
+                        aria-label={`Desactivar a ${u.nombre}`}
+                      >
                         desactivar
-                      </button>{' '}
-                    </>
-                  )}
-                  {u.estado === 'pendiente_activacion' && (
-                    <>
-                      <button type="button" className="enlace" onClick={() => reenviarActivacion(u)}>
+                      </button>
+                    )}
+                    {u.estado === 'pendiente_activacion' && (
+                      <button
+                        type="button"
+                        className="enlace"
+                        onClick={() => void reenviarActivacion(u)}
+                        aria-label={`Reenviar activación a ${u.nombre}`}
+                      >
                         reenviar activación
-                      </button>{' '}
-                    </>
-                  )}
-                  <button type="button" className="enlace enlace-peligro" onClick={() => reiniciarActivacion(u)}>
-                    reiniciar activación
-                  </button>{' '}
-                  <button type="button" className="enlace enlace-peligro" onClick={() => eliminar(u)}>
-                    eliminar
-                  </button>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="enlace enlace-peligro"
+                      onClick={() => pedirReiniciarActivacion(u)}
+                      aria-label={`Reiniciar activación de ${u.nombre}`}
+                    >
+                      reiniciar activación
+                    </button>
+                    <button
+                      type="button"
+                      className="enlace enlace-peligro"
+                      onClick={() => pedirEliminar(u)}
+                      aria-label={`Eliminar a ${u.nombre}`}
+                    >
+                      eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ),
           )}
         </tbody>
       </table>
+
+      <Dialogo
+        abierto={dialogo !== null}
+        titulo={dialogo?.titulo ?? ''}
+        mensaje={dialogo?.mensaje ?? ''}
+        tipo={dialogo?.tipo ?? 'alerta'}
+        peligro={dialogo?.tipo === 'confirmar' ? dialogo.peligro : false}
+        textoConfirmar="Confirmar"
+        onConfirmar={dialogo?.tipo === 'confirmar' ? dialogo.onConfirmar : undefined}
+        onCerrar={() => setDialogo(null)}
+      />
     </section>
   );
 }

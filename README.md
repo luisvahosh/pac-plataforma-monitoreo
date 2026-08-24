@@ -47,7 +47,7 @@ Requisitos: Docker y Docker Compose.
    cp .env.example .env
    # edita .env y cambia POSTGRES_PASSWORD y DATABASE_URL en consecuencia
    ```
-2. Levanta todo el stack (reverse proxy, frontend, backend, worker y PostgreSQL):
+2. Levanta todo el stack (reverse proxy, frontend, backend y PostgreSQL):
    ```bash
    docker compose up --build
    ```
@@ -186,7 +186,7 @@ Un **scheduler** de servidor evalúa a diario el cronograma y envía por correo 
 
 El envío usa la misma interfaz de correo desacoplada (dev/SMTP Office 365). La no-duplicación se garantiza con la tabla `notificacion_enviada`. Prueba unitaria de la lógica de umbrales en `dominio/alertas.spec.ts`.
 
-> Nota: el scheduler corre hoy dentro del backend (`@nestjs/schedule`); puede moverse al contenedor `worker` (ADR-0006) sin cambiar la lógica. Los "cambios importantes" notificables (RN-12) quedan pendientes de definir (PA-16).
+> Nota: el scheduler corre dentro del backend (`@nestjs/schedule`); el contenedor `worker` scaffolded en el ADR-0006 se retiró por no aportar nada (era solo un latido de conectividad a la base de datos, sin lógica). Los "cambios importantes" notificables (RN-12) quedan pendientes de definir (PA-16).
 
 ## Auditoría y trazabilidad (Fase 8)
 

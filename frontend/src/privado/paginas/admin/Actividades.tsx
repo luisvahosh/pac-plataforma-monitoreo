@@ -71,7 +71,7 @@ export function Actividades() {
         Entra a una actividad para registrar avances, ver evidencias o asignar responsables (peso de
         trabajo por colaborador).
       </p>
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
       {fases.length === 0 && !error && <p className="tenue">No hay fases registradas todavía.</p>}
 
       {fases.map((fase) => (

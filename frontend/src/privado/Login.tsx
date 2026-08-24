@@ -44,7 +44,7 @@ export function Login() {
   return (
     <div className="login-caja">
       <h1>Acceso de colaboradores</h1>
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
 
       {paso === 1 ? (
         <form onSubmit={enviarPaso1} className="form">

@@ -31,7 +31,11 @@ export function App() {
     return <div className="estado-carga">Cargando el estado del proyecto…</div>;
   }
   if (error) {
-    return <div className="estado-error">No se pudo cargar el dashboard: {error}</div>;
+    return (
+      <div className="estado-error" role="alert">
+        No se pudo cargar el dashboard: {error}
+      </div>
+    );
   }
   if (!data || !data.proyecto || !data.indicadores) {
     return <div className="estado-carga">Aún no hay un proyecto publicado.</div>;

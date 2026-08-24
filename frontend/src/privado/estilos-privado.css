@@ -27,7 +27,7 @@
   font-size: 0.9rem;
 }
 .nav-enlaces a:hover {
-  color: var(--primario);
+  color: var(--enlace-color);
 }
 .nav-usuario {
   display: flex;
@@ -100,7 +100,7 @@ button:disabled {
 }
 button.enlace {
   background: none;
-  color: var(--primario);
+  color: var(--enlace-color);
   padding: 0;
   font-weight: 500;
   text-decoration: underline;
@@ -111,6 +111,35 @@ button.enlace.enlace-peligro {
 .acciones {
   display: flex;
   gap: 0.75rem;
+}
+
+/* Acciones dentro de una celda de tabla (editar/eliminar/etc.): en vez de
+   enlaces de texto muy juntos, cada acción es un área táctil de al menos
+   44x44px (RN-touch-target-size) separada por >= 8px (RN-touch-spacing),
+   con un fondo sutil en hover/foco para que se lea como botón. */
+.acciones-tabla {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.acciones-tabla button.enlace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.acciones-tabla button.enlace:hover,
+.acciones-tabla button.enlace:focus-visible {
+  background: var(--primario-suave);
+  text-decoration: underline;
+}
+.acciones-tabla button.enlace.enlace-peligro:hover,
+.acciones-tabla button.enlace.enlace-peligro:focus-visible {
+  background: color-mix(in srgb, #c0392b 12%, transparent);
 }
 
 .panel {
@@ -172,7 +201,8 @@ button.enlace.enlace-peligro {
 }
 .form-ok {
   background: #e7f6ec;
-  color: #1a7f4b;
+  /* #1a7f4b daba 4.49:1 sobre este fondo, justo bajo el mínimo AA (4.5:1). */
+  color: #146b3d;
   border: 1px solid #a6ddbb;
   border-radius: 8px;
   padding: 0.6rem 0.85rem;

@@ -1,0 +1,75 @@
+# docker-compose.yml — Base
+# Levanta: backend (Node.js), frontend (contenedor separado) y PostgreSQL.
+#
+# El VPS ya tiene un Nginx corriendo FUERA de Docker, en el propio sistema
+# operativo, que actúa como proxy inverso. Por eso este compose publica los
+# puertos del backend y del frontend solo en 127.0.0.1 (loopback): nadie
+# desde fuera del servidor puede alcanzarlos directamente, únicamente el
+# Nginx del host, que sí corre en esa misma máquina. Ver nginx-pac.conf para
+# la configuración del lado de Nginx.
+#
+# Uso en desarrollo local:
+#   docker compose up -d --build
+#
+# Uso en producción (Hostinger, vía "Compose from URL" o "Compose Manually"
+#   en el Docker Manager, o por Terminal con docker compose up -d --build):
+#   Este mismo archivo sirve para producción; solo cambian los valores del
+#   .env (puertos, credenciales, dominio en PUBLIC_API_URL).
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${BACKEND_PORT:-4000}
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - pac_evidencias:/app/storage/evidencias
+    ports:
+      - "127.0.0.1:${BACKEND_HOST_PORT:-4005}:${BACKEND_PORT:-4000}"   # solo accesible desde el propio VPS; Nginx del host lo expone al público
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${PUBLIC_API_URL}
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-4006}:80"   # solo accesible desde el propio VPS; Nginx del host lo expone al público
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pac_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # En producción NO se publica ningún puerto de la base de datos hacia el exterior.
+    # En desarrollo local, si necesitas conectarte con un cliente SQL, descomenta:
+    # ports:
+    #   - "5432:5432"
+
+volumes:
+  pac_db_data:
+  pac_evidencias:

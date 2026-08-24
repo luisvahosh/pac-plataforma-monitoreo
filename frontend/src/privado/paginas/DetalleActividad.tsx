@@ -160,7 +160,7 @@ export function DetalleActividad() {
     URL.revokeObjectURL(url);
   }
 
-  if (error && !actividad) return <div className="form-error">{error}</div>;
+  if (error && !actividad) return <div className="form-error" role="alert">{error}</div>;
   if (!actividad) return <p>Cargando…</p>;
 
   return (
@@ -237,7 +237,7 @@ export function DetalleActividad() {
           )}
         </p>
       )}
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
 
       <div className="grid-2">
         {subactividades.length > 0 ? (
@@ -395,7 +395,7 @@ function SubactividadFila({
       <button type="button" className="enlace" onClick={alternarHistorial}>
         {historial ? 'ocultar historial' : 'ver historial'}
       </button>
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
@@ -523,7 +523,7 @@ function AsignacionesAdmin({
           {descripcion}
         </p>
       )}
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
       {datos && (
         <p className="tenue">
           Suma de pesos: {Math.round(datos.sumaPesos)}% {datos.pesosValidos ? '✓' : '(debe ser 100%)'}

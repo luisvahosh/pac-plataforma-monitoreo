@@ -28,7 +28,7 @@ export function MisActividades() {
   return (
     <section>
       <h2>Mis actividades</h2>
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
       {!items && !error && <p>Cargando…</p>}
       {items && items.length === 0 && <p>No tienes actividades asignadas.</p>}
       <ul className="lista-simple">

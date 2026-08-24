@@ -26,6 +26,16 @@
   --finalizada: #008647;
   --proxima: #c1540a;
   --vencida: #b30000;
+
+  /* Anillo de foco (WCAG 2.4.7 / 1.4.11, contraste >= 3:1 contra el fondo
+     adyacente). --primario-oscuro da 5.6:1 sobre superficies claras pero
+     cae a ~3:1 sobre superficies oscuras, así que se invierte en modo
+     oscuro (ver media query al final del archivo). */
+  --anillo-foco: var(--primario-oscuro);
+  /* Color de "enlace" (texto interactivo sobre --superficie). Igual que el
+     anillo de foco, --primario-oscuro cumple 5.6:1 en modo claro pero cae
+     bajo 3:1 en modo oscuro, así que también se invierte más abajo. */
+  --enlace-color: var(--primario-oscuro);
 }
 
 * {
@@ -38,6 +48,19 @@ body {
   color: var(--texto);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
+}
+
+/* Foco visible y consistente en todo elemento interactivo (WCAG 2.4.7). */
+:focus-visible {
+  outline: 2px solid var(--anillo-foco);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* La cabecera pública siempre tiene fondo oscuro (gradiente fijo), sin
+   importar el esquema de color, así que su anillo de foco se fija aparte:
+   el amarillo institucional da >= 6.3:1 contra ambos tonos del gradiente. */
+.cabecera :focus-visible {
+  outline-color: var(--institucional-amarillo);
 }
 
 .contenedor {
@@ -715,5 +738,70 @@ body {
     --texto: #e6ebf5;
     --texto-tenue: #9aa6bb;
     --primario-suave: #16233d;
+    /* --primario-oscuro cae a ~3:1 sobre superficies oscuras; --primario
+       (más claro) da >= 6.6:1 sobre --fondo/--superficie oscuros. */
+    --anillo-foco: var(--primario);
+    --enlace-color: var(--primario);
   }
+}
+
+/* Diálogo modal accesible (reemplaza window.alert()/window.confirm()). */
+.dialogo-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 32, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+.dialogo-caja {
+  background: var(--superficie);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(15, 20, 32, 0.25);
+}
+.dialogo-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+}
+.dialogo-mensaje {
+  margin: 0;
+  color: var(--texto-tenue);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.dialogo-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.boton-primario,
+.boton-secundario,
+.boton-peligro {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.55rem 1.1rem;
+  font-weight: 600;
+  min-height: 44px;
+}
+.boton-primario {
+  border: none;
+  background: var(--primario);
+  color: #fff;
+}
+.boton-secundario {
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+}
+.boton-peligro {
+  border: none;
+  background: var(--vencida);
+  color: #fff;
 }

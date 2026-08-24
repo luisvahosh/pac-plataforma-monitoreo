@@ -100,8 +100,8 @@ export function Alertas() {
         último día). Si ya venció, envía un aviso de "vencida" en su lugar. Cada aviso se envía una
         sola vez por persona.
       </p>
-      {error && <div className="form-error">{error}</div>}
-      {ok && <div className="form-ok">{ok}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
+      {ok && <div className="form-ok" role="status">{ok}</div>}
 
       <form onSubmit={guardar} className="form">
         <label>

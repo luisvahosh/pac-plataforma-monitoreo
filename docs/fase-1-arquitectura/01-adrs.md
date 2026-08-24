@@ -63,6 +63,8 @@ Cada ADR sigue el formato: Contexto · Opciones consideradas · Decisión · Jus
 
 ## ADR-0006 — Motor de tareas programadas (scheduler de notificaciones) ⚠️ requiere aprobación
 
+> **Actualización (Fase 15):** el contenedor `worker` se implementó como andamiaje mínimo (solo un latido de conectividad a la base de datos) y nunca llegó a alojar el scheduler real; `@nestjs/schedule` terminó corriendo dentro del propio backend, que ya cumple "independiente del navegador" como proceso de servidor. El contenedor `worker` se retiró de `docker-compose.yml`/`docker-compose.hostinger.yml` por no aportar nada. Si en el futuro se necesita un proceso separado (p. ej. para BullMQ + Redis), se puede reintroducir.
+
 - **Contexto:** El Sistema de Notificaciones debe evaluar el cronograma periódicamente (p. ej. a diario), generar Alertas de próxima a vencer/vencida sin duplicar (RN-11), y debe ser un **proceso de servidor independiente del navegador**.
 - **Opciones consideradas:**
   - (a) **Contenedor *worker* dedicado** con `@nestjs/schedule` (cron in-process) que consulta la base de datos y registra las notificaciones enviadas.

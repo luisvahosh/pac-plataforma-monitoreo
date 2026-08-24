@@ -69,8 +69,8 @@ export function Activar() {
   return (
     <div className="login-caja">
       <h1>Activar cuenta</h1>
-      {error && <div className="form-error">{error}</div>}
-      {!token && <div className="form-error">Falta el token en el enlace de activación.</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
+      {!token && <div className="form-error" role="alert">Falta el token en el enlace de activación.</div>}
       <form onSubmit={enviar} className="form">
         <label>
           Nueva contraseña

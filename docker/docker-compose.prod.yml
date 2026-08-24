@@ -1,0 +1,47 @@
+# docker-compose.prod.yml — Override opcional de producción
+#
+# Ya no se usa Traefik (lo maneja tu Nginx del host, ver nginx-pac.conf), así
+# que este override quedó simple: solo ajustes recomendables para producción
+# que no quieres tener en desarrollo local (rotación de logs y límites de
+# recursos, para que un contenedor con fuga de memoria no tumbe el VPS
+# completo, donde ya corren tus otros proyectos).
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Si prefieres simplicidad y no te importan estos ajustes, puedes ignorar
+# este archivo y desplegar solo con docker-compose.yml.
+
+services:
+  backend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  frontend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  db:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M

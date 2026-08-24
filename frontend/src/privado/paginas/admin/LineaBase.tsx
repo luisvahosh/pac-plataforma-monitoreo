@@ -132,8 +132,8 @@ export function LineaBase() {
         Las fechas planeadas no se editan libremente: todo cambio queda registrado con quién lo
         hizo, cuándo y por qué, sin borrar el dato original (RN-07).
       </p>
-      {error && <div className="form-error">{error}</div>}
-      {ok && <div className="form-ok">{ok}</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
+      {ok && <div className="form-ok" role="status">{ok}</div>}
 
       <form onSubmit={cambiar} className="form">
         <label>

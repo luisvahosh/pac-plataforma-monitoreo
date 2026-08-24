@@ -60,8 +60,8 @@ export function Restablecer() {
   return (
     <div className="login-caja">
       <h1>Restablecer contraseña</h1>
-      {error && <div className="form-error">{error}</div>}
-      {!token && <div className="form-error">Falta el token en el enlace de recuperación.</div>}
+      {error && <div className="form-error" role="alert">{error}</div>}
+      {!token && <div className="form-error" role="alert">Falta el token en el enlace de recuperación.</div>}
       <form onSubmit={enviar} className="form">
         <label>
           Nueva contraseña

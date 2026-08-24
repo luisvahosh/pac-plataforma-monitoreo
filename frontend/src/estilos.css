@@ -508,6 +508,199 @@ body {
   background: var(--vencida);
 }
 
+/* Pestaña Actividades (bitácora de observaciones) */
+.tenue-publico {
+  color: var(--texto-tenue);
+  font-size: 0.82rem;
+}
+.bitacora-actividad {
+  border-top: 1px solid var(--borde);
+  padding: 0.6rem 0;
+}
+.bitacora-actividad:first-of-type {
+  border-top: none;
+}
+.bitacora-actividad-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--texto);
+  cursor: pointer;
+  text-align: left;
+}
+.bitacora-actividad-cuerpo {
+  margin-top: 0.6rem;
+  padding-left: 1.25rem;
+}
+.bitacora-lista {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.bitacora-lista li {
+  border-left: 2px solid var(--borde);
+  padding-left: 0.6rem;
+}
+.bitacora-lista p {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+}
+.bitacora-subactividad {
+  padding: 0.6rem 0;
+  border-top: 1px dashed var(--borde);
+}
+.bitacora-subactividad:first-child {
+  border-top: none;
+}
+.bitacora-subactividad-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+.enlace-evidencia-boton {
+  background: none;
+  border: none;
+  color: var(--primario-oscuro);
+  text-decoration: underline;
+  font-size: 0.8rem;
+  padding: 0;
+  cursor: pointer;
+}
+.evidencia-lista {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+/* Pestaña Pendientes y notas */
+.nota-formulario {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.nota-formulario textarea {
+  font: inherit;
+  min-height: 4.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  resize: vertical;
+}
+.nota-formulario-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.nota-formulario select {
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--superficie);
+}
+.boton-primario-publico {
+  background: var(--primario-oscuro);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.nota-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.nota {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--proxima);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+}
+.nota.resuelta {
+  border-left-color: var(--finalizada);
+  opacity: 0.75;
+}
+.nota-texto {
+  white-space: pre-line;
+}
+.nota-meta {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--texto-tenue);
+}
+.nota-acciones {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Pestaña Alertas */
+.alerta-grupo {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.alerta-grupo-danger {
+  border-left-color: var(--vencida);
+}
+.alerta-grupo-warn {
+  border-left-color: var(--proxima);
+}
+.alerta-grupo h3 {
+  margin: 0 0 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.alerta-contador {
+  font-size: 0.75rem;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  font-weight: 700;
+}
+.alerta-lista {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.alerta-lista li {
+  border-top: 1px solid var(--borde);
+  padding-top: 0.5rem;
+}
+.alerta-lista li:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
 .estado-carga,
 .estado-error {
   text-align: center;

@@ -5,10 +5,15 @@ import { Donut } from './components/Donut';
 import { TarjetasIndicadores } from './components/TarjetasIndicadores';
 import { ListaFases } from './components/ListaFases';
 import { Gantt } from './components/Gantt';
+import { ActividadesBitacora } from './components/ActividadesBitacora';
+import { PendientesNotas } from './components/PendientesNotas';
+import { AlertasPublicas } from './components/AlertasPublicas';
+import { useAuth } from './privado/auth-contexto';
 
-type Pestana = 'resumen' | 'cronograma';
+type Pestana = 'resumen' | 'cronograma' | 'actividades' | 'pendientes' | 'alertas';
 
 export function App() {
+  const { usuario } = useAuth();
   const [data, setData] = useState<DashboardResp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -35,6 +40,17 @@ export function App() {
   const { proyecto, indicadores } = data;
   const fasesFiltradas =
     faseId === 'todas' ? proyecto.fases : proyecto.fases.filter((f) => f.id === faseId);
+  const actividadesPlanas = proyecto.fases.flatMap((f) =>
+    f.actividades.map((a) => ({ id: a.id, nombre: a.nombre })),
+  );
+
+  const pestanas: { id: Pestana; etiqueta: string }[] = [
+    { id: 'resumen', etiqueta: 'Resumen por componente' },
+    { id: 'cronograma', etiqueta: 'Cronograma (Gantt)' },
+    { id: 'actividades', etiqueta: 'Actividades' },
+    { id: 'pendientes', etiqueta: 'Pendientes y notas' },
+    { id: 'alertas', etiqueta: 'Alertas' },
+  ];
 
   return (
     <>
@@ -44,9 +60,15 @@ export function App() {
             <a href="/ayuda" className="enlace-ayuda">
               ¿Cómo se lee esto?
             </a>
-            <a href="/login" className="boton-acceso">
-              Acceso colaboradores
-            </a>
+            {usuario ? (
+              <a href="/app" className="boton-acceso">
+                Ir a mi panel
+              </a>
+            ) : (
+              <a href="/login" className="boton-acceso">
+                Acceso colaboradores
+              </a>
+            )}
           </div>
           <h1>{proyecto.nombre}</h1>
           {proyecto.objetivos && <p>{proyecto.objetivos}</p>}
@@ -69,20 +91,16 @@ export function App() {
         <TarjetasIndicadores indicadores={indicadores} />
 
         <nav className="tabs">
-          <button
-            type="button"
-            className={`tab ${pestana === 'resumen' ? 'activo' : ''}`}
-            onClick={() => setPestana('resumen')}
-          >
-            Resumen por componente
-          </button>
-          <button
-            type="button"
-            className={`tab ${pestana === 'cronograma' ? 'activo' : ''}`}
-            onClick={() => setPestana('cronograma')}
-          >
-            Cronograma (Gantt)
-          </button>
+          {pestanas.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              className={`tab ${pestana === p.id ? 'activo' : ''}`}
+              onClick={() => setPestana(p.id)}
+            >
+              {p.etiqueta}
+            </button>
+          ))}
         </nav>
 
         {pestana === 'resumen' && (
@@ -111,6 +129,16 @@ export function App() {
         )}
 
         {pestana === 'cronograma' && <Gantt fases={proyecto.fases} />}
+
+        {pestana === 'actividades' && (
+          <ActividadesBitacora fases={proyecto.fases} estaLogueado={!!usuario} />
+        )}
+
+        {pestana === 'pendientes' && (
+          <PendientesNotas estaLogueado={!!usuario} actividades={actividadesPlanas} />
+        )}
+
+        {pestana === 'alertas' && <AlertasPublicas fases={proyecto.fases} />}
       </main>
     </>
   );

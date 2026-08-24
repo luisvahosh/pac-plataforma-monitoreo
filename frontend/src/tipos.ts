@@ -17,10 +17,19 @@ export interface Hito {
   cumplido: boolean;
 }
 
+export interface AvanceObservacion {
+  id: string;
+  porcentaje: number;
+  observaciones: string | null;
+  fechaHora: string;
+  usuario: string;
+}
+
 export interface Subactividad {
   id: string;
   descripcion: string;
   avancePorcentaje: number;
+  avances: AvanceObservacion[];
 }
 
 export interface Actividad {
@@ -35,6 +44,7 @@ export interface Actividad {
   desviacion: number | null;
   estadoCronograma: EstadoCronograma;
   hitos: Hito[];
+  avances: AvanceObservacion[];
   subactividades: Subactividad[];
 }
 
@@ -71,4 +81,13 @@ export interface Indicadores {
 export interface DashboardResp {
   proyecto: Proyecto | null;
   indicadores: Indicadores | null;
+}
+
+export interface Nota {
+  id: string;
+  actividadId: string | null;
+  texto: string;
+  resuelta: boolean;
+  creadoEn: string;
+  autor: { nombre: string };
 }

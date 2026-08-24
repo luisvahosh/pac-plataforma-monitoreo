@@ -20,7 +20,22 @@ export class CronogramaService {
           orderBy: { orden: 'asc' },
           include: {
             actividades: {
-              include: { hitos: true, subactividades: { orderBy: { orden: 'asc' } } },
+              include: {
+                hitos: true,
+                avances: {
+                  orderBy: { fechaHora: 'asc' },
+                  include: { usuario: { select: { nombre: true } } },
+                },
+                subactividades: {
+                  orderBy: { orden: 'asc' },
+                  include: {
+                    avances: {
+                      orderBy: { fechaHora: 'asc' },
+                      include: { usuario: { select: { nombre: true } } },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -65,12 +80,28 @@ export class CronogramaService {
           ahora,
         ),
         hitos: a.hitos,
-        // Solo descripción y avance (nunca el enlace de evidencia: RN-06/RN-13,
-        // la evidencia es siempre privada aunque sea "solo un enlace").
+        // Historial de observaciones (texto libre de cada reporte de avance).
+        // Público a propósito: es la bitácora de seguimiento del proyecto,
+        // distinto de la Evidencia (enlace/archivo), que sí es siempre
+        // privada (RN-06/RN-13) y nunca se incluye aquí.
+        avances: a.avances.map((av) => ({
+          id: av.id,
+          porcentaje: av.porcentaje,
+          observaciones: av.observaciones,
+          fechaHora: av.fechaHora,
+          usuario: av.usuario.nombre,
+        })),
         subactividades: a.subactividades.map((s) => ({
           id: s.id,
           descripcion: s.descripcion,
           avancePorcentaje: s.avancePorcentaje,
+          avances: s.avances.map((av) => ({
+            id: av.id,
+            porcentaje: av.porcentaje,
+            observaciones: av.observaciones,
+            fechaHora: av.fechaHora,
+            usuario: av.usuario.nombre,
+          })),
         })),
       })),
     }));

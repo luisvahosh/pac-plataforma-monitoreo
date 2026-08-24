@@ -18,6 +18,7 @@ import { AvanceModule } from './avance/avance.module';
 import { SubactividadModule } from './subactividad/subactividad.module';
 import { AsignacionModule } from './asignacion/asignacion.module';
 import { EvidenciaModule } from './evidencia/evidencia.module';
+import { NotaModule } from './nota/nota.module';
 import { NotificacionModule } from './notificacion/notificacion.module';
 import { AuditoriaModule } from './auditoria/auditoria.module';
 
@@ -46,6 +47,7 @@ import { AuditoriaModule } from './auditoria/auditoria.module';
     SubactividadModule,
     AsignacionModule,
     EvidenciaModule,
+    NotaModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

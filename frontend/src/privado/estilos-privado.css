@@ -283,6 +283,43 @@ button.enlace.enlace-peligro:hover:not(:disabled) {
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+
+/* Mis actividades — tarjetas en vez de lista plana */
+.mis-actividades-lista {
+  display: grid;
+  gap: 0.85rem;
+}
+a.mis-actividades-tarjeta {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 0;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+a.mis-actividades-tarjeta:hover {
+  border-color: var(--primario);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+.mis-actividades-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.mis-actividades-nombre {
+  font-weight: 600;
+}
+.mis-actividades-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
 @media (max-width: 760px) {
   .grid-2 {
     grid-template-columns: 1fr;

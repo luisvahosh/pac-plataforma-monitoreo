@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { AvanceService } from '../avance/avance.service';
 import { CrearAsignacionDto } from './dto/crear-asignacion.dto';
+import { derivarEstado } from '../dominio/estado-actividad';
+import { calcularDesviacion } from '../dominio/desviacion-cronograma';
 
 @Injectable()
 export class AsignacionService {
@@ -144,11 +146,30 @@ export class AsignacionService {
       }),
     ]);
 
+    const ahora = new Date();
+    // Mismo estado por fecha límite y desviación de cronograma que ve el
+    // tablero público (dominio compartido), para que el colaborador entienda
+    // de un vistazo si alguna de sus actividades está atrasada.
+    const enriquecer = <
+      T extends {
+        finalizada: boolean;
+        avancePorcentaje: number;
+        fechaInicioPlan: Date | null;
+        fechaFinPlan: Date | null;
+      },
+    >(
+      actividad: T,
+    ) => ({
+      ...actividad,
+      estado: derivarEstado(actividad, ahora),
+      ...calcularDesviacion(actividad, ahora),
+    });
+
     const vistos = new Set(porActividad.map((a) => a.actividadId));
     const resultado = porActividad.map((a) => ({
       asignacionId: a.id,
       pesoTrabajoPorcentaje: a.pesoTrabajoPorcentaje,
-      actividad: a.actividad,
+      actividad: enriquecer(a.actividad),
     }));
 
     for (const asg of porSubactividad) {
@@ -158,7 +179,7 @@ export class AsignacionService {
       resultado.push({
         asignacionId: asg.id,
         pesoTrabajoPorcentaje: asg.pesoTrabajoPorcentaje,
-        actividad: asg.subactividad.actividad,
+        actividad: enriquecer(asg.subactividad.actividad),
       });
     }
 

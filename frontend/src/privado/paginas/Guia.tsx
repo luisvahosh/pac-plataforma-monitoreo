@@ -86,13 +86,23 @@ export function Guia() {
           </div>
 
           <div className="panel">
-            <h3>Administrador — Asignar responsables y editar actividades</h3>
+            <h3>Administrador — Crear actividades y asignar responsables</h3>
             <ul className="lista-simple">
               <li>
-                En <strong>Actividades</strong> ves las 7 fases con sus actividades, sin necesitar
-                ningún identificador de antemano. Entra a una y baja hasta "Asignaciones (admin)"
-                para agregar un colaborador con su peso de trabajo (%). La suma de pesos de una
-                actividad no puede superar 100 %; la pantalla muestra la suma actual.
+                En <strong>Actividades</strong> hay un formulario arriba para crear una actividad
+                nueva dentro de un componente. Debajo ves las 7 fases con sus actividades, sin
+                necesitar ningún identificador de antemano.
+              </li>
+              <li>
+                Cada actividad se completa a través de sus <strong>subactividades</strong> (las
+                tareas puntuales). Los responsables se asignan ahí, no en la actividad general: en
+                el detalle de la actividad, junto a cada subactividad hay un botón "responsables"
+                para agregar un colaborador con su peso (%). Si una actividad todavía no tiene
+                subactividades, hay un formulario "Nueva subactividad" para crear la primera.
+              </li>
+              <li>
+                La suma de pesos de los responsables de una subactividad no puede superar 100 %; la
+                pantalla muestra la suma actual.
               </li>
               <li>
                 El botón "editar" junto al título de la actividad permite cambiar nombre,

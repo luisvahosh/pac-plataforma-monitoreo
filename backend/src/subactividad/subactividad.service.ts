@@ -10,14 +10,42 @@ export class SubactividadService {
     private readonly avances: AvanceService,
   ) {}
 
-  private estaAsignadoALaActividad(actividadId: string, usuarioId: string): Promise<boolean> {
-    return this.prisma.asignacion
-      .findUnique({ where: { actividadId_usuarioId: { actividadId, usuarioId } } })
-      .then((a) => !!a);
+  /**
+   * Autorizado si está asignado a la Actividad completa (asignación heredada,
+   * como antes) O directamente a esta Subactividad puntual (RN-08 aplicado a
+   * ese nivel: el responsable real del trabajo).
+   */
+  private async tieneAcceso(
+    subactividadId: string,
+    actividadId: string,
+    usuarioId: string,
+  ): Promise<boolean> {
+    const [asignadoActividad, asignadoSubactividad] = await Promise.all([
+      this.prisma.asignacion.findUnique({
+        where: { actividadId_usuarioId: { actividadId, usuarioId } },
+      }),
+      this.prisma.asignacionSubactividad.findUnique({
+        where: { subactividadId_usuarioId: { subactividadId, usuarioId } },
+      }),
+    ]);
+    return !!asignadoActividad || !!asignadoSubactividad;
   }
 
   listarPorActividad(actividadId: string) {
     return this.prisma.subactividad.findMany({ where: { actividadId }, orderBy: { orden: 'asc' } });
+  }
+
+  /** Crea una subactividad nueva dentro de una Actividad (admin). */
+  async crear(actividadId: string, descripcion: string) {
+    const actividad = await this.prisma.actividad.findUnique({ where: { id: actividadId } });
+    if (!actividad) throw new NotFoundException('Actividad no encontrada');
+    const total = await this.prisma.subactividad.count({ where: { actividadId } });
+    const subactividad = await this.prisma.subactividad.create({
+      data: { actividadId, descripcion, orden: total },
+    });
+    // La actividad pasa a derivar su avance del promedio de sus subactividades.
+    await this.avances.recalcularActividad(actividadId);
+    return subactividad;
   }
 
   private async obtener(id: string) {
@@ -35,8 +63,8 @@ export class SubactividadService {
   ) {
     const sub = await this.obtener(subactividadId);
 
-    if (!esAdmin && !(await this.estaAsignadoALaActividad(sub.actividadId, autorId))) {
-      throw new ForbiddenException('No estás asignado a la actividad de esta subactividad');
+    if (!esAdmin && !(await this.tieneAcceso(subactividadId, sub.actividadId, autorId))) {
+      throw new ForbiddenException('No estás asignado a esta subactividad ni a su actividad');
     }
 
     const avance = await this.prisma.avanceSubactividad.create({
@@ -61,8 +89,8 @@ export class SubactividadService {
   /** Historial cronológico de avances de una subactividad. Colaborador: solo si está asignado (RN-10). */
   async historial(subactividadId: string, solicitanteId: string, esAdmin: boolean) {
     const sub = await this.obtener(subactividadId);
-    if (!esAdmin && !(await this.estaAsignadoALaActividad(sub.actividadId, solicitanteId))) {
-      throw new ForbiddenException('No estás asignado a la actividad de esta subactividad');
+    if (!esAdmin && !(await this.tieneAcceso(subactividadId, sub.actividadId, solicitanteId))) {
+      throw new ForbiddenException('No estás asignado a esta subactividad ni a su actividad');
     }
     return this.prisma.avanceSubactividad.findMany({
       where: { subactividadId },

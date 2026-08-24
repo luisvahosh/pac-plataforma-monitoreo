@@ -152,6 +152,7 @@ model Usuario {
   refreshTokens    RefreshToken[]
   cambiosLineaBase CambioLineaBase[]
   asignaciones     Asignacion[]
+  asignacionesSubactividad AsignacionSubactividad[]
   avances          Avance[]
   avancesSubactividad AvanceSubactividad[]
   evidencias       Evidencia[]
@@ -224,15 +225,34 @@ model Avance {
 // principales" de un entregable). avancePorcentaje es un caché del último
 // AvanceSubactividad registrado; ver AvanceSubactividad para el histórico.
 model Subactividad {
-  id               String               @id @default(uuid())
-  actividadId      String               @map("actividad_id")
+  id               String                  @id @default(uuid())
+  actividadId      String                  @map("actividad_id")
   descripcion      String
-  orden            Int                  @default(0)
-  avancePorcentaje Float                @default(0) @map("avance_porcentaje")
-  actividad        Actividad            @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  orden            Int                     @default(0)
+  avancePorcentaje Float                   @default(0) @map("avance_porcentaje")
+  actividad        Actividad               @relation(fields: [actividadId], references: [id], onDelete: Cascade)
   avances          AvanceSubactividad[]
+  asignaciones     AsignacionSubactividad[]
 
   @@map("subactividad")
+}
+
+// El responsable real del trabajo es quien ejecuta la Subactividad (RN-08
+// aplicado a ese nivel): un Colaborador asignado a una Subactividad, con su
+// peso relativo frente a los demás responsables de esa misma subactividad.
+// Es informativo ("quién responde por esta tarea y en qué proporción"); no
+// participa en el cálculo del avance (ver AvanceSubactividad).
+model AsignacionSubactividad {
+  id                    String       @id @default(uuid())
+  subactividadId        String       @map("subactividad_id")
+  usuarioId             String       @map("usuario_id")
+  pesoTrabajoPorcentaje Float        @map("peso_trabajo_porcentaje")
+  creadoEn              DateTime     @default(now()) @map("creado_en")
+  subactividad          Subactividad @relation(fields: [subactividadId], references: [id], onDelete: Cascade)
+  usuario               Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([subactividadId, usuarioId])
+  @@map("asignacion_subactividad")
 }
 
 // Registro histórico (append-only) de avances de una Subactividad, igual que

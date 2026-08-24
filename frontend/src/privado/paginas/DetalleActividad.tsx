@@ -270,55 +270,64 @@ export function DetalleActividad() {
       )}
 
       <div className="grid-2">
-        {subactividades.length > 0 ? (
-          <div className="panel">
-            <h3>Subactividades</h3>
-            <p className="tenue">
-              El avance de esta actividad se calcula como el promedio de sus subactividades.
-            </p>
-            <ul className="lista-simple">
-              {subactividades.map((s) => (
-                <SubactividadFila key={s.id} subactividad={s} onCambio={cargar} />
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div className="panel">
-            <h3>Registrar avance</h3>
-            <form onSubmit={registrarAvance} className="form">
-              <label>
-                Porcentaje (0–100)
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={porcentaje}
-                  onChange={(e) => setPorcentaje(e.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Observaciones
-                <textarea value={obsAvance} onChange={(e) => setObsAvance(e.target.value)} />
-              </label>
-              <button type="submit">Guardar avance</button>
-            </form>
+        <div className="panel">
+          {subactividades.length > 0 ? (
+            <>
+              <h3>Subactividades</h3>
+              <p className="tenue">
+                El avance de esta actividad se calcula como el promedio de sus subactividades. Los
+                responsables se asignan a cada subactividad, no a la actividad general.
+              </p>
+              <ul className="lista-simple">
+                {subactividades.map((s) => (
+                  <SubactividadFila
+                    key={s.id}
+                    subactividad={s}
+                    onCambio={cargar}
+                    esAdmin={esAdmin}
+                  />
+                ))}
+              </ul>
+            </>
+          ) : (
+            <>
+              <h3>Registrar avance</h3>
+              <form onSubmit={registrarAvance} className="form">
+                <label>
+                  Porcentaje (0–100)
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={porcentaje}
+                    onChange={(e) => setPorcentaje(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  Observaciones
+                  <textarea value={obsAvance} onChange={(e) => setObsAvance(e.target.value)} />
+                </label>
+                <button type="submit">Guardar avance</button>
+              </form>
 
-            <h4>Histórico</h4>
-            <ul className="lista-simple">
-              {avances.map((a) => (
-                <li key={a.id}>
-                  <strong>{Math.round(a.porcentaje)}%</strong> — {a.usuario.nombre}
-                  <span className="tenue">
-                    {new Date(a.fechaHora).toLocaleString('es-CO')}
-                    {a.observaciones ? ` · ${a.observaciones}` : ''}
-                  </span>
-                </li>
-              ))}
-              {avances.length === 0 && <li className="tenue">Sin avances aún.</li>}
-            </ul>
-          </div>
-        )}
+              <h4>Histórico</h4>
+              <ul className="lista-simple">
+                {avances.map((a) => (
+                  <li key={a.id}>
+                    <strong>{Math.round(a.porcentaje)}%</strong> — {a.usuario.nombre}
+                    <span className="tenue">
+                      {new Date(a.fechaHora).toLocaleString('es-CO')}
+                      {a.observaciones ? ` · ${a.observaciones}` : ''}
+                    </span>
+                  </li>
+                ))}
+                {avances.length === 0 && <li className="tenue">Sin avances aún.</li>}
+              </ul>
+            </>
+          )}
+          {esAdmin && <AgregarSubactividad actividadId={id} onCreada={cargar} />}
+        </div>
 
         <div className="panel">
           <h3>Evidencias</h3>
@@ -370,14 +379,17 @@ interface AvanceSubactividad {
 function SubactividadFila({
   subactividad,
   onCambio,
+  esAdmin,
 }: {
   subactividad: Subactividad;
   onCambio: () => Promise<void>;
+  esAdmin: boolean;
 }) {
   const [porcentaje, setPorcentaje] = useState('');
   const [enlace, setEnlace] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [mostrarResponsables, setMostrarResponsables] = useState(false);
   const [historial, setHistorial] = useState<AvanceSubactividad[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -427,12 +439,18 @@ function SubactividadFila({
       </button>{' '}
       <button type="button" className="enlace" onClick={alternarHistorial}>
         {historial ? 'ocultar historial' : 'ver historial'}
-      </button>
+      </button>{' '}
+      {esAdmin && (
+        <button type="button" className="enlace" onClick={() => setMostrarResponsables((v) => !v)}>
+          {mostrarResponsables ? 'ocultar responsables' : 'responsables'}
+        </button>
+      )}
       {error && (
         <div className="form-error" role="alert">
           {error}
         </div>
       )}
+      {mostrarResponsables && <ResponsablesSubactividad subactividadId={subactividad.id} />}
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
@@ -485,6 +503,154 @@ function SubactividadFila({
         </ul>
       )}
     </li>
+  );
+}
+
+// ─── Agregar una subactividad nueva (admin) ─────────────────────────
+function AgregarSubactividad({
+  actividadId,
+  onCreada,
+}: {
+  actividadId: string;
+  onCreada: () => Promise<void>;
+}) {
+  const [descripcion, setDescripcion] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [creando, setCreando] = useState(false);
+
+  async function crear(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setCreando(true);
+    try {
+      await apiJson(`/api/actividades/${actividadId}/subactividades`, {
+        method: 'POST',
+        body: JSON.stringify({ descripcion }),
+      });
+      setDescripcion('');
+      await onCreada();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setCreando(false);
+    }
+  }
+
+  return (
+    <form onSubmit={crear} className="form-inline" style={{ marginTop: '1rem' }}>
+      <label>
+        Nueva subactividad
+        <input
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Describe la tarea…"
+          required
+        />
+      </label>
+      <button type="submit" disabled={creando}>
+        {creando ? 'Agregando…' : 'Agregar'}
+      </button>
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+    </form>
+  );
+}
+
+// ─── Responsables de una subactividad (admin) ───────────────────────
+function ResponsablesSubactividad({ subactividadId }: { subactividadId: string }) {
+  const [datos, setDatos] = useState<RespAsignaciones | null>(null);
+  const [usuarios, setUsuarios] = useState<UsuarioLista[]>([]);
+  const [usuarioId, setUsuarioId] = useState('');
+  const [peso, setPeso] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const cargar = useCallback(async () => {
+    try {
+      const [asg, us] = await Promise.all([
+        apiJson<RespAsignaciones>(`/api/subactividades/${subactividadId}/asignaciones`),
+        apiJson<UsuarioLista[]>('/api/usuarios'),
+      ]);
+      setDatos(asg);
+      setUsuarios(us);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }, [subactividadId]);
+
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+
+  async function asignar(e: FormEvent) {
+    e.preventDefault();
+    try {
+      await apiJson(`/api/subactividades/${subactividadId}/asignaciones`, {
+        method: 'POST',
+        body: JSON.stringify({ usuarioId, pesoTrabajoPorcentaje: Number(peso) }),
+      });
+      setUsuarioId('');
+      setPeso('');
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function quitar(asignacionId: string) {
+    await apiFetch(`/api/subactividades/${subactividadId}/asignaciones/${asignacionId}`, {
+      method: 'DELETE',
+    });
+    await cargar();
+  }
+
+  return (
+    <div className="panel" style={{ marginTop: '0.5rem' }}>
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {datos && <p className="tenue">Suma de pesos: {Math.round(datos.sumaPesos)}%</p>}
+      <ul className="lista-simple">
+        {datos?.asignaciones.map((a) => (
+          <li key={a.id}>
+            {a.usuario.nombre} — {Math.round(a.pesoTrabajoPorcentaje)}%
+            <button type="button" className="enlace" onClick={() => quitar(a.id)}>
+              quitar
+            </button>
+          </li>
+        ))}
+        {datos?.asignaciones.length === 0 && <li className="tenue">Sin responsables aún.</li>}
+      </ul>
+      <form onSubmit={asignar} className="form-inline">
+        <label>
+          Colaborador
+          <select value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)} required>
+            <option value="">—</option>
+            {usuarios.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.nombre} ({u.email})
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Peso %
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={peso}
+            onChange={(e) => setPeso(e.target.value)}
+            required
+          />
+        </label>
+        <button type="submit">Asignar</button>
+      </form>
+    </div>
   );
 }
 

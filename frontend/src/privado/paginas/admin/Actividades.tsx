@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FolderOpen } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
@@ -38,39 +38,68 @@ export function Actividades() {
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
 
-  useEffect(() => {
-    async function cargar() {
-      try {
-        const proyectos = await apiJson<Proyecto[]>('/api/proyectos');
-        if (proyectos.length === 0) {
-          setCargando(false);
-          return;
-        }
-        const listaFases = await apiJson<Fase[]>(
-          `/api/fases?proyectoId=${encodeURIComponent(proyectos[0].id)}`,
-        );
-        setFases(listaFases);
+  // formulario: crear actividad
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [faseId, setFaseId] = useState('');
+  const [creando, setCreando] = useState(false);
 
-        const pares = await Promise.all(
-          listaFases.map(
-            async (f) =>
-              [
-                f.id,
-                await apiJson<ActividadResumen[]>(
-                  `/api/actividades?faseId=${encodeURIComponent(f.id)}`,
-                ),
-              ] as const,
-          ),
-        );
-        setActividadesPorFase(Object.fromEntries(pares));
-      } catch (e) {
-        setError((e as Error).message);
-      } finally {
+  const cargar = useCallback(async () => {
+    setError(null);
+    try {
+      const proyectos = await apiJson<Proyecto[]>('/api/proyectos');
+      if (proyectos.length === 0) {
         setCargando(false);
+        return;
       }
+      const listaFases = await apiJson<Fase[]>(
+        `/api/fases?proyectoId=${encodeURIComponent(proyectos[0].id)}`,
+      );
+      setFases(listaFases);
+      setFaseId((actual) => actual || listaFases[0]?.id || '');
+
+      const pares = await Promise.all(
+        listaFases.map(
+          async (f) =>
+            [
+              f.id,
+              await apiJson<ActividadResumen[]>(
+                `/api/actividades?faseId=${encodeURIComponent(f.id)}`,
+              ),
+            ] as const,
+        ),
+      );
+      setActividadesPorFase(Object.fromEntries(pares));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setCargando(false);
     }
-    void cargar();
   }, []);
+
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+
+  async function crearActividad(e: FormEvent) {
+    e.preventDefault();
+    if (!faseId) return;
+    setCreando(true);
+    setError(null);
+    try {
+      await apiJson('/api/actividades', {
+        method: 'POST',
+        body: JSON.stringify({ nombre, faseId, descripcion: descripcion || undefined }),
+      });
+      setNombre('');
+      setDescripcion('');
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setCreando(false);
+    }
+  }
 
   if (cargando) {
     return (
@@ -110,6 +139,35 @@ export function Actividades() {
           titulo="No hay fases registradas todavía"
           descripcion="Cuando se publique el proyecto, aquí aparecerán sus componentes y actividades."
         />
+      )}
+
+      {fases.length > 0 && (
+        <div className="panel">
+          <h3>Crear actividad</h3>
+          <form onSubmit={crearActividad} className="form-inline">
+            <label>
+              Componente
+              <select value={faseId} onChange={(e) => setFaseId(e.target.value)} required>
+                {fases.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Nombre
+              <input value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+            </label>
+            <label>
+              Descripción
+              <input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+            </label>
+            <button type="submit" disabled={creando}>
+              {creando ? 'Creando…' : 'Crear'}
+            </button>
+          </form>
+        </div>
       )}
 
       {fases.map((fase) => (

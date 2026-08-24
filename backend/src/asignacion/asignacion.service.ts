@@ -62,18 +62,106 @@ export class AsignacionService {
     return { mensaje: 'Asignación eliminada' };
   }
 
-  /** Actividades asignadas a un Colaborador ("mis actividades"). */
-  async misActividades(usuarioId: string) {
-    const asignaciones = await this.prisma.asignacion.findMany({
-      where: { usuarioId },
-      include: {
-        actividad: { include: { fase: { select: { id: true, nombre: true } } } },
+  /**
+   * Asigna (o reajusta el peso de) un Colaborador a una Subactividad (RN-08
+   * aplicado a ese nivel: los pesos de una misma subactividad nunca suman
+   * más de 100 %). Es informativo — no participa en el cálculo del avance,
+   * que sigue viniendo de AvanceSubactividad.
+   */
+  async asignarSubactividad(subactividadId: string, dto: CrearAsignacionDto) {
+    const subactividad = await this.prisma.subactividad.findUnique({
+      where: { id: subactividadId },
+    });
+    if (!subactividad) throw new NotFoundException('Subactividad no encontrada');
+    const usuario = await this.prisma.usuario.findUnique({ where: { id: dto.usuarioId } });
+    if (!usuario) throw new NotFoundException('Usuario no encontrado');
+
+    const existentes = await this.prisma.asignacionSubactividad.findMany({
+      where: { subactividadId },
+    });
+    const sumaSinEste = existentes
+      .filter((a) => a.usuarioId !== dto.usuarioId)
+      .reduce((acc, a) => acc + a.pesoTrabajoPorcentaje, 0);
+    const nuevaSuma = sumaSinEste + dto.pesoTrabajoPorcentaje;
+    if (nuevaSuma > 100.01) {
+      throw new BadRequestException(
+        `La suma de pesos de esta subactividad quedaría en ${nuevaSuma.toFixed(1)} %, más de 100 %. ` +
+          `Reduce este peso o ajusta primero el de otro colaborador (suma actual sin este: ${sumaSinEste.toFixed(1)} %).`,
+      );
+    }
+
+    return this.prisma.asignacionSubactividad.upsert({
+      where: { subactividadId_usuarioId: { subactividadId, usuarioId: dto.usuarioId } },
+      update: { pesoTrabajoPorcentaje: dto.pesoTrabajoPorcentaje },
+      create: {
+        subactividadId,
+        usuarioId: dto.usuarioId,
+        pesoTrabajoPorcentaje: dto.pesoTrabajoPorcentaje,
       },
     });
-    return asignaciones.map((a) => ({
+  }
+
+  /** Lista las asignaciones de una Subactividad e informa si los pesos suman 100 %. */
+  async listarSubactividad(subactividadId: string) {
+    const asignaciones = await this.prisma.asignacionSubactividad.findMany({
+      where: { subactividadId },
+      include: { usuario: { select: { id: true, nombre: true, email: true } } },
+    });
+    const sumaPesos = asignaciones.reduce((acc, a) => acc + a.pesoTrabajoPorcentaje, 0);
+    return { asignaciones, sumaPesos, pesosValidos: Math.abs(sumaPesos - 100) <= 0.01 };
+  }
+
+  async quitarSubactividad(subactividadId: string, asignacionId: string) {
+    const asignacion = await this.prisma.asignacionSubactividad.findUnique({
+      where: { id: asignacionId },
+    });
+    if (!asignacion || asignacion.subactividadId !== subactividadId) {
+      throw new NotFoundException('Asignación no encontrada');
+    }
+    await this.prisma.asignacionSubactividad.delete({ where: { id: asignacionId } });
+    return { mensaje: 'Asignación eliminada' };
+  }
+
+  /**
+   * Actividades asignadas a un Colaborador ("mis actividades"): incluye tanto
+   * la asignación directa a la Actividad como la asignación a cualquiera de
+   * sus Subactividades (el responsable real puede estar asignado solo ahí).
+   * Si aparece por ambos caminos para la misma actividad, se muestra una vez.
+   */
+  async misActividades(usuarioId: string) {
+    const [porActividad, porSubactividad] = await Promise.all([
+      this.prisma.asignacion.findMany({
+        where: { usuarioId },
+        include: { actividad: { include: { fase: { select: { id: true, nombre: true } } } } },
+      }),
+      this.prisma.asignacionSubactividad.findMany({
+        where: { usuarioId },
+        include: {
+          subactividad: {
+            include: { actividad: { include: { fase: { select: { id: true, nombre: true } } } } },
+          },
+        },
+      }),
+    ]);
+
+    const vistos = new Set(porActividad.map((a) => a.actividadId));
+    const resultado = porActividad.map((a) => ({
       asignacionId: a.id,
       pesoTrabajoPorcentaje: a.pesoTrabajoPorcentaje,
       actividad: a.actividad,
     }));
+
+    for (const asg of porSubactividad) {
+      const actividadId = asg.subactividad.actividadId;
+      if (vistos.has(actividadId)) continue;
+      vistos.add(actividadId);
+      resultado.push({
+        asignacionId: asg.id,
+        pesoTrabajoPorcentaje: asg.pesoTrabajoPorcentaje,
+        actividad: asg.subactividad.actividad,
+      });
+    }
+
+    return resultado;
   }
 }

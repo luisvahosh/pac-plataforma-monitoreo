@@ -48,6 +48,11 @@ export class UsuarioController {
     return this.usuarios.reenviarActivacion(id);
   }
 
+  @Post(':id/reiniciar-activacion')
+  reiniciarActivacion(@Param('id') id: string) {
+    return this.usuarios.reiniciarActivacion(id);
+  }
+
   @Delete(':id')
   eliminar(@Param('id') id: string) {
     return this.usuarios.eliminar(id);

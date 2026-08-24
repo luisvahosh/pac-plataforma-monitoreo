@@ -80,6 +80,27 @@ export function Usuarios() {
     }
   }
 
+  async function reiniciarActivacion(u: Usuario) {
+    setError(null);
+    if (
+      !window.confirm(
+        `¿Reiniciar la activación de "${u.nombre}"? Esto borra su contraseña y su 2FA actuales ` +
+          '(dejará de poder iniciar sesión con lo que tenía) y le envía un enlace nuevo para configurar todo de cero.',
+      )
+    ) {
+      return;
+    }
+    try {
+      const r = await apiJson<{ mensaje: string }>(`/api/usuarios/${u.id}/reiniciar-activacion`, {
+        method: 'POST',
+      });
+      window.alert(r.mensaje);
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   function iniciarEdicion(u: Usuario) {
     setError(null);
     setEditandoId(u.id);
@@ -238,6 +259,9 @@ export function Usuarios() {
                       </button>{' '}
                     </>
                   )}
+                  <button type="button" className="enlace enlace-peligro" onClick={() => reiniciarActivacion(u)}>
+                    reiniciar activación
+                  </button>{' '}
                   <button type="button" className="enlace enlace-peligro" onClick={() => eliminar(u)}>
                     eliminar
                   </button>

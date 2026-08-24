@@ -118,6 +118,44 @@ export class UsuarioService {
     return { mensaje: `Correo de activación reenviado a ${usuario.email}` };
   }
 
+  /**
+   * Reinicia por completo la activación: borra la contraseña y el 2FA
+   * actuales (si los tenía), revoca sus sesiones y reenvía el correo de
+   * activación con un token nuevo, para que la persona vuelva a definir
+   * contraseña y a enrolar Microsoft Authenticator desde cero. A diferencia
+   * de `reenviarActivacion`, funciona sin importar el estado actual (activo,
+   * inactivo o pendiente_activacion) — útil si perdió el acceso a su 2FA o
+   * si hay que resetear sus credenciales por seguridad.
+   */
+  async reiniciarActivacion(id: string) {
+    const usuario = await this.obtener(id);
+    await this.prisma.$transaction([
+      this.prisma.usuario.update({
+        where: { id },
+        data: {
+          passwordHash: null,
+          totpSecretCifrado: null,
+          totpHabilitado: false,
+          estado: 'pendiente_activacion',
+        },
+      }),
+      this.prisma.refreshToken.updateMany({ where: { usuarioId: id }, data: { revocado: true } }),
+      this.prisma.tokenCuenta.updateMany({
+        where: { usuarioId: id, tipo: 'activacion', usado: false },
+        data: { usado: true },
+      }),
+    ]);
+    try {
+      await this.enviarActivacion(usuario);
+    } catch (error) {
+      throw new BadRequestException(
+        `Las credenciales se reiniciaron, pero no se pudo enviar el correo a ${usuario.email}: ` +
+          `${(error as Error).message}. Revisa el registro del servidor para el enlace manual.`,
+      );
+    }
+    return { mensaje: `Activación reiniciada: se envió un enlace nuevo a ${usuario.email}` };
+  }
+
   listar() {
     return this.prisma.usuario.findMany({ select: SELECT_SEGURO, orderBy: { creadoEn: 'asc' } });
   }

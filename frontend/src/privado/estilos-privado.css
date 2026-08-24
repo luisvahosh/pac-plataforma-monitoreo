@@ -233,6 +233,51 @@ button.enlace.enlace-peligro:hover:not(:disabled) {
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 }
+
+/* Guía — navegación rápida y agrupación por audiencia */
+.guia-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.75rem;
+}
+.guia-nav a {
+  font-size: 0.82rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  text-decoration: none;
+  color: var(--texto);
+}
+.guia-nav a:hover {
+  border-color: var(--primario);
+  color: var(--primario-oscuro);
+}
+.guia-grupo {
+  margin-bottom: 2rem;
+}
+.guia-grupo-rotulo {
+  display: inline-block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  margin-bottom: 0.85rem;
+}
+.guia-grupo-colaborador .guia-grupo-rotulo {
+  background: color-mix(in srgb, var(--finalizada) 14%, white);
+  color: var(--finalizada);
+}
+.guia-grupo-admin .guia-grupo-rotulo {
+  background: color-mix(in srgb, var(--proxima) 16%, white);
+  color: var(--proxima);
+}
+.guia-grupo .panel {
+  scroll-margin-top: 1rem;
+}
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;

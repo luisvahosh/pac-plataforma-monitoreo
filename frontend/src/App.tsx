@@ -116,7 +116,7 @@ export function App() {
           <div className="cabecera-acciones">
             <TemaBoton className="tema-boton tema-boton-cabecera" />
             <a href="/guia" className="enlace-guia">
-              ¿Cómo se lee esto?
+              Guía
             </a>
             {usuario ? (
               <>

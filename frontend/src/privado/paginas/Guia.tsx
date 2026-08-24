@@ -6,56 +6,78 @@ export function Guia() {
   return (
     <section>
       <h2>Guía</h2>
+      <p className="tenue">Cómo usar el panel, según lo que necesites hacer.</p>
 
-      <div className="panel">
-        <h3>Mis actividades y avances</h3>
-        <ul className="lista-simple">
-          <li>
-            <strong>Mis actividades</strong> muestra las actividades que un administrador te asignó,
-            con tu peso de trabajo en cada una. Haz clic en una para entrar al detalle.
-          </li>
-          <li>
-            <strong>Registrar avance</strong>: dentro de una actividad sin tareas puntuales, escribe
-            el porcentaje (0–100) y, si quieres, una observación. Queda un historial completo con
-            fecha y autor — nunca se borra, aunque el porcentaje baje.
-          </li>
-          <li>
-            <strong>Subactividades</strong>: si la actividad sí tiene tareas puntuales definidas, no
-            hay formulario de avance directo — se calcula solo, como el promedio de esas tareas. Haz
-            clic en "actualizar avance" junto a cada tarea para reportar su % y, si tienes, el
-            enlace a la evidencia. "ver historial" muestra los reportes anteriores de esa tarea.
-          </li>
-          <li>
-            <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que
-            respalde el avance — a un documento en Drive, SharePoint, etc. No se suben archivos
-            adjuntos, solo enlaces a donde ya vive el archivo real.
-          </li>
-        </ul>
-      </div>
+      <nav className="guia-nav" aria-label="Ir a una sección">
+        <a href="#mis-actividades">Mis actividades y avances</a>
+        <a href="#sesion">Iniciar sesión y recuperar acceso</a>
+        {esAdmin && (
+          <>
+            <a href="#usuarios">Usuarios</a>
+            <a href="#actividades-responsables">Actividades y responsables</a>
+            <a href="#linea-base">Línea base</a>
+            <a href="#alertas-auditoria">Alertas y auditoría</a>
+            <a href="#correos-provisionales">Correos provisionales</a>
+          </>
+        )}
+      </nav>
 
-      <div className="panel">
-        <h3>Iniciar sesión y recuperar acceso</h3>
-        <ul className="lista-simple">
-          <li>
-            El código que pide el segundo paso del inicio de sesión lo genera la app{' '}
-            <strong>Microsoft Authenticator</strong>, configurada al activar la cuenta.
-          </li>
-          <li>
-            Si olvidaste tu contraseña, usa "¿Olvidaste tu contraseña?" en la pantalla de inicio de
-            sesión.
-          </li>
-          <li>
-            Si perdiste el celular con Microsoft Authenticator, no hay recuperación automática: pide
-            a un administrador que te desactive y te vuelva a crear la cuenta para repetir la
-            activación.
-          </li>
-        </ul>
+      <div className="guia-grupo guia-grupo-colaborador">
+        <span className="guia-grupo-rotulo">Para todos los colaboradores</span>
+
+        <div className="panel" id="mis-actividades">
+          <h3>Mis actividades y avances</h3>
+          <ul className="lista-simple">
+            <li>
+              <strong>Mis actividades</strong> muestra las actividades que un administrador te
+              asignó, con tu peso de trabajo en cada una. Haz clic en una para entrar al detalle.
+            </li>
+            <li>
+              <strong>Registrar avance</strong>: dentro de una actividad sin tareas puntuales,
+              escribe el porcentaje (0–100) y, si quieres, una observación. Queda un historial
+              completo con fecha y autor — nunca se borra, aunque el porcentaje baje.
+            </li>
+            <li>
+              <strong>Subactividades</strong>: si la actividad sí tiene tareas puntuales definidas,
+              no hay formulario de avance directo — se calcula solo, como el promedio de esas
+              tareas. Haz clic en "actualizar avance" junto a cada tarea para reportar su % y, si
+              tienes, el enlace a la evidencia. "ver historial" muestra los reportes anteriores de
+              esa tarea.
+            </li>
+            <li>
+              <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que
+              respalde el avance — a un documento en Drive, SharePoint, etc. No se suben archivos
+              adjuntos, solo enlaces a donde ya vive el archivo real.
+            </li>
+          </ul>
+        </div>
+
+        <div className="panel" id="sesion">
+          <h3>Iniciar sesión y recuperar acceso</h3>
+          <ul className="lista-simple">
+            <li>
+              El código que pide el segundo paso del inicio de sesión lo genera la app{' '}
+              <strong>Microsoft Authenticator</strong>, configurada al activar la cuenta.
+            </li>
+            <li>
+              Si olvidaste tu contraseña, usa "¿Olvidaste tu contraseña?" en la pantalla de inicio
+              de sesión.
+            </li>
+            <li>
+              Si perdiste el celular con Microsoft Authenticator, no hay recuperación automática:
+              pide a un administrador que te desactive y te vuelva a crear la cuenta para repetir la
+              activación.
+            </li>
+          </ul>
+        </div>
       </div>
 
       {esAdmin && (
-        <>
-          <div className="panel">
-            <h3>Administrador — Usuarios</h3>
+        <div className="guia-grupo guia-grupo-admin">
+          <span className="guia-grupo-rotulo">Solo administrador</span>
+
+          <div className="panel" id="usuarios">
+            <h3>Usuarios</h3>
             <ul className="lista-simple">
               <li>
                 <strong>Crear</strong>: nombre, correo, celular (opcional) y rol. Al guardar se
@@ -85,8 +107,8 @@ export function Guia() {
             </ul>
           </div>
 
-          <div className="panel">
-            <h3>Administrador — Crear actividades y asignar responsables</h3>
+          <div className="panel" id="actividades-responsables">
+            <h3>Actividades y responsables</h3>
             <ul className="lista-simple">
               <li>
                 En <strong>Actividades</strong> hay un formulario arriba para crear una actividad
@@ -112,8 +134,8 @@ export function Guia() {
             </ul>
           </div>
 
-          <div className="panel">
-            <h3>Administrador — Línea base</h3>
+          <div className="panel" id="linea-base">
+            <h3>Línea base</h3>
             <p className="tenue">
               Las fechas de inicio/fin de una actividad, o la fecha objetivo de un hito, no se
               editan libremente: todo cambio queda registrado con quién lo hizo, cuándo y por qué,
@@ -124,8 +146,8 @@ export function Guia() {
             </p>
           </div>
 
-          <div className="panel">
-            <h3>Administrador — Alertas y Auditoría</h3>
+          <div className="panel" id="alertas-auditoria">
+            <h3>Alertas y auditoría</h3>
             <ul className="lista-simple">
               <li>
                 <strong>Alertas</strong> define con cuántos días de anticipación se avisa por correo
@@ -141,7 +163,7 @@ export function Guia() {
             </ul>
           </div>
 
-          <div className="panel">
+          <div className="panel" id="correos-provisionales">
             <h3>Correos provisionales del equipo</h3>
             <p className="tenue">
               Si el equipo técnico cargó datos nuevos del proyecto, puede haber creado cuentas con
@@ -151,7 +173,7 @@ export function Guia() {
               real (o usa "reiniciar activación" si ya intentaron activarla con el correo viejo).
             </p>
           </div>
-        </>
+        </div>
       )}
     </section>
   );

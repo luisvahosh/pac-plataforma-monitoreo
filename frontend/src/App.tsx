@@ -13,7 +13,7 @@ import { useAuth } from './privado/auth-contexto';
 type Pestana = 'resumen' | 'cronograma' | 'actividades' | 'alertas';
 
 export function App() {
-  const { usuario } = useAuth();
+  const { usuario, logout } = useAuth();
   const [data, setData] = useState<DashboardResp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -57,9 +57,14 @@ export function App() {
               ¿Cómo se lee esto?
             </a>
             {usuario ? (
-              <a href="/app" className="boton-acceso">
-                Ir a mi panel
-              </a>
+              <>
+                <button type="button" className="enlace-ayuda enlace-ayuda-boton" onClick={logout}>
+                  Cerrar sesión
+                </button>
+                <a href="/app" className="boton-acceso">
+                  Ir a mi panel
+                </a>
+              </>
             ) : (
               <a href="/login" className="boton-acceso">
                 Acceso colaboradores

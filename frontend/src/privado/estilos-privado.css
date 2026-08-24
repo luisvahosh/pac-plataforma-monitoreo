@@ -252,7 +252,7 @@ button.enlace.enlace-peligro:hover:not(:disabled) {
 }
 .guia-nav a:hover {
   border-color: var(--primario);
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
 }
 .guia-grupo {
   margin-bottom: 2rem;
@@ -304,7 +304,7 @@ button.enlace.enlace-peligro:hover:not(:disabled) {
   flex: 0 0 auto;
   border-radius: 999px;
   background: var(--primario-suave);
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
 }
 .guia-grupo-admin .guia-panel-icono {
   background: color-mix(in srgb, var(--proxima) 14%, white);

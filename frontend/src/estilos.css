@@ -129,9 +129,10 @@ body {
 
 .cabecera-acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem 1rem;
   margin-bottom: 0.75rem;
 }
 .enlace-guia {
@@ -466,7 +467,10 @@ body {
   color: var(--texto);
 }
 .tab.activo {
-  color: var(--primario-oscuro);
+  /* var(--enlace-color), no var(--primario-oscuro): este último cae a ~3:1
+     sobre fondos oscuros (bajo AA); --enlace-color ya se invierte en modo
+     oscuro para mantener buen contraste. */
+  color: var(--enlace-color);
   border-bottom-color: var(--primario);
 }
 
@@ -590,7 +594,7 @@ body {
   text-overflow: ellipsis;
 }
 .gantt-etiqueta-fase {
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
 }
 .gantt-area {
   position: relative;
@@ -700,7 +704,7 @@ body {
 .enlace-evidencia-boton {
   background: none;
   border: none;
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
   text-decoration: underline;
   font-size: 0.8rem;
   padding: 0;
@@ -776,7 +780,7 @@ body {
   padding: 0.35rem 0.8rem;
   font: inherit;
   font-size: 0.82rem;
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
   cursor: pointer;
   transition: background-color var(--transicion), border-color var(--transicion);
 }
@@ -1035,7 +1039,7 @@ body {
   color: var(--vencida);
 }
 .toast-info svg {
-  color: var(--primario-oscuro);
+  color: var(--enlace-color);
 }
 .toast span {
   flex: 1;

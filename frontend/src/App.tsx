@@ -134,9 +134,7 @@ export function App() {
           <ActividadesBitacora fases={proyecto.fases} estaLogueado={!!usuario} />
         )}
 
-        {pestana === 'pendientes' && (
-          <PendientesNotas estaLogueado={!!usuario} actividades={actividadesPlanas} />
-        )}
+        {pestana === 'pendientes' && <PendientesNotas actividades={actividadesPlanas} />}
 
         {pestana === 'alertas' && <AlertasPublicas fases={proyecto.fases} />}
       </main>

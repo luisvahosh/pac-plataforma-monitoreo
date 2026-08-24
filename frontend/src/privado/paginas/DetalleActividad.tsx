@@ -321,6 +321,8 @@ export function DetalleActividad() {
         </div>
       </div>
 
+      <PendientesActividad actividadId={id} />
+
       {esAdmin && <AsignacionesAdmin actividadId={id} descripcion={actividad.descripcion} />}
     </section>
   );
@@ -443,6 +445,101 @@ function SubactividadFila({
         </ul>
       )}
     </li>
+  );
+}
+
+// ─── Pendientes y notas de esta actividad (se ven en el tablero público,
+// pestaña "Pendientes y notas", en modo solo lectura) ────────────────
+interface Nota {
+  id: string;
+  texto: string;
+  resuelta: boolean;
+  creadoEn: string;
+  autor: { nombre: string };
+}
+
+function PendientesActividad({ actividadId }: { actividadId: string }) {
+  const [notas, setNotas] = useState<Nota[]>([]);
+  const [texto, setTexto] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const cargar = useCallback(async () => {
+    try {
+      setNotas(await apiJson<Nota[]>(`/api/public/notas?actividadId=${actividadId}`));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }, [actividadId]);
+
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+
+  async function crear(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await apiJson('/api/notas', { method: 'POST', body: JSON.stringify({ texto, actividadId }) });
+      setTexto('');
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function alternarResuelta(nota: Nota) {
+    setError(null);
+    try {
+      await apiJson(`/api/notas/${nota.id}/${nota.resuelta ? 'reabrir' : 'resolver'}`, { method: 'PATCH' });
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function eliminar(nota: Nota) {
+    setError(null);
+    try {
+      await apiJson(`/api/notas/${nota.id}`, { method: 'DELETE' });
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  return (
+    <div className="panel">
+      <h3>Pendientes y notas</h3>
+      <p className="tenue">Se muestran también en el tablero público, pestaña "Pendientes y notas".</p>
+      {error && <div className="form-error">{error}</div>}
+      <ul className="lista-simple">
+        {notas.map((n) => (
+          <li key={n.id}>
+            {n.texto}
+            <span className="tenue">
+              {n.resuelta ? 'Resuelta' : 'Pendiente'} · {n.autor.nombre} ·{' '}
+              {new Date(n.creadoEn).toLocaleDateString('es-CO')}
+            </span>
+            <span>
+              <button type="button" className="enlace" onClick={() => alternarResuelta(n)}>
+                {n.resuelta ? 'reabrir' : 'marcar resuelta'}
+              </button>{' '}
+              <button type="button" className="enlace" onClick={() => eliminar(n)}>
+                eliminar
+              </button>
+            </span>
+          </li>
+        ))}
+        {notas.length === 0 && <li className="tenue">Sin pendientes ni notas.</li>}
+      </ul>
+      <form onSubmit={crear} className="form-inline">
+        <label>
+          Nuevo pendiente o nota
+          <input value={texto} onChange={(e) => setTexto(e.target.value)} required />
+        </label>
+        <button type="submit">Registrar</button>
+      </form>
+    </div>
   );
 }
 

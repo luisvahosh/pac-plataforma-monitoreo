@@ -582,48 +582,7 @@ body {
   font-size: 0.85rem;
 }
 
-/* Pestaña Pendientes y notas */
-.nota-formulario {
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  display: grid;
-  gap: 0.6rem;
-}
-.nota-formulario textarea {
-  font: inherit;
-  min-height: 4.5rem;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid var(--borde);
-  border-radius: 8px;
-  resize: vertical;
-}
-.nota-formulario-acciones {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-.nota-formulario select {
-  font: inherit;
-  padding: 0.45rem 0.6rem;
-  border: 1px solid var(--borde);
-  border-radius: 8px;
-  background: var(--superficie);
-}
-.boton-primario-publico {
-  background: var(--primario-oscuro);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1.2rem;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
+/* Pestaña Pendientes y notas (solo lectura; se registran desde la actividad) */
 .nota-lista {
   list-style: none;
   margin: 0;

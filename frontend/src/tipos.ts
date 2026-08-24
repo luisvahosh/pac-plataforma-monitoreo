@@ -82,12 +82,3 @@ export interface DashboardResp {
   proyecto: Proyecto | null;
   indicadores: Indicadores | null;
 }
-
-export interface Nota {
-  id: string;
-  actividadId: string | null;
-  texto: string;
-  resuelta: boolean;
-  creadoEn: string;
-  autor: { nombre: string };
-}

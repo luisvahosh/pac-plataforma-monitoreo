@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvanceService } from '../avance/avance.service';
 import { CrearAsignacionDto } from './dto/crear-asignacion.dto';
@@ -10,12 +10,24 @@ export class AsignacionService {
     private readonly avances: AvanceService,
   ) {}
 
-  /** Asigna (o reajusta el peso de) un Colaborador a una Actividad. */
+  /** Asigna (o reajusta el peso de) un Colaborador a una Actividad (RN-08: los pesos nunca suman más de 100 %). */
   async asignar(actividadId: string, dto: CrearAsignacionDto) {
     const actividad = await this.prisma.actividad.findUnique({ where: { id: actividadId } });
     if (!actividad) throw new NotFoundException('Actividad no encontrada');
     const usuario = await this.prisma.usuario.findUnique({ where: { id: dto.usuarioId } });
     if (!usuario) throw new NotFoundException('Usuario no encontrado');
+
+    const existentes = await this.prisma.asignacion.findMany({ where: { actividadId } });
+    const sumaSinEste = existentes
+      .filter((a) => a.usuarioId !== dto.usuarioId)
+      .reduce((acc, a) => acc + a.pesoTrabajoPorcentaje, 0);
+    const nuevaSuma = sumaSinEste + dto.pesoTrabajoPorcentaje;
+    if (nuevaSuma > 100.01) {
+      throw new BadRequestException(
+        `La suma de pesos de esta actividad quedaría en ${nuevaSuma.toFixed(1)} %, más de 100 %. ` +
+          `Reduce este peso o ajusta primero el de otro colaborador (suma actual sin este: ${sumaSinEste.toFixed(1)} %).`,
+      );
+    }
 
     const asignacion = await this.prisma.asignacion.upsert({
       where: { actividadId_usuarioId: { actividadId, usuarioId: dto.usuarioId } },

@@ -78,7 +78,6 @@ model Actividad {
   // desglosadas). Si una Actividad tiene subactividades, su avancePorcentaje
   // se calcula como el promedio de ellas en vez de reportarse directamente.
   subactividades Subactividad[]
-  notas          Nota[]
 
   @@map("actividad")
 }
@@ -156,7 +155,6 @@ model Usuario {
   avances          Avance[]
   avancesSubactividad AvanceSubactividad[]
   evidencias       Evidencia[]
-  notas            Nota[]
 
   @@map("usuario")
 }
@@ -254,25 +252,6 @@ model AvanceSubactividad {
 
   @@index([subactividadId, usuarioId])
   @@map("avance_subactividad")
-}
-
-// Pendiente/nota de seguimiento (pestaña pública "Pendientes y notas").
-// "Pendiente" y "nota" son la misma entidad; `resuelta` distingue si ya se
-// atendió. Puede ser general del proyecto (actividadId nulo) o ligada a una
-// actividad puntual. Lectura pública; solo un usuario autenticado la crea,
-// la marca resuelta o la elimina.
-model Nota {
-  id          String     @id @default(uuid())
-  actividadId String?    @map("actividad_id")
-  autorId     String     @map("autor_id")
-  texto       String
-  resuelta    Boolean    @default(false)
-  creadoEn    DateTime   @default(now()) @map("creado_en")
-  actividad   Actividad? @relation(fields: [actividadId], references: [id], onDelete: Cascade)
-  autor       Usuario    @relation(fields: [autorId], references: [id])
-
-  @@index([actividadId])
-  @@map("nota")
 }
 
 // ─── Auditoría (Fase 8) ─────────────────────────────────────────────

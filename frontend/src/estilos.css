@@ -582,39 +582,6 @@ body {
   font-size: 0.85rem;
 }
 
-/* Pestaña Pendientes y notas (solo lectura; se registran desde la actividad) */
-.nota-lista {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-.nota {
-  background: var(--superficie);
-  border: 1px solid var(--borde);
-  border-left: 4px solid var(--proxima);
-  border-radius: 10px;
-  padding: 0.85rem 1.1rem;
-}
-.nota.resuelta {
-  border-left-color: var(--finalizada);
-  opacity: 0.75;
-}
-.nota-texto {
-  white-space: pre-line;
-}
-.nota-meta {
-  margin-top: 0.4rem;
-  font-size: 0.78rem;
-  color: var(--texto-tenue);
-}
-.nota-acciones {
-  margin-top: 0.5rem;
-  display: flex;
-  gap: 1rem;
-}
-
 /* Pestaña Alertas */
 .alerta-grupo {
   background: var(--superficie);

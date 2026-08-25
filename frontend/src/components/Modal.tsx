@@ -25,6 +25,11 @@ export function Modal({
 }) {
   const cajaRef = useRef<HTMLDivElement>(null);
   const disparadorPrevio = useRef<HTMLElement | null>(null);
+  // onCerrar suele recrearse en cada render del padre; guardarlo en un ref
+  // evita que el efecto (que enfoca el primer campo) se re-ejecute en cada
+  // tecla y "salte" el foco de vuelta al primer campo mientras se escribe.
+  const onCerrarRef = useRef(onCerrar);
+  onCerrarRef.current = onCerrar;
 
   useEffect(() => {
     if (!abierto) return;
@@ -37,7 +42,7 @@ export function Modal({
     function alTeclado(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault();
-        onCerrar();
+        onCerrarRef.current();
         return;
       }
       if (e.key !== 'Tab' || !caja) return;
@@ -59,7 +64,7 @@ export function Modal({
       document.removeEventListener('keydown', alTeclado);
       disparadorPrevio.current?.focus();
     };
-  }, [abierto, onCerrar]);
+  }, [abierto]);
 
   if (!abierto) return null;
 

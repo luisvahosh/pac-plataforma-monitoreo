@@ -1,5 +1,6 @@
 import {
   avanceActividadPonderado,
+  avanceEntregablePonderado,
   avanceFase,
   avanceProyecto,
   sumaPesosFases,
@@ -15,17 +16,47 @@ describe('calculo-avance (RN-02)', () => {
     it('promedia sin importar el número de actividades', () => {
       expect(avanceFase([{ avancePorcentaje: 0 }, { avancePorcentaje: 100 }])).toBe(50);
       expect(
-        avanceFase([
-          { avancePorcentaje: 30 },
-          { avancePorcentaje: 60 },
-          { avancePorcentaje: 90 },
-        ]),
+        avanceFase([{ avancePorcentaje: 30 }, { avancePorcentaje: 60 }, { avancePorcentaje: 90 }]),
       ).toBe(60);
     });
 
     it('maneja 0 % y 100 %', () => {
       expect(avanceFase([{ avancePorcentaje: 0 }])).toBe(0);
       expect(avanceFase([{ avancePorcentaje: 100 }])).toBe(100);
+    });
+  });
+
+  describe('avanceEntregablePonderado — suma ponderada por peso de Actividad', () => {
+    it('entregable sin actividades devuelve 0', () => {
+      expect(avanceEntregablePonderado([])).toBe(0);
+    });
+
+    it('pondera por el peso de cada actividad', () => {
+      // 85% elaboración al 100 % + 15% revisión al 0 % = 85 %
+      expect(
+        avanceEntregablePonderado([
+          { pesoPorcentaje: 85, avancePorcentaje: 100 },
+          { pesoPorcentaje: 15, avancePorcentaje: 0 },
+        ]),
+      ).toBe(85);
+    });
+
+    it('normaliza cuando los pesos no cuadran exactamente a 100', () => {
+      expect(
+        avanceEntregablePonderado([
+          { pesoPorcentaje: 20, avancePorcentaje: 50 },
+          { pesoPorcentaje: 20, avancePorcentaje: 100 },
+        ]),
+      ).toBe(75);
+    });
+
+    it('cae a promedio simple si todos los pesos son 0', () => {
+      expect(
+        avanceEntregablePonderado([
+          { pesoPorcentaje: 0, avancePorcentaje: 40 },
+          { pesoPorcentaje: 0, avancePorcentaje: 80 },
+        ]),
+      ).toBe(60);
     });
   });
 
@@ -62,7 +93,11 @@ describe('calculo-avance (RN-02)', () => {
       const avance = avanceProyecto([
         {
           pesoPorcentaje: 50,
-          actividades: [{ avancePorcentaje: 50 }, { avancePorcentaje: 50 }, { avancePorcentaje: 50 }],
+          actividades: [
+            { avancePorcentaje: 50 },
+            { avancePorcentaje: 50 },
+            { avancePorcentaje: 50 },
+          ],
         },
         { pesoPorcentaje: 50, actividades: [{ avancePorcentaje: 100 }] },
       ]);

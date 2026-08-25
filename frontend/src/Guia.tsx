@@ -99,8 +99,13 @@ export function Guia() {
             </li>
           </ul>
           <p>
-            Si la actividad tiene tareas específicas definidas (algunos de los 18 entregables las
-            traen desglosadas), aparecen listadas debajo con su propia barra de avance.
+            La estructura es <strong>Componente → Entregable → Actividad</strong>. Cada uno de los
+            18 entregables (P1–P18) se desglosa en sus actividades específicas —incluidas la
+            revisión y aval y la revisión final de la Secretaría—, y cada actividad tiene un peso.
+            El avance del entregable es la <strong>suma ponderada</strong> de sus actividades por
+            ese peso; el del componente, el promedio de sus entregables; y el avance global, la suma
+            ponderada de los componentes. Las actividades de cada entregable aparecen listadas
+            debajo con su propia barra de avance.
           </p>
         </GuiaPanel>
 
@@ -116,11 +121,12 @@ export function Guia() {
 
         <GuiaPanel icono={ClipboardText} titulo='Pestaña "Actividades"' id="actividades">
           <p>
-            La bitácora del proyecto: cada actividad (o cada tarea puntual, si las tiene) con el
-            historial completo de sus reportes de avance — porcentaje, fecha, quién lo registró y su
-            observación en texto libre. Haz clic en una actividad para desplegar su historial. El
-            enlace de evidencia de cada reporte solo aparece (botón "ver evidencia") si iniciaste
-            sesión y tienes acceso a esa actividad — nunca es visible sin iniciar sesión.
+            La bitácora del proyecto: cada entregable (o cada una de sus actividades específicas)
+            con el historial completo de sus reportes de avance — porcentaje, fecha, quién lo
+            registró y su observación en texto libre. Haz clic en una actividad para desplegar su
+            historial. El enlace de evidencia de cada reporte solo aparece (botón "ver evidencia")
+            si iniciaste sesión y tienes acceso a esa actividad — nunca es visible sin iniciar
+            sesión.
           </p>
         </GuiaPanel>
 

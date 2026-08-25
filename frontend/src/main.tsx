@@ -18,6 +18,7 @@ import { Guia } from './privado/paginas/Guia';
 import { DetalleActividad } from './privado/paginas/DetalleActividad';
 import { Usuarios } from './privado/paginas/admin/Usuarios';
 import { Actividades } from './privado/paginas/admin/Actividades';
+import { Componentes } from './privado/paginas/admin/Componentes';
 import { LineaBase } from './privado/paginas/admin/LineaBase';
 import { Alertas } from './privado/paginas/admin/Alertas';
 import { Auditoria } from './privado/paginas/admin/Auditoria';
@@ -45,6 +46,14 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               <Route index element={<MisActividades />} />
               <Route path="actividad/:id" element={<DetalleActividad />} />
               <Route path="guia" element={<Guia />} />
+              <Route
+                path="admin/componentes"
+                element={
+                  <RutaProtegida rol="administrador">
+                    <Componentes />
+                  </RutaProtegida>
+                }
+              />
               <Route
                 path="admin/actividades"
                 element={

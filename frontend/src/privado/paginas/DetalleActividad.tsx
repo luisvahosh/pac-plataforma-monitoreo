@@ -41,6 +41,9 @@ interface Subactividad {
   descripcion: string;
   orden: number;
   avancePorcentaje: number;
+  etapa: string | null;
+  pesoPorcentaje: number;
+  criterioTerminado: string | null;
 }
 
 export function DetalleActividad() {
@@ -273,10 +276,11 @@ export function DetalleActividad() {
         <div className="panel">
           {subactividades.length > 0 ? (
             <>
-              <h3>Subactividades</h3>
+              <h3>Actividades</h3>
               <p className="tenue">
-                El avance de esta actividad se calcula como el promedio de sus subactividades. Los
-                responsables se asignan a cada subactividad, no a la actividad general.
+                El avance de este entregable se calcula como la suma ponderada de sus actividades
+                por su peso (suman 100%). Cada actividad tiene su responsable, que reporta su
+                avance.
               </p>
               <ul className="lista-simple">
                 {subactividades.map((s) => (
@@ -361,7 +365,16 @@ export function DetalleActividad() {
         </div>
       </div>
 
-      {esAdmin && <AsignacionesAdmin actividadId={id} descripcion={actividad.descripcion} />}
+      {esAdmin && subactividades.length === 0 && (
+        <AsignacionesAdmin actividadId={id} descripcion={actividad.descripcion} />
+      )}
+      {esAdmin && subactividades.length > 0 && actividad.descripcion && (
+        <div className="panel">
+          <p className="tenue" style={{ whiteSpace: 'pre-line', margin: 0 }}>
+            {actividad.descripcion}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
@@ -433,7 +446,12 @@ function SubactividadFila({
   return (
     <li>
       {subactividad.descripcion}
-      <span className="tenue"> — {Math.round(subactividad.avancePorcentaje)}%</span>{' '}
+      <span className="tenue">
+        {' — '}
+        {subactividad.etapa ? `${subactividad.etapa} · ` : ''}
+        peso {subactividad.pesoPorcentaje.toFixed(2).replace(/\.00$/, '')}% · avance{' '}
+        {Math.round(subactividad.avancePorcentaje)}%
+      </span>{' '}
       <button type="button" className="enlace" onClick={() => setMostrarForm((v) => !v)}>
         {mostrarForm ? 'cancelar' : 'actualizar avance'}
       </button>{' '}

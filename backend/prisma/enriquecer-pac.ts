@@ -1,27 +1,38 @@
 import { PrismaClient } from '@prisma/client';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-// Enriquecimiento del Proyecto PAC ya sembrado (ver seed-pac.ts) con datos
-// adicionales de los documentos base que no se incluyeron en la siembra
-// inicial: dependencias entre entregables, tramos de pago, tareas reales
-// (Estructura por Entregable), equipo real (Perfiles Propuesta ITM) y
-// asignación de responsables por entregable (Asignación por Entregable).
+// Enriquecimiento del Proyecto PAC ya sembrado (ver seed-pac.ts) con la
+// "Propuesta de asignación de actividades" (Documentosbase/
+// Propuesta_asignacion_actividades_PAC.xlsx, exportada a actividades-pac.json):
+//
+//   Componente (Fase) → Entregable (Actividad) → Actividad (Subactividad) → Integrante
+//
+// El porcentaje NACE en la Actividad (Subactividad) con su peso y se propaga:
+//   - Entregable  = suma ponderada de sus Actividades por peso (suman 100 %).
+//   - Componente  = promedio simple de sus Entregables.
+//   - Total PAC   = suma ponderada de los Componentes por su peso (nº de entregables).
+//
+// Además siembra dos niveles de asignación:
+//   1) AsignacionComponente  — distribución % de responsabilidad por Componente (suma 100 %).
+//   2) AsignacionSubactividad — responsable(s) específico(s) de cada Actividad.
 //
 // A diferencia de seed-pac.ts, este script es de ACTUALIZACIÓN en línea:
 // nunca borra ni recrea Fase/Actividad (evita perder Avances/Evidencias/
-// Hitos ya vinculados por cascada) y es seguro de volver a ejecutar
-// (upsert / findFirst-then-create en todo lo que crea filas nuevas).
+// Hitos), y es seguro de volver a ejecutar (upsert por claves estables:
+// Subactividad.codigo "P1-A01", (fase,usuario), (subactividad,usuario)).
 //
 // Ejecutar:
 //   npm run enriquecer:pac
 
 const prisma = new PrismaClient();
 
-// ─── Equipo real (hoja "Perfiles Propuesta ITM") ────────────────────
-// Correos PROVISIONALES (el documento fuente no trae correos reales);
-// un administrador debe reemplazarlos por los reales desde el panel
-// (editar usuario → correo) antes de poner las cuentas en producción.
+// ─── Equipo real (hoja "Perfiles") ──────────────────────────────────
+// Correos PROVISIONALES; un administrador los reemplaza por los reales desde
+// el panel (Usuarios → editar) antes de que las personas activen su cuenta.
 const DOMINIO_PROVISIONAL = 'centrodepensamientoitm.cloud';
 
+// Clave interna → { nombre EXACTO como aparece en actividades-pac.json, correo }.
 const PERSONAS = {
   mariaJose: { nombre: 'María José Suárez', email: `maria.suarez@${DOMINIO_PROVISIONAL}` },
   paolaRuiz: { nombre: 'Paola Andrea Ruiz Franco', email: `paola.ruiz@${DOMINIO_PROVISIONAL}` },
@@ -31,50 +42,57 @@ const PERSONAS = {
     email: `jeiner.castellanos@${DOMINIO_PROVISIONAL}`,
   },
   marcosArango: { nombre: 'Marcos Arango Tamayo', email: `marcos.arango@${DOMINIO_PROVISIONAL}` },
-  dianaRios: { nombre: 'Diana Carolina Ríos Echeverri', email: `diana.rios@${DOMINIO_PROVISIONAL}` },
-  harlemAcevedo: { nombre: 'Harlem Acevedo Agudelo', email: `harlem.acevedo@${DOMINIO_PROVISIONAL}` },
+  dianaRios: {
+    nombre: 'Diana Carolina Ríos Echeverri',
+    email: `diana.rios@${DOMINIO_PROVISIONAL}`,
+  },
+  harlemAcevedo: {
+    nombre: 'Harlem Acevedo Agudelo',
+    email: `harlem.acevedo@${DOMINIO_PROVISIONAL}`,
+  },
   vanessaGarcia: { nombre: 'Vanessa García Leoz', email: `vanessa.garcia@${DOMINIO_PROVISIONAL}` },
-  alejandroSilva: { nombre: 'Alejandro Silva Cortés', email: `alejandro.silva@${DOMINIO_PROVISIONAL}` },
-  guillermoPenagos: { nombre: 'Guillermo Penagos', email: `guillermo.penagos@${DOMINIO_PROVISIONAL}` },
+  alejandroSilva: {
+    nombre: 'Alejandro Silva Cortés',
+    email: `alejandro.silva@${DOMINIO_PROVISIONAL}`,
+  },
+  guillermoPenagos: {
+    nombre: 'Guillermo Penagos',
+    email: `guillermo.penagos@${DOMINIO_PROVISIONAL}`,
+  },
   luisVahos: { nombre: 'Luis Eduardo Vahos Hernández', email: `luis.vahos@${DOMINIO_PROVISIONAL}` },
   leonOrrego: { nombre: 'León Darío Orrego Espejo', email: `leon.orrego@${DOMINIO_PROVISIONAL}` },
-  danielGonzalez: { nombre: 'Daniel González Montoya', email: `daniel.gonzalez@${DOMINIO_PROVISIONAL}` },
-  sebastianCartagena: { nombre: 'Sebastián Cartagena', email: `sebastian.cartagena@${DOMINIO_PROVISIONAL}` },
+  danielGonzalez: {
+    nombre: 'Daniel González Montoya',
+    email: `daniel.gonzalez@${DOMINIO_PROVISIONAL}`,
+  },
+  sebastianCartagena: {
+    nombre: 'Sebastián Cartagena',
+    email: `sebastian.cartagena@${DOMINIO_PROVISIONAL}`,
+  },
   lilianaRestrepo: { nombre: 'Liliana Restrepo', email: `liliana.restrepo@${DOMINIO_PROVISIONAL}` },
+  // Revisora final institucional (5 %). Nombre completo por confirmar; correo
+  // provisional a reemplazar por el real de la Secretaría de Medio Ambiente.
+  juanaSma: {
+    nombre: 'Juana — Secretaría de Medio Ambiente',
+    email: `juana.sma@${DOMINIO_PROVISIONAL}`,
+  },
 } as const;
 
-type ClavePersona = keyof typeof PERSONAS;
-
-// ─── Datos por entregable (hojas "Cronograma", "Estructura por
-// Entregable" e "Asignación por Entregable"). La columna "Tareas
-// principales" de "Estructura por Entregable" está diligenciada solo en
-// la fila del primer ID de cada componente (P1, P3, P5, P8, P11, P15):
-// son las subactividades de ESE entregable puntual, no de todo el
-// componente — por eso solo esos 6 productos tienen `tareasPrincipales`.
-interface DatosEntregable {
+// ─── Metadatos por entregable (hojas "Cronograma"): insumos, dependencias y
+// tramos de pago. NO los trae la Propuesta de asignación y siguen vigentes. ─
+interface MetaEntregable {
   producto: string;
   insumos: string;
-  tareasPrincipales?: string;
-  apoyo: ClavePersona[];
-  responsables: ClavePersona[];
-  dependeDe: string[]; // códigos de producto de los que depende
+  dependeDe: string[];
   tramoPago: string;
   tramoPagoPorcentaje: number;
 }
 
-const ENTREGABLES: DatosEntregable[] = [
+const META: MetaEntregable[] = [
   {
     producto: 'P1',
     insumos:
-      'Inventarios de emisiones de GEI; insumos del soporte técnico proporcionado por el Grupo de Liderazgo Climático de Ciudades C40; Evaluación de Riesgos Climáticos; datos DANE/POT + insumo de equidad territorial; Evaluación de Necesidades de Inclusión Social y Grupos Vulnerables (doc. #8 del directorio)',
-    tareasPrincipales:
-      '● Consolidación y análisis de la serie histórica de inventarios de emisiones de GEI con base en información suministrada por la Secretaría de Medio Ambiente\n' +
-      '● Consolidación y análisis de las trayectorias de emisiones al 2030, 2040 y 2050, considerando entre otros insumos los resultados del soporte técnico proporcionado por parte del Grupo de Liderazgo Climático de Ciudades C40\n' +
-      '● Integración de los resultados de la Evaluación de Riesgos Climáticos actualizada.\n' +
-      '● Caracterización socioeconómica del territorio con enfoque diferencial, de equidad y justicia climática que permita la identificación y priorización de comunidades, grupos poblacionales y/o sectores más vulnerables ante las amenazas identificadas\n' +
-      '● Descripción de factores estructurales que condicionan la vulnerabilidad y la capacidad adaptativa del Distrito.',
-    apoyo: ['paolaRuiz'],
-    responsables: ['julianaValencia', 'harlemAcevedo', 'jeinerCastellanos', 'marcosArango', 'sebastianCartagena'],
+      'Inventarios de emisiones de GEI; soporte técnico C40; Evaluación de Riesgos Climáticos; datos DANE/POT + equidad territorial; Evaluación de Necesidades de Inclusión Social y Grupos Vulnerables',
     dependeDe: [],
     tramoPago: 'Pago 2',
     tramoPagoPorcentaje: 35,
@@ -82,9 +100,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P2',
     insumos:
-      'Inventarios de emisiones GEI (doc. #26 del directorio, serie 2015-2023); insumo técnico C40 (Pathways); Evaluación de Riesgos Climáticos (ERC U de A)',
-    apoyo: ['paolaRuiz'],
-    responsables: ['julianaValencia', 'harlemAcevedo', 'jeinerCastellanos', 'marcosArango', 'sebastianCartagena'],
+      'Inventarios de emisiones GEI (serie 2015-2023); insumo técnico C40 (Pathways); Evaluación de Riesgos Climáticos (ERC U de A)',
     dependeDe: ['P1'],
     tramoPago: 'Pago 2',
     tramoPagoPorcentaje: 35,
@@ -92,50 +108,15 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P3',
     insumos:
-      'Plan de Acción Climática vigente (Decreto 942/2021); 33 acciones/7 sectores clasificados por la U de A (Evaluación, Cap. 2) como inventario base; Matriz de relacionamiento PDD 2024-2027 (Anexo 8 de la Evaluación)',
-    tareasPrincipales:
-      '● Revisión y reformulación de objetivos estratégicos y sectoriales del Plan de Acción Climática bajo criterios SMART (específicos, medibles, realizables, realistas y temporales).\n' +
-      '● Actualización de la teoría de cambio y la cadena de valor del instrumento.\n' +
-      '● Revisión y depuración de acciones con dificultades de implementación derivadas de restricciones competenciales o de gobernanza\n' +
-      '● Diseño e incorporación de medidas de gestión, medios de implementación, proyectos o instrumentos de implementación para el cumplimiento de los objetivos SMART y las acciones sectoriales\n' +
-      '● Incorporación transversal de los enfoques de resiliencia, biodiversidad, economía circular y transición energética en el marco estratégico del plan.',
-    apoyo: ['mariaJose'],
-    responsables: [
-      'paolaRuiz',
-      'julianaValencia',
-      'jeinerCastellanos',
-      'marcosArango',
-      'dianaRios',
-      'harlemAcevedo',
-      'vanessaGarcia',
-      'alejandroSilva',
-      'luisVahos',
-      'leonOrrego',
-      'danielGonzalez',
-      'sebastianCartagena',
-    ],
+      'Plan de Acción Climática vigente (Decreto 942/2021); 33 acciones/7 sectores (Evaluación, Cap. 2); Matriz de relacionamiento PDD 2024-2027 (Anexo 8)',
     dependeDe: ['P2'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
   },
   {
     producto: 'P4',
-    insumos: 'Hallazgos del Capítulo 1 de la Evaluación (coherencia interna); Matriz de relacionamiento PDD (Anexo 8)',
-    apoyo: ['mariaJose'],
-    responsables: [
-      'paolaRuiz',
-      'julianaValencia',
-      'jeinerCastellanos',
-      'marcosArango',
-      'dianaRios',
-      'harlemAcevedo',
-      'vanessaGarcia',
-      'alejandroSilva',
-      'luisVahos',
-      'leonOrrego',
-      'danielGonzalez',
-      'sebastianCartagena',
-    ],
+    insumos:
+      'Hallazgos del Capítulo 1 de la Evaluación (coherencia interna); Matriz de relacionamiento PDD (Anexo 8)',
     dependeDe: ['P2'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -143,17 +124,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P5',
     insumos:
-      'Acciones de Alto Impacto (HIA) promovidas por el Grupo de Liderazgo Climático de Ciudades C40; metas y políticas nacionales y recomendaciones del C40; catálogo de medidas del directorio (docs. #6, #12, #13, #27, #28)',
-    tareasPrincipales:
-      '● Integración de las Acciones de Alto Impacto (High Impact Actions – HIA) promovidas por el Grupo de Liderazgo Climático de Ciudades C40, en coherencia con evidencia y evaluación de pertinencia y oportunidad para el Distrito\n' +
-      '● Identificación y caracterización del inventario de acciones y medidas planteadas para el Plan de Acción Climática, mediante la estandarización y estructuración de metas, clasificación de opciones tecnológicas, potencial de reducción de emisiones basadas en consumo, Soluciones basadas en la Naturaleza (SbN) y medidas político-institucionales de mitigación y adaptación aplicables a los sectores priorizados del Distrito (Transporte, Residuos, Energía, Agricultura Silvicultura, Gestión del Riesgo, entre otros), garantizando su alineación con instrumentos de mayor jerarquía, metas y políticas nacionales y las recomendaciones del Grupo de Liderazgo Climático de Ciudades C40.\n' +
-      '● Estimación cuantitativa del potencial de reducción de emisiones de Gases de Efecto Invernadero (expresado en ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).\n' +
-      '● Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.\n' +
-      '● Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.\n' +
-      '● Diseño y aplicación de un modelo de análisis multicriterio basado en el Proceso de Redes Analíticas (ANP) para la priorización del portafolio que permita evaluar cómo las alternativas de mitigación impactan y potencian la capacidad de adaptación (co-beneficios de doble vía) y cómo interactúan con criterios socioeconómicos clave del Distrito (equidad de género, generación de empleo verde, salud pública/calidad del aire por reducción de PM 2.5 y viabilidad institucional).\n' +
-      '● Modelación de escenarios y trayectorias de descarbonización y resiliencia para la implementación en el corto, mediano y largo plazo a partir de los resultados del modelo ANP, definiendo la hoja de ruta técnica e institucional de manera conjunta y con consideración de las herramientas proporcionadas por el Grupo de Liderazgo Climático de Ciudades C40',
-    apoyo: ['marcosArango'],
-    responsables: ['dianaRios', 'alejandroSilva', 'vanessaGarcia', 'jeinerCastellanos', 'harlemAcevedo'],
+      'Acciones de Alto Impacto (HIA) C40; metas y políticas nacionales; catálogo de medidas del directorio',
     dependeDe: ['P3', 'P4'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -161,9 +132,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P6',
     insumos:
-      'Catálogo de medidas (P5); costeo preliminar; documento de Cobeneficios de la acción climática urbana (doc. #11 del directorio)',
-    apoyo: ['marcosArango'],
-    responsables: ['dianaRios', 'alejandroSilva', 'vanessaGarcia', 'jeinerCastellanos', 'harlemAcevedo'],
+      'Catálogo de medidas (P5); costeo preliminar; documento de Cobeneficios de la acción climática urbana',
     dependeDe: ['P5'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -171,25 +140,15 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P7',
     insumos:
-      'Resultado de P6; ROAD MAP existente (doc. #18 del directorio) como precedente directo; documento de armonización con instrumentos distritales',
-    apoyo: ['marcosArango'],
-    responsables: ['dianaRios', 'alejandroSilva', 'vanessaGarcia', 'jeinerCastellanos', 'harlemAcevedo'],
+      'Resultado de P6; ROAD MAP existente como precedente directo; armonización con instrumentos distritales',
     dependeDe: ['P6'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
   },
   {
     producto: 'P8',
-    insumos: 'Política Distrital de CTeI para la Sostenibilidad; Plan Decenal de CTeI; diagnóstico consolidado (P2)',
-    tareasPrincipales:
-      '● Armonización del PAC con la Política Distrital de CTeI para la Sostenibilidad y el Plan Decenal de CTeI.\n' +
-      '● Identificación de retos climáticos susceptibles de ser abordados mediante innovación y tecnologías emergentes.\n' +
-      '● Definición de mecanismos de articulación con el sistema de CTeI.\n' +
-      '● Diseño de estrategias para la apropiación social del conocimiento climático.\n' +
-      '● Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.\n' +
-      '● Desarrollo de herramientas para la integración del PAC con la estrategia del Plan Maestro Distrito Inteligente, relacionadas con plataformas de seguimiento de datos y asistentes inteligentes para la consulta de información.',
-    apoyo: ['sebastianCartagena'],
-    responsables: ['danielGonzalez', 'luisVahos', 'leonOrrego', 'mariaJose', 'julianaValencia', 'harlemAcevedo', 'lilianaRestrepo'],
+    insumos:
+      'Política Distrital de CTeI para la Sostenibilidad; Plan Decenal de CTeI; diagnóstico consolidado (P2)',
     dependeDe: ['P2'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -197,9 +156,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P9',
     insumos:
-      'Medidas priorizadas (P6); batería de indicadores; Seguimiento PAC-20240104 (doc. #24 del directorio — metodología e indicadores existentes)',
-    apoyo: ['sebastianCartagena'],
-    responsables: ['danielGonzalez', 'luisVahos', 'leonOrrego', 'mariaJose', 'julianaValencia', 'harlemAcevedo', 'lilianaRestrepo'],
+      'Medidas priorizadas (P6); batería de indicadores; Seguimiento PAC-20240104 (metodología e indicadores)',
     dependeDe: ['P6', 'P14'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -207,8 +164,6 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P10',
     insumos: 'Sistema de Gobierno de Datos Climáticos (P9)',
-    apoyo: ['sebastianCartagena'],
-    responsables: ['danielGonzalez', 'luisVahos', 'leonOrrego', 'mariaJose', 'julianaValencia', 'harlemAcevedo', 'lilianaRestrepo'],
     dependeDe: ['P9'],
     tramoPago: 'Pago 3',
     tramoPagoPorcentaje: 35,
@@ -216,17 +171,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P11',
     insumos:
-      'Diagnóstico de Oportunidades de Inversión Climática del Distrito (doc. #16 del directorio); Evaluación de Riesgos Climáticos (ERC); medidas priorizadas (P6)',
-    tareasPrincipales:
-      '● Identificación de análisis de barreras, riesgos y gestión de la implementación. Incluye la identificación de los cuellos de botella normativos, técnicos, institucionales, políticos o de apropiación social que puedan ralentizar la ejecución de las medidas prioritarias formulando las respectivas estrategias de mitigación del riesgo.\n' +
-      '● Estimación de los requerimientos de inversión (CAPEX), costos operativos (OPEX) y la viabilidad física e institucional de las medidas priorizadas para el corto y mediano plazo.\n' +
-      '● Estructuración de la Cartera de Proyectos Climáticos bajo criterios de Viabilidad y Bancabilidad. La viabilidad se fundamenta en el análisis previo de barreras y sus estrategias de mitigación. La bancabilidad se determina mediante el perfilamiento financiero del costeo detallado, garantizando una articulación orgánica con el Diagnóstico de Oportunidades de Inversión Climática del Distrito para facilitar el enganche con fuentes de recursos.\n' +
-      '● Diseño de la Estrategia de Financiamiento y Movilización de Recursos\n' +
-      '● Estructuración del marco institucional y operativo del Sistema MERL (Monitoreo, Evaluación, Reporte y Aprendizaje) para el seguimiento del plan, definiendo la gobernanza y la interoperabilidad de datos climáticos entre las secretarías del Distrito, entes descentralizados, Área Metropolitana del Valle de Aburrá (AMVA), considerando los avances metodológicos señalados en el documento de Evaluación\n' +
-      '● Revisión, ajuste y concertación de la batería de indicadores de gestión, resultados e impactos climáticos y socioeconómicos (reducción neta de GEI, inversión ejecutada, población con resiliencia aumentada), garantizando la articulación técnica con el sistema de Monitoreo a nivel nacional e instrumentos regionales.\n' +
-      '● Diseño de protocolos de reporte, seguimiento y actualización del plan. Incluye el desarrollo de las guías metodológicas, periodicidad, flujos de información y asignación de responsabilidades institucionales para asegurar que el sistema MERL actúe como un eje de actualización dinámica y mejora continua del PAC',
-    apoyo: ['marcosArango', 'paolaRuiz'],
-    responsables: ['alejandroSilva', 'dianaRios', 'julianaValencia', 'vanessaGarcia', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
+      'Diagnóstico de Oportunidades de Inversión Climática; Evaluación de Riesgos Climáticos; medidas priorizadas (P6)',
     dependeDe: ['P6'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
@@ -234,9 +179,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P12',
     insumos:
-      'Matriz de riesgos y barreras (P11); medidas priorizadas (P6); Diagnóstico de Oportunidades de Inversión Climática (doc. #16); proyectos de inversión 2021-2023 (doc. #20)',
-    apoyo: ['marcosArango', 'paolaRuiz'],
-    responsables: ['alejandroSilva', 'dianaRios', 'julianaValencia', 'vanessaGarcia', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
+      'Matriz de riesgos y barreras (P11); medidas priorizadas (P6); Diagnóstico de Oportunidades de Inversión; proyectos 2021-2023',
     dependeDe: ['P11', 'P6'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
@@ -244,9 +187,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P13',
     insumos:
-      'Cartera priorizada de proyectos (P12); CFF-Parques del Río Norte como precedente de estructuración financiera (doc. #29 del directorio)',
-    apoyo: ['marcosArango', 'paolaRuiz'],
-    responsables: ['alejandroSilva', 'dianaRios', 'julianaValencia', 'vanessaGarcia', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
+      'Cartera priorizada de proyectos (P12); CFF-Parques del Río Norte como precedente de estructuración financiera',
     dependeDe: ['P12'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
@@ -254,9 +195,7 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P14',
     insumos:
-      'Medidas priorizadas (P6); Seguimiento PAC-20240104 (doc. #24, línea base de indicadores existente); reportes CDP/ICLEI (doc. #19)',
-    apoyo: ['marcosArango', 'paolaRuiz'],
-    responsables: ['alejandroSilva', 'dianaRios', 'julianaValencia', 'vanessaGarcia', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
+      'Medidas priorizadas (P6); Seguimiento PAC-20240104 (línea base de indicadores); reportes CDP/ICLEI',
     dependeDe: ['P6'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
@@ -264,22 +203,14 @@ const ENTREGABLES: DatosEntregable[] = [
   {
     producto: 'P15',
     insumos: 'Transversal — recoge insumos de todos los componentes a medida que avanzan',
-    tareasPrincipales:
-      '● Diseño e implementación de espacios de participación con actores institucionales, comunitarios, académicos y productivos.\n' +
-      '● Validación técnica y social de los resultados del proceso.\n' +
-      '● Elaboración de materiales de comunicación y divulgación.\n' +
-      '● Diagramación y publicación de los documentos finales.',
-    apoyo: ['paolaRuiz', 'mariaJose'],
-    responsables: ['sebastianCartagena', 'lilianaRestrepo'],
     dependeDe: [],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
   },
   {
     producto: 'P16',
-    insumos: 'Direccionamiento estratégico (P3); Hoja de ruta 2050 (P7); Memoria participativa (P15)',
-    apoyo: ['paolaRuiz', 'mariaJose'],
-    responsables: ['sebastianCartagena', 'lilianaRestrepo'],
+    insumos:
+      'Direccionamiento estratégico (P3); Hoja de ruta 2050 (P7); Memoria participativa (P15)',
     dependeDe: ['P3', 'P7', 'P15'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
@@ -288,38 +219,67 @@ const ENTREGABLES: DatosEntregable[] = [
     producto: 'P17',
     insumos:
       'Direccionamiento estratégico (P3); Priorización (P6); Hoja de ruta (P7); Plan financiero (P13); Sistema MERL (P14)',
-    apoyo: ['paolaRuiz', 'mariaJose'],
-    responsables: ['lilianaRestrepo', 'danielGonzalez', 'luisVahos', 'leonOrrego'],
     dependeDe: ['P3', 'P6', 'P7', 'P13', 'P14'],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
   },
   {
     producto: 'P18',
-    insumos: 'Evaluación de Riesgos Climáticos (ERC U de A); equipo del Museo de Ciencia; material de divulgación',
-    apoyo: ['paolaRuiz', 'mariaJose'],
-    responsables: ['sebastianCartagena', 'lilianaRestrepo'],
+    insumos:
+      'Evaluación de Riesgos Climáticos (ERC U de A); equipo del Museo de Ciencia; material de divulgación',
     dependeDe: [],
     tramoPago: 'Pago 4',
     tramoPagoPorcentaje: 10,
   },
 ];
 
-const REVISOR: ClavePersona = 'guillermoPenagos';
-const NOTA_REVISOR =
-  'Revisor final (aval): Guillermo Penagos — Consultor Experto en Planeación Climática, Política Pública y ' +
-  'Equidad Territorial; da el aval final antes de enviar a la Secretaría.';
+// ─── Actividades por entregable (generado desde el Excel) ────────────
+interface ActividadFuente {
+  codigo: string;
+  etapa: string;
+  descripcion: string;
+  responsables: string[]; // nombres canónicos (usuarios conocidos)
+  apoyos: string[]; // nombres canónicos (usuarios conocidos)
+  apoyosTexto: string[]; // roles sin cuenta (texto libre)
+  pesoPorcentaje: number;
+  fechaInicio: string | null;
+  fechaFin: string | null;
+  criterio: string | null;
+}
+interface EntregableFuente {
+  codigo: string;
+  componente: string;
+  nombre: string;
+  actividades: ActividadFuente[];
+}
+interface ActividadesJson {
+  entregables: EntregableFuente[];
+}
 
-// Los 3 hitos maestros del proyecto (hoja "Resumen Ejecutivo Cronograma"),
-// enganchados a la actividad de cierre de su alcance (fechas coincidentes
-// con la "Entrega oficial" de esa actividad en el Cronograma Maestro).
+const DATOS = JSON.parse(
+  readFileSync(join(__dirname, 'actividades-pac.json'), 'utf-8'),
+) as ActividadesJson;
+
+// Los 3 hitos maestros del proyecto (hoja "Resumen Ejecutivo Cronograma").
 const HITOS_MAESTROS: { nombre: string; fechaObjetivo: string; productoCierre: string }[] = [
-  { nombre: 'HITO 1 — Componente 1 (C1) cerrado', fechaObjetivo: '2026-09-25', productoCierre: 'P2' },
-  { nombre: 'HITO 2 — Componentes 1 a 5 (C1-C5) cerrados', fechaObjetivo: '2026-11-27', productoCierre: 'P14' },
-  { nombre: 'HITO 3 — Todos los componentes (C1-C6) entregados', fechaObjetivo: '2026-12-10', productoCierre: 'P18' },
+  {
+    nombre: 'HITO 1 — Componente 1 (C1) cerrado',
+    fechaObjetivo: '2026-09-25',
+    productoCierre: 'P2',
+  },
+  {
+    nombre: 'HITO 2 — Componentes 1 a 5 (C1-C5) cerrados',
+    fechaObjetivo: '2026-11-27',
+    productoCierre: 'P14',
+  },
+  {
+    nombre: 'HITO 3 — Todos los componentes (C1-C6) entregados',
+    fechaObjetivo: '2026-12-10',
+    productoCierre: 'P18',
+  },
 ];
 
-/** Reparte un porcentaje entre N nombres, ajustando el último para que la suma sea exacta. */
+/** Reparte un porcentaje entre N ítems, ajustando el último para que sume exacto. */
 function repartir(pctTotal: number, n: number): number[] {
   if (n === 0) return [];
   const base = Math.round((pctTotal / n) * 100) / 100;
@@ -335,12 +295,13 @@ async function main(): Promise<void> {
     throw new Error('No existe ningún Proyecto todavía. Ejecuta primero "npm run seed:pac".');
   }
 
-  // ── 1) Crear/actualizar las 15 personas reales del equipo ─────────
-  const usuarioIdPorClave = new Map<ClavePersona, string>();
+  // ── 1) Crear/actualizar las personas del equipo (incluida Juana) ──
   const rolColaborador = await prisma.rol.findUnique({ where: { nombre: 'colaborador' } });
-  if (!rolColaborador) throw new Error('No existe el rol "colaborador". Ejecuta primero las migraciones/seed base.');
+  if (!rolColaborador)
+    throw new Error('No existe el rol "colaborador". Ejecuta primero las migraciones/seed base.');
 
-  for (const [clave, persona] of Object.entries(PERSONAS) as [ClavePersona, (typeof PERSONAS)[ClavePersona]][]) {
+  const usuarioIdPorNombre = new Map<string, string>();
+  for (const persona of Object.values(PERSONAS)) {
     const usuario = await prisma.usuario.upsert({
       where: { email: persona.email },
       update: {},
@@ -351,100 +312,244 @@ async function main(): Promise<void> {
         estado: 'pendiente_activacion',
       },
     });
-    usuarioIdPorClave.set(clave, usuario.id);
+    usuarioIdPorNombre.set(persona.nombre, usuario.id);
   }
-  console.log(`Equipo real: ${usuarioIdPorClave.size} cuentas (correos provisionales @${DOMINIO_PROVISIONAL}).`);
+  console.log(
+    `Equipo: ${usuarioIdPorNombre.size} cuentas (correos provisionales @${DOMINIO_PROVISIONAL}).`,
+  );
 
-  // ── 2) Revertir cualquier "Tareas principales" que una versión anterior
-  // de este script haya anexado a la Fase: las tareas son subactividades
-  // del entregable puntual (P1, P3, P5, P8, P11, P15), no del componente
-  // completo, así que ahora viven en la descripción de esa Actividad (paso 4).
-  const fases = await prisma.fase.findMany({ where: { proyectoId: proyecto.id } });
-  for (const fase of fases) {
-    if (!fase.descripcion?.includes('\n\nTareas principales:\n')) continue;
-    const base = fase.descripcion.split('\n\nTareas principales:\n')[0];
-    await prisma.fase.update({ where: { id: fase.id }, data: { descripcion: base } });
-  }
-  console.log('Fases: descripción restaurada (sin tareas principales; ahora van en la Actividad correspondiente).');
+  const idDe = (nombre: string): string | undefined => usuarioIdPorNombre.get(nombre);
 
-  // ── 3) Localizar cada Actividad P1..P18 por su prefijo de nombre ──
-  const actividades = await prisma.actividad.findMany({ where: { fase: { proyectoId: proyecto.id } } });
+  // ── 2) Localizar cada Actividad P1..P18 (Entregable) por prefijo de nombre ─
+  const actividades = await prisma.actividad.findMany({
+    where: { fase: { proyectoId: proyecto.id } },
+  });
   const actividadIdPorProducto = new Map<string, string>();
-  for (const e of ENTREGABLES) {
-    const act = actividades.find((a) => a.nombre.startsWith(`${e.producto} — `));
+  for (const e of DATOS.entregables) {
+    const act = actividades.find((a) => a.nombre.startsWith(`${e.codigo} — `));
     if (!act) {
-      console.warn(`Aviso: no se encontró la Actividad para ${e.producto}; se omite.`);
+      console.warn(`Aviso: no se encontró la Actividad (Entregable) para ${e.codigo}; se omite.`);
       continue;
     }
-    actividadIdPorProducto.set(e.producto, act.id);
+    actividadIdPorProducto.set(e.codigo, act.id);
   }
 
-  // ── 4) Actualizar descripción real + tramo de pago de cada Actividad ─
-  for (const e of ENTREGABLES) {
-    const actividadId = actividadIdPorProducto.get(e.producto);
+  // ── 3) Descripción + tramo de pago del Entregable ─────────────────
+  for (const meta of META) {
+    const actividadId = actividadIdPorProducto.get(meta.producto);
     if (!actividadId) continue;
-    const apoyoNombres = e.apoyo.map((c) => PERSONAS[c].nombre).join(', ');
-    const responsablesNombres = e.responsables.map((c) => PERSONAS[c].nombre).join(', ');
-    const descripcion = [
-      `Apoyo de componente: ${apoyoNombres}`,
-      `Responsables principales: ${responsablesNombres}`,
-      NOTA_REVISOR,
-      `Insumos de entrada necesarios: ${e.insumos}`,
-    ].join('\n\n');
-
+    const descripcion = `Insumos de entrada necesarios: ${meta.insumos}`;
     await prisma.actividad.update({
       where: { id: actividadId },
-      data: { descripcion, tramoPago: e.tramoPago, tramoPagoPorcentaje: e.tramoPagoPorcentaje },
+      data: {
+        descripcion,
+        tramoPago: meta.tramoPago,
+        tramoPagoPorcentaje: meta.tramoPagoPorcentaje,
+      },
     });
   }
-  console.log('Actividades: descripción real (equipo + insumos) y tramo de pago actualizados.');
+  console.log('Entregables: insumos y tramo de pago actualizados.');
 
-  // ── 4b) Subactividades: cada viñeta de "Tareas principales" del entregable
-  // puntual (P1, P3, P5, P8, P11, P15) se vuelve una Subactividad rastreable
-  // con su propio % de avance (el de la Actividad se deriva de estas).
-  let subactividadesCreadas = 0;
-  for (const e of ENTREGABLES) {
-    if (!e.tareasPrincipales) continue;
-    const actividadId = actividadIdPorProducto.get(e.producto);
+  // ── 4) Actividades (Subactividades) por entregable ────────────────
+  // Limpieza previa: quitar subactividades heredadas (sin código, de la versión
+  // anterior "Tareas principales") SOLO si no tienen avances registrados.
+  let legadoBorrado = 0;
+  let legadoConservado = 0;
+  for (const e of DATOS.entregables) {
+    const actividadId = actividadIdPorProducto.get(e.codigo);
     if (!actividadId) continue;
-
-    const tareas = e.tareasPrincipales
-      .split('\n')
-      .map((l) => l.replace(/^●\s*/, '').trim())
-      .filter((l) => l.length > 0);
-
-    for (const [i, descripcion] of tareas.entries()) {
-      const existente = await prisma.subactividad.findFirst({ where: { actividadId, descripcion } });
-      if (existente) continue;
-      await prisma.subactividad.create({ data: { actividadId, descripcion, orden: i } });
-      subactividadesCreadas += 1;
+    const codigosValidos = new Set(e.actividades.map((a) => a.codigo));
+    const existentes = await prisma.subactividad.findMany({ where: { actividadId } });
+    for (const sub of existentes) {
+      if (sub.codigo && codigosValidos.has(sub.codigo)) continue; // se actualiza abajo
+      const conAvances =
+        (await prisma.avanceSubactividad.count({ where: { subactividadId: sub.id } })) > 0;
+      if (conAvances) {
+        legadoConservado += 1;
+        continue; // no destruir avances reales
+      }
+      await prisma.subactividad.delete({ where: { id: sub.id } });
+      legadoBorrado += 1;
     }
   }
-  console.log(`Subactividades: ${subactividadesCreadas} tareas nuevas creadas (avance inicial 0%).`);
-
-  // El avance de una Actividad con Subactividades se deriva de ellas (promedio
-  // simple), nunca se reporta directo — se recalcula por si el script corre
-  // de nuevo después de que ya haya avances registrados en las subactividades.
-  for (const e of ENTREGABLES) {
-    if (!e.tareasPrincipales) continue;
-    const actividadId = actividadIdPorProducto.get(e.producto);
-    if (!actividadId) continue;
-    const subs = await prisma.subactividad.findMany({ where: { actividadId } });
-    const promedio = subs.length === 0 ? 0 : subs.reduce((a, s) => a + s.avancePorcentaje, 0) / subs.length;
-    await prisma.actividad.update({ where: { id: actividadId }, data: { avancePorcentaje: promedio } });
+  if (legadoBorrado || legadoConservado) {
+    console.log(
+      `Subactividades heredadas: ${legadoBorrado} eliminadas (sin avances)` +
+        (legadoConservado
+          ? `, ${legadoConservado} conservadas por tener avances (revisar a mano).`
+          : '.'),
+    );
   }
 
-  // ── 5) Dependencias entre actividades (segunda pasada: ya existen todas) ─
-  let dependenciasCreadas = 0;
-  for (const e of ENTREGABLES) {
-    const actividadId = actividadIdPorProducto.get(e.producto);
+  // Upsert de cada Actividad por (actividadId, codigo) y su responsable(s).
+  let creadas = 0;
+  let actualizadas = 0;
+  for (const e of DATOS.entregables) {
+    const actividadId = actividadIdPorProducto.get(e.codigo);
     if (!actividadId) continue;
-    for (const codigoDep of e.dependeDe) {
-      const dependeDeId = actividadIdPorProducto.get(codigoDep);
-      if (!dependeDeId) {
-        console.warn(`Aviso: ${e.producto} depende de ${codigoDep}, pero esa actividad no se encontró.`);
-        continue;
+
+    for (const [i, a] of e.actividades.entries()) {
+      const nota = a.apoyosTexto.length ? `Apoyos: ${a.apoyosTexto.join('; ')}` : null;
+      const datos = {
+        etapa: a.etapa,
+        descripcion: a.descripcion,
+        orden: i,
+        pesoPorcentaje: a.pesoPorcentaje,
+        fechaInicioPlan: a.fechaInicio ? new Date(a.fechaInicio) : null,
+        fechaFinPlan: a.fechaFin ? new Date(a.fechaFin) : null,
+        criterioTerminado: a.criterio,
+        nota,
+      };
+      const existente = await prisma.subactividad.findFirst({
+        where: { actividadId, codigo: a.codigo },
+      });
+      const sub = existente
+        ? ((actualizadas += 1),
+          await prisma.subactividad.update({ where: { id: existente.id }, data: datos }))
+        : ((creadas += 1),
+          await prisma.subactividad.create({ data: { actividadId, codigo: a.codigo, ...datos } }));
+
+      // Responsable(s) de la Actividad (AsignacionSubactividad, informativa).
+      // Responsables comparten el 85 %; apoyos con cuenta, el 15 %. Sin apoyos,
+      // los responsables comparten el 100 %.
+      const respIds = a.responsables.map(idDe).filter((x): x is string => !!x);
+      const apoyoIds = a.apoyos.map(idDe).filter((x): x is string => !!x);
+      const pesos = new Map<string, number>();
+      if (respIds.length && apoyoIds.length) {
+        repartir(85, respIds.length).forEach((p, k) =>
+          pesos.set(respIds[k], (pesos.get(respIds[k]) ?? 0) + p),
+        );
+        repartir(15, apoyoIds.length).forEach((p, k) =>
+          pesos.set(apoyoIds[k], (pesos.get(apoyoIds[k]) ?? 0) + p),
+        );
+      } else if (respIds.length) {
+        repartir(100, respIds.length).forEach((p, k) =>
+          pesos.set(respIds[k], (pesos.get(respIds[k]) ?? 0) + p),
+        );
+      } else if (apoyoIds.length) {
+        repartir(100, apoyoIds.length).forEach((p, k) =>
+          pesos.set(apoyoIds[k], (pesos.get(apoyoIds[k]) ?? 0) + p),
+        );
       }
+
+      // Sincronizar: quitar asignaciones de usuarios ya no listados.
+      const vigentes = new Set(pesos.keys());
+      const prev = await prisma.asignacionSubactividad.findMany({
+        where: { subactividadId: sub.id },
+      });
+      for (const p of prev) {
+        if (!vigentes.has(p.usuarioId)) {
+          await prisma.asignacionSubactividad.delete({ where: { id: p.id } });
+        }
+      }
+      for (const [usuarioId, peso] of pesos) {
+        await prisma.asignacionSubactividad.upsert({
+          where: { subactividadId_usuarioId: { subactividadId: sub.id, usuarioId } },
+          update: { pesoTrabajoPorcentaje: peso },
+          create: { subactividadId: sub.id, usuarioId, pesoTrabajoPorcentaje: peso },
+        });
+      }
+    }
+
+    // El avance del Entregable se deriva de sus Actividades (suma ponderada);
+    // recalcular el caché por si el script corre tras haber avances.
+    const subs = await prisma.subactividad.findMany({ where: { actividadId } });
+    const sumaPesos = subs.reduce((acc, s) => acc + s.pesoPorcentaje, 0);
+    const avance =
+      subs.length === 0
+        ? 0
+        : sumaPesos === 0
+          ? subs.reduce((acc, s) => acc + s.avancePorcentaje, 0) / subs.length
+          : subs.reduce((acc, s) => acc + (s.pesoPorcentaje / sumaPesos) * s.avancePorcentaje, 0);
+    await prisma.actividad.update({
+      where: { id: actividadId },
+      data: { avancePorcentaje: avance },
+    });
+  }
+  console.log(
+    `Actividades: ${creadas} creadas, ${actualizadas} actualizadas (con peso, fechas y criterio).`,
+  );
+
+  // ── 5) Asignación por Componente (Fase): distribución % que suma 100 ─
+  // Cada Actividad reparte su peso: 85 % a responsables, 15 % a apoyos con
+  // cuenta; se acumula por Componente y se normaliza a 100 %.
+  const fases = await prisma.fase.findMany({ where: { proyectoId: proyecto.id } });
+  const faseIdPorCodigo = new Map<string, string>();
+  for (const f of fases) {
+    const cod = f.nombre.split(' — ')[0];
+    faseIdPorCodigo.set(cod, f.id);
+  }
+
+  const creditoPorComponente = new Map<string, Map<string, number>>(); // comp → (usuarioId → crédito)
+  for (const e of DATOS.entregables) {
+    const acc = creditoPorComponente.get(e.componente) ?? new Map<string, number>();
+    for (const a of e.actividades) {
+      const respIds = a.responsables.map(idDe).filter((x): x is string => !!x);
+      const apoyoIds = a.apoyos.map(idDe).filter((x): x is string => !!x);
+      const sumar = (id: string, v: number) => acc.set(id, (acc.get(id) ?? 0) + v);
+      if (respIds.length && apoyoIds.length) {
+        respIds.forEach((id) => sumar(id, (a.pesoPorcentaje * 0.85) / respIds.length));
+        apoyoIds.forEach((id) => sumar(id, (a.pesoPorcentaje * 0.15) / apoyoIds.length));
+      } else if (respIds.length) {
+        respIds.forEach((id) => sumar(id, a.pesoPorcentaje / respIds.length));
+      } else if (apoyoIds.length) {
+        apoyoIds.forEach((id) => sumar(id, a.pesoPorcentaje / apoyoIds.length));
+      }
+    }
+    creditoPorComponente.set(e.componente, acc);
+  }
+
+  let asignacionesComp = 0;
+  for (const [comp, creditos] of creditoPorComponente) {
+    const faseId = faseIdPorCodigo.get(comp);
+    if (!faseId) {
+      console.warn(
+        `Aviso: no se encontró la Fase para el componente ${comp}; se omite su asignación.`,
+      );
+      continue;
+    }
+    const total = [...creditos.values()].reduce((a, b) => a + b, 0);
+    if (total === 0) continue;
+    const entradas = [...creditos.entries()];
+    // Normalizar a 100 con redondeo a 2 decimales, ajustando el último.
+    let acumulado = 0;
+    const normalizados = entradas.map(([usuarioId, v], i) => {
+      const pct =
+        i === entradas.length - 1
+          ? Math.round((100 - acumulado) * 100) / 100
+          : Math.round((v / total) * 100 * 100) / 100;
+      acumulado += pct;
+      return { usuarioId, pct };
+    });
+
+    const vigentes = new Set(normalizados.map((n) => n.usuarioId));
+    const prev = await prisma.asignacionComponente.findMany({ where: { faseId } });
+    for (const p of prev) {
+      if (!vigentes.has(p.usuarioId)) {
+        await prisma.asignacionComponente.delete({ where: { id: p.id } });
+      }
+    }
+    for (const n of normalizados) {
+      await prisma.asignacionComponente.upsert({
+        where: { faseId_usuarioId: { faseId, usuarioId: n.usuarioId } },
+        update: { pesoPorcentaje: n.pct },
+        create: { faseId, usuarioId: n.usuarioId, pesoPorcentaje: n.pct },
+      });
+      asignacionesComp += 1;
+    }
+  }
+  console.log(
+    `Asignación por Componente: ${asignacionesComp} participaciones (suma 100 % por componente).`,
+  );
+
+  // ── 6) Dependencias entre entregables ─────────────────────────────
+  let dependenciasCreadas = 0;
+  for (const meta of META) {
+    const actividadId = actividadIdPorProducto.get(meta.producto);
+    if (!actividadId) continue;
+    for (const codigoDep of meta.dependeDe) {
+      const dependeDeId = actividadIdPorProducto.get(codigoDep);
+      if (!dependeDeId) continue;
       await prisma.dependenciaActividad.upsert({
         where: { actividadId_dependeDeId: { actividadId, dependeDeId } },
         update: {},
@@ -453,39 +558,9 @@ async function main(): Promise<void> {
       dependenciasCreadas += 1;
     }
   }
-  console.log(`Dependencias entre actividades: ${dependenciasCreadas} relaciones aseguradas.`);
+  console.log(`Dependencias entre entregables: ${dependenciasCreadas} relaciones aseguradas.`);
 
-  // ── 6) Asignaciones (peso: 15% apoyo, 70% responsables, 15% revisor) ─
-  for (const e of ENTREGABLES) {
-    const actividadId = actividadIdPorProducto.get(e.producto);
-    if (!actividadId) continue;
-
-    const pesosPorUsuario = new Map<string, number>();
-    const acumular = (clave: ClavePersona, peso: number) => {
-      const usuarioId = usuarioIdPorClave.get(clave);
-      if (!usuarioId) return;
-      pesosPorUsuario.set(usuarioId, (pesosPorUsuario.get(usuarioId) ?? 0) + peso);
-    };
-
-    const pesosApoyo = repartir(15, e.apoyo.length);
-    e.apoyo.forEach((clave, i) => acumular(clave, pesosApoyo[i]));
-
-    const pesosResp = repartir(70, e.responsables.length);
-    e.responsables.forEach((clave, i) => acumular(clave, pesosResp[i]));
-
-    acumular(REVISOR, 15);
-
-    for (const [usuarioId, peso] of pesosPorUsuario) {
-      await prisma.asignacion.upsert({
-        where: { actividadId_usuarioId: { actividadId, usuarioId } },
-        update: { pesoTrabajoPorcentaje: peso },
-        create: { actividadId, usuarioId, pesoTrabajoPorcentaje: peso },
-      });
-    }
-  }
-  console.log('Asignaciones: responsables reales vinculados a cada actividad con su peso de trabajo.');
-
-  // ── 7) Hitos maestros del proyecto ─────────────────────────────────
+  // ── 7) Hitos maestros del proyecto ────────────────────────────────
   for (const hito of HITOS_MAESTROS) {
     const actividadId = actividadIdPorProducto.get(hito.productoCierre);
     if (!actividadId) continue;
@@ -497,7 +572,10 @@ async function main(): Promise<void> {
   }
   console.log('Hitos maestros del proyecto (3): asegurados en su actividad de cierre.');
 
-  console.log('\nListo. Recuerda: los correos del equipo son PROVISIONALES — reemplázalos por los reales desde el panel (Usuarios → editar) antes de que las personas activen su cuenta.');
+  console.log(
+    '\nListo. Recuerda: los correos del equipo (incluida Juana) son PROVISIONALES — ' +
+      'reemplázalos por los reales desde el panel (Usuarios → editar) antes de que activen su cuenta.',
+  );
 }
 
 main()

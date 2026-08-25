@@ -3,6 +3,7 @@ import {
   ClipboardText,
   LockKey,
   Users,
+  UsersThree,
   FolderOpen,
   CalendarCheck,
   Bell,
@@ -49,6 +50,7 @@ export function Guia() {
         {esAdmin && (
           <>
             <a href="#usuarios">Usuarios</a>
+            <a href="#componentes">Componentes y responsabilidad</a>
             <a href="#actividades-responsables">Actividades y responsables</a>
             <a href="#linea-base">Línea base</a>
             <a href="#alertas-auditoria">Alertas y auditoría</a>
@@ -63,8 +65,9 @@ export function Guia() {
         <GuiaPanel icono={ClipboardText} titulo="Mis actividades y avances" id="mis-actividades">
           <ul className="lista-simple">
             <li>
-              <strong>Mis actividades</strong> muestra las actividades que un administrador te
-              asignó, con tu peso de trabajo en cada una. Haz clic en una para entrar al detalle.
+              <strong>Mis actividades</strong> muestra los entregables en los que un administrador
+              te asignó alguna actividad. Haz clic en uno para entrar al detalle y ver, dentro, las
+              actividades específicas de las que eres responsable.
             </li>
             <li>
               <strong>Registrar avance</strong>: dentro de una actividad sin tareas puntuales,
@@ -72,11 +75,12 @@ export function Guia() {
               completo con fecha y autor — nunca se borra, aunque el porcentaje baje.
             </li>
             <li>
-              <strong>Subactividades</strong>: si la actividad sí tiene tareas puntuales definidas,
-              no hay formulario de avance directo — se calcula solo, como el promedio de esas
-              tareas. Haz clic en "actualizar avance" junto a cada tarea para reportar su % y, si
-              tienes, el enlace a la evidencia. "ver historial" muestra los reportes anteriores de
-              esa tarea.
+              <strong>Actividades del entregable</strong>: cada entregable se desglosa en
+              actividades específicas (con su etapa y peso). El avance del entregable no se reporta
+              directo: se calcula solo, como la <strong>suma ponderada</strong> de sus actividades
+              por su peso. Haz clic en "actualizar avance" junto a cada actividad para reportar su %
+              y, si tienes, el enlace a la evidencia. "ver historial" muestra los reportes
+              anteriores de esa actividad.
             </li>
             <li>
               <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que
@@ -139,6 +143,26 @@ export function Guia() {
             </ul>
           </GuiaPanel>
 
+          <GuiaPanel icono={UsersThree} titulo="Componentes y responsabilidad" id="componentes">
+            <p className="tenue">
+              El modelo tiene <strong>dos niveles</strong> de asignación:
+            </p>
+            <ul className="lista-simple">
+              <li>
+                <strong>Componentes</strong> (esta página): la distribución porcentual de
+                responsabilidad de cada componente entre sus colaboradores. La suma por componente
+                debe ser <strong>100 %</strong>. Es informativa —el avance se calcula desde las
+                actividades, no desde estos porcentajes— y sirve para ver quién participa en el
+                componente y en qué proporción. Al incorporar un colaborador nuevo, reduce el % de
+                otro(s) para seguir en 100 %.
+              </li>
+              <li>
+                <strong>Actividades</strong>: el responsable concreto de cada actividad específica
+                (ver el panel siguiente).
+              </li>
+            </ul>
+          </GuiaPanel>
+
           <GuiaPanel
             icono={FolderOpen}
             titulo="Actividades y responsables"
@@ -146,25 +170,26 @@ export function Guia() {
           >
             <ul className="lista-simple">
               <li>
-                En <strong>Actividades</strong> hay un formulario arriba para crear una actividad
-                nueva dentro de un componente. Debajo ves las 7 fases con sus actividades, sin
-                necesitar ningún identificador de antemano.
+                En <strong>Actividades</strong> hay un formulario arriba para crear un entregable
+                nuevo dentro de un componente. Debajo ves las 7 fases (Preparación + C1–C6) con sus
+                entregables, sin necesitar ningún identificador de antemano.
               </li>
               <li>
-                Cada actividad se completa a través de sus <strong>subactividades</strong> (las
-                tareas puntuales). Los responsables se asignan ahí, no en la actividad general: en
-                el detalle de la actividad, junto a cada subactividad hay un botón "responsables"
-                para agregar un colaborador con su peso (%). Si una actividad todavía no tiene
-                subactividades, hay un formulario "Nueva subactividad" para crear la primera.
+                Cada entregable se completa a través de sus <strong>actividades específicas</strong>
+                . El responsable se asigna en cada actividad, no en el entregable general: en el
+                detalle, junto a cada actividad hay un botón "responsables" para agregar un
+                colaborador con su peso (%). Si un entregable aún no tiene actividades, el
+                formulario "Nueva subactividad" crea la primera (recuerda darle su peso).
               </li>
               <li>
-                La suma de pesos de los responsables de una subactividad no puede superar 100 %; la
-                pantalla muestra la suma actual.
+                El avance del entregable es la <strong>suma ponderada</strong> de sus actividades
+                por su peso (que suman 100 %: 85 % elaboración + 10 % revisión y aval + 5 % revisión
+                final de la Secretaría). La suma de pesos de los responsables de una misma actividad
+                no puede superar 100 %; la pantalla muestra la suma actual.
               </li>
               <li>
-                El botón "editar" junto al título de la actividad permite cambiar nombre,
-                descripción y marcarla como finalizada. Las fechas planeadas no se editan ahí — ver
-                Línea base.
+                El botón "editar" junto al título del entregable permite cambiar nombre, descripción
+                y marcarlo como finalizado. Las fechas planeadas no se editan ahí — ver Línea base.
               </li>
             </ul>
           </GuiaPanel>

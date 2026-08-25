@@ -2,7 +2,14 @@
 
 **Proyecto:** Plataforma de Seguimiento y Monitoreo (PAC)
 **Fase:** 0 de 16 — Descubrimiento y Definición de Requisitos
-**Skill de Claude recomendada:** No se requiere una skill técnica especializada para esta fase, ya que es puramente documental (no hay código, arquitectura ni infraestructura todavía). Si está disponible, se recomienda apoyarse en `engineering:documentation` únicamente para dar formato y estructura profesional a los documentos de salida, no para su contenido sustantivo. No uses skills de arquitectura, backend, frontend, PostgreSQL, Docker, autenticación o testing en esta fase: se usarán a partir de la Fase 1 en adelante.
+
+> **Actualización 25-ago-2026 (Propuesta de asignación de actividades) — NO requiere re-ejecutar esta fase.** Las reglas que abajo se piden "descubrir" ya están decididas e implementadas en producción; se dejan aquí como referencia para que un re-uso de este prompt parta del modelo vigente y no de una versión anterior:
+>
+> - **Jerarquía oficial:** Componente → Entregable → Actividad → Integrante. Mapea a la BD: `Fase`=Componente (C1-C6), `Actividad`=Entregable (P1-P18), `Subactividad`=Actividad granular (P#-A01…, +R01 aval +R02 SMA), responsable por Actividad vía `AsignacionSubactividad`.
+> - **Cálculo de avance:** el % nace en la Actividad (peso propio). **Entregable = suma ponderada de sus Actividades por peso** (suman 100%: 85% elaboración + 10% aval + 5% Secretaría). **Componente = promedio simple de sus Entregables. Total = suma ponderada de Componentes por su peso** (por nº de entregables, "opción A").
+> - **Dos niveles de asignación:** (1) `AsignacionComponente` — distribución % por Componente, suma 100%, informativa, editable/redistribuible; (2) `AsignacionSubactividad` — responsable(s) específico(s) de cada Actividad.
+> - Fuente de datos: `Documentosbase/Propuesta_asignacion_actividades_PAC.xlsx` → `backend/prisma/actividades-pac.json`. Migración `0014_actividades_ponderadas`. Tras desplegar: `prisma migrate deploy` + `npm run enriquecer:pac`.
+>   **Skill de Claude recomendada:** No se requiere una skill técnica especializada para esta fase, ya que es puramente documental (no hay código, arquitectura ni infraestructura todavía). Si está disponible, se recomienda apoyarse en `engineering:documentation` únicamente para dar formato y estructura profesional a los documentos de salida, no para su contenido sustantivo. No uses skills de arquitectura, backend, frontend, PostgreSQL, Docker, autenticación o testing en esta fase: se usarán a partir de la Fase 1 en adelante.
 
 Copia y pega el bloque completo de abajo (desde `<role>` hasta `</deliverables>`) directamente en Claude Code.
 

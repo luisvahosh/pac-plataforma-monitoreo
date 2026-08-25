@@ -49,6 +49,7 @@ model Fase {
   orden          Int         @default(0)
   proyecto       Proyecto    @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
   actividades    Actividad[]
+  asignacionesComponente AsignacionComponente[]
 
   @@map("fase")
 }
@@ -152,6 +153,7 @@ model Usuario {
   refreshTokens    RefreshToken[]
   cambiosLineaBase CambioLineaBase[]
   asignaciones     Asignacion[]
+  asignacionesComponente   AsignacionComponente[]
   asignacionesSubactividad AsignacionSubactividad[]
   avances          Avance[]
   avancesSubactividad AvanceSubactividad[]
@@ -227,14 +229,43 @@ model Avance {
 model Subactividad {
   id               String                  @id @default(uuid())
   actividadId      String                  @map("actividad_id")
+  codigo           String?                 // p.ej. "P1-A01" (identidad estable para la siembra idempotente)
+  etapa            String?                 // "Elaboración" | "Revisión y aval" | "Revisión final Secretaría"
   descripcion      String
   orden            Int                     @default(0)
+  // Peso de la Subactividad (Actividad, en el lenguaje del negocio) dentro de
+  // su Entregable. La suma por Entregable es 100 %. El avance del Entregable
+  // (Actividad de la BD) se deriva como la SUMA PONDERADA por este peso.
+  pesoPorcentaje   Float                   @default(0) @map("peso_porcentaje")
+  fechaInicioPlan  DateTime?               @map("fecha_inicio_plan")
+  fechaFinPlan     DateTime?               @map("fecha_fin_plan")
+  criterioTerminado String?                @map("criterio_terminado")
+  nota             String? // apoyos/roles no vinculados a una cuenta (texto libre)
   avancePorcentaje Float                   @default(0) @map("avance_porcentaje")
   actividad        Actividad               @relation(fields: [actividadId], references: [id], onDelete: Cascade)
   avances          AvanceSubactividad[]
   asignaciones     AsignacionSubactividad[]
 
   @@map("subactividad")
+}
+
+// Distribución de responsabilidad de un Componente (Fase) entre sus
+// Colaboradores: cada uno con su porcentaje de participación; el conjunto por
+// Componente suma 100 % (RN-08 a nivel de Componente). Es INFORMATIVA — no
+// altera el cálculo del avance (que se deriva de las Actividades) — y permite
+// ver de forma consolidada quién participa en el Componente y en qué
+// proporción. Al incorporar un nuevo Colaborador se redistribuyen los pesos.
+model AsignacionComponente {
+  id             String   @id @default(uuid())
+  faseId         String   @map("fase_id")
+  usuarioId      String   @map("usuario_id")
+  pesoPorcentaje Float    @map("peso_porcentaje")
+  creadoEn       DateTime @default(now()) @map("creado_en")
+  fase           Fase     @relation(fields: [faseId], references: [id], onDelete: Cascade)
+  usuario        Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([faseId, usuarioId])
+  @@map("asignacion_componente")
 }
 
 // El responsable real del trabajo es quien ejecuta la Subactividad (RN-08

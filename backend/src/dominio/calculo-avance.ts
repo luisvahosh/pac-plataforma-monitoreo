@@ -1,10 +1,13 @@
 // Lógica pura de cálculo de Avance (RN-02). Sin dependencias de framework ni de
 // base de datos, para que sea directamente testeable.
 //
-// Reglas (Fase 0):
-//  - Avance de una Fase   = promedio simple de sus Actividades (sin importar cuántas tenga).
-//  - Avance del Proyecto  = suma ponderada de las Fases por su peso; los pesos de
-//                           las Fases suman 100 %.
+// Reglas (Fase 0, actualizadas):
+//  - Avance de un Entregable (Actividad de la BD) con Actividades desglosadas
+//                           (Subactividades) = SUMA PONDERADA por el peso de cada
+//                           Actividad; los pesos por Entregable suman 100 %.
+//  - Avance de un Componente (Fase) = promedio simple de sus Entregables.
+//  - Avance del Proyecto  = suma ponderada de los Componentes por su peso; los
+//                           pesos de los Componentes suman 100 %.
 
 export interface ActividadAvance {
   avancePorcentaje: number; // 0..100
@@ -20,6 +23,31 @@ export function avanceFase(actividades: ActividadAvance[]): number {
   if (actividades.length === 0) return 0;
   const suma = actividades.reduce((acc, a) => acc + a.avancePorcentaje, 0);
   return suma / actividades.length;
+}
+
+// ─── Avance de un Entregable a partir de sus Actividades (Subactividades) ─
+
+export interface ActividadPonderada {
+  pesoPorcentaje: number; // peso de la Actividad dentro del Entregable (suman 100)
+  avancePorcentaje: number; // 0..100
+}
+
+/**
+ * Avance de un Entregable = Σ (peso_actividad/Σpesos × avance_actividad).
+ * Se normaliza por la suma de pesos para ser robusto si aún no cuadran a 100.
+ * Si todos los pesos son 0 (aún sin cuadrar), cae a promedio simple para no
+ * perder la lectura del avance. Sin actividades => 0.
+ */
+export function avanceEntregablePonderado(actividades: ActividadPonderada[]): number {
+  if (actividades.length === 0) return 0;
+  const sumaPesos = actividades.reduce((acc, a) => acc + a.pesoPorcentaje, 0);
+  if (sumaPesos === 0) {
+    return avanceFase(actividades);
+  }
+  return actividades.reduce(
+    (acc, a) => acc + (a.pesoPorcentaje / sumaPesos) * a.avancePorcentaje,
+    0,
+  );
 }
 
 /** Suma de los pesos de un conjunto de Fases. */

@@ -2,8 +2,14 @@
 
 **Proyecto:** Plataforma de Seguimiento y Monitoreo (PAC)
 **Fase:** 3 de 16 — Modelo de Datos y Backend Core del Dominio
-**Depende de:** Fase 2 completada y validada (andamiaje ejecutable con `docker compose up`, `/api/health` OK). Diseño en `docs/fase-1-arquitectura/`.
-**Skills de Claude recomendadas:** `engineering:system-design` (si hay que refinar el modelo) y `engineering:testing-strategy` (para las pruebas de cálculo e inmutabilidad).
+
+> **Actualización 25-ago-2026 — el modelo evolucionó; NO requiere re-ejecutar la fase (ya implementado).** Cambios vigentes sobre el modelo original `Proyecto → Fase → Actividad → Subactividad → Hito`:
+>
+> - `Subactividad` (= "Actividad" del negocio) ganó `codigo`, `etapa`, `pesoPorcentaje`, `fechaInicioPlan/FinPlan`, `criterioTerminado`, `nota` (migración `0014_actividades_ponderadas`). El avance del Entregable (`Actividad`) se deriva como **suma ponderada** de sus subactividades por `pesoPorcentaje` (ver `dominio/calculo-avance.ts::avanceEntregablePonderado` y `avance.service.ts::recalcularActividad`), ya no promedio simple.
+> - Nuevo modelo **`AsignacionComponente`** (fase↔usuario, `pesoPorcentaje`, suma 100% por Fase): distribución de responsabilidad por Componente, informativa. Endpoints en `fases/:id/asignaciones-componente` (lectura con sesión, escritura admin). Complementa a `AsignacionSubactividad` (responsable por Actividad).
+> - Los 18 Entregables tienen ahora Actividades desglosadas (antes solo 6). El reparto por entregable vía `Asignacion` (15/70/15) quedó obsoleto.
+>   **Depende de:** Fase 2 completada y validada (andamiaje ejecutable con `docker compose up`, `/api/health` OK). Diseño en `docs/fase-1-arquitectura/`.
+>   **Skills de Claude recomendadas:** `engineering:system-design` (si hay que refinar el modelo) y `engineering:testing-strategy` (para las pruebas de cálculo e inmutabilidad).
 
 > **Nota de secuencia:** ejecuta esta fase sobre la rama de la Fase 2 ya integrada. En esta fase **sí** se escriben pruebas automatizadas (unitarias y de integración): forman parte de la entrega.
 

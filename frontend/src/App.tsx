@@ -174,7 +174,7 @@ export function App() {
             <h4>Qué estás viendo</h4>
             <p>
               El componente seleccionado arriba (o los 7, con "Todos los componentes"), con sus
-              actividades, hitos y tareas puntuales.
+              entregables, hitos y las actividades específicas de cada entregable.
             </p>
             <h4>Dos indicadores por actividad, no uno</h4>
             <ul>
@@ -209,9 +209,9 @@ export function App() {
           <GuiaTab>
             <h4>Qué estás viendo</h4>
             <p>
-              Una bitácora: cada actividad (o cada tarea puntual, si las tiene) con el historial
-              completo de sus reportes de avance — porcentaje, fecha, quién lo registró y su
-              observación en texto libre. Haz clic en una actividad para desplegar su historial.
+              Una bitácora: cada entregable (o cada una de sus actividades específicas) con el
+              historial completo de sus reportes de avance — porcentaje, fecha, quién lo registró y
+              su observación en texto libre. Haz clic en un entregable para desplegar su historial.
             </p>
             <h4>El enlace de evidencia</h4>
             <p>

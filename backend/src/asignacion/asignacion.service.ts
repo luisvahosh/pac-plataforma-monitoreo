@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { AvanceService } from '../avance/avance.service';
 import { CrearAsignacionDto } from './dto/crear-asignacion.dto';
+import { CrearAsignacionComponenteDto } from './dto/crear-asignacion-componente.dto';
 import { derivarEstado } from '../dominio/estado-actividad';
 import { calcularDesviacion } from '../dominio/desviacion-cronograma';
 
@@ -121,6 +122,60 @@ export class AsignacionService {
       throw new NotFoundException('Asignación no encontrada');
     }
     await this.prisma.asignacionSubactividad.delete({ where: { id: asignacionId } });
+    return { mensaje: 'Asignación eliminada' };
+  }
+
+  // ─── Asignación por Componente (Fase) ─────────────────────────────
+  // Distribución de responsabilidad de un Componente entre sus Colaboradores:
+  // suma 100 % (RN-08 a nivel de Componente). Es informativa (no altera el
+  // cálculo del avance). Al incorporar un nuevo Colaborador hay que reducir el
+  // peso de otro(s) para seguir en 100 %.
+
+  /** Asigna (o reajusta) el % de participación de un Colaborador en un Componente. */
+  async asignarComponente(faseId: string, dto: CrearAsignacionComponenteDto) {
+    const fase = await this.prisma.fase.findUnique({ where: { id: faseId } });
+    if (!fase) throw new NotFoundException('Componente no encontrado');
+    const usuario = await this.prisma.usuario.findUnique({ where: { id: dto.usuarioId } });
+    if (!usuario) throw new NotFoundException('Usuario no encontrado');
+
+    const existentes = await this.prisma.asignacionComponente.findMany({ where: { faseId } });
+    const sumaSinEste = existentes
+      .filter((a) => a.usuarioId !== dto.usuarioId)
+      .reduce((acc, a) => acc + a.pesoPorcentaje, 0);
+    const nuevaSuma = sumaSinEste + dto.pesoPorcentaje;
+    if (nuevaSuma > 100.01) {
+      throw new BadRequestException(
+        `La suma de participación de este componente quedaría en ${nuevaSuma.toFixed(1)} %, más de 100 %. ` +
+          `Reduce este porcentaje o ajusta primero el de otro colaborador (suma actual sin este: ${sumaSinEste.toFixed(1)} %).`,
+      );
+    }
+
+    return this.prisma.asignacionComponente.upsert({
+      where: { faseId_usuarioId: { faseId, usuarioId: dto.usuarioId } },
+      update: { pesoPorcentaje: dto.pesoPorcentaje },
+      create: { faseId, usuarioId: dto.usuarioId, pesoPorcentaje: dto.pesoPorcentaje },
+    });
+  }
+
+  /** Lista la distribución de un Componente e informa si suma 100 %. */
+  async listarComponente(faseId: string) {
+    const asignaciones = await this.prisma.asignacionComponente.findMany({
+      where: { faseId },
+      include: { usuario: { select: { id: true, nombre: true, email: true } } },
+      orderBy: { pesoPorcentaje: 'desc' },
+    });
+    const sumaPesos = asignaciones.reduce((acc, a) => acc + a.pesoPorcentaje, 0);
+    return { asignaciones, sumaPesos, pesosValidos: Math.abs(sumaPesos - 100) <= 0.01 };
+  }
+
+  async quitarComponente(faseId: string, asignacionId: string) {
+    const asignacion = await this.prisma.asignacionComponente.findUnique({
+      where: { id: asignacionId },
+    });
+    if (!asignacion || asignacion.faseId !== faseId) {
+      throw new NotFoundException('Asignación no encontrada');
+    }
+    await this.prisma.asignacionComponente.delete({ where: { id: asignacionId } });
     return { mensaje: 'Asignación eliminada' };
   }
 

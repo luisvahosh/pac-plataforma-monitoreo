@@ -43,7 +43,9 @@ export class SubactividadService {
     const subactividad = await this.prisma.subactividad.create({
       data: { actividadId, descripcion, orden: total },
     });
-    // La actividad pasa a derivar su avance del promedio de sus subactividades.
+    // La actividad pasa a derivar su avance de la suma ponderada de sus
+    // subactividades por peso (la nueva, con peso 0, no altera el resultado
+    // hasta que un admin le asigne un peso).
     await this.avances.recalcularActividad(actividadId);
     return subactividad;
   }

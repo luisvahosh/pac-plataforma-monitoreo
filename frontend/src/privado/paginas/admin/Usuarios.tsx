@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { apiFetch, apiJson } from '../../api-cliente';
 import { Dialogo } from '../../../components/Dialogo';
+import { Modal } from '../../../components/Modal';
 
 interface Usuario {
   id: string;
@@ -133,10 +134,12 @@ export function Usuarios() {
     setEditandoId(null);
   }
 
-  async function guardarEdicion(id: string) {
+  async function guardarEdicion(e: FormEvent) {
+    e.preventDefault();
+    if (!editandoId) return;
     setError(null);
     try {
-      await apiJson(`/api/usuarios/${id}`, {
+      await apiJson(`/api/usuarios/${editandoId}`, {
         method: 'PATCH',
         body: JSON.stringify({
           nombre: editNombre,
@@ -226,126 +229,118 @@ export function Usuarios() {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((u) =>
-              editandoId === u.id ? (
-                <tr key={u.id}>
-                  <td>
-                    <input
-                      value={editNombre}
-                      onChange={(e) => setEditNombre(e.target.value)}
-                      aria-label={`Nombre de ${u.nombre}`}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="email"
-                      value={editEmail}
-                      onChange={(e) => setEditEmail(e.target.value)}
-                      aria-label={`Correo de ${u.nombre}`}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="tel"
-                      value={editCelular}
-                      onChange={(e) => setEditCelular(e.target.value)}
-                      placeholder="+57 300 000 0000"
-                      aria-label={`Celular de ${u.nombre}`}
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={editRol}
-                      onChange={(e) => setEditRol(e.target.value)}
-                      aria-label={`Rol de ${u.nombre}`}
+            {usuarios.map((u) => (
+              <tr key={u.id}>
+                <td>{u.nombre}</td>
+                <td>{u.email}</td>
+                <td>{u.celular ?? <span className="tenue">—</span>}</td>
+                <td>{u.rol.nombre}</td>
+                <td>{u.estado}</td>
+                <td>
+                  <div className="acciones-tabla">
+                    <button
+                      type="button"
+                      className="enlace"
+                      onClick={() => iniciarEdicion(u)}
+                      aria-label={`Editar a ${u.nombre}`}
                     >
-                      <option value="colaborador">Colaborador</option>
-                      <option value="administrador">Administrador</option>
-                    </select>
-                  </td>
-                  <td>{u.estado}</td>
-                  <td>
-                    <div className="acciones-tabla">
-                      <button type="button" className="enlace" onClick={() => guardarEdicion(u.id)}>
-                        guardar
-                      </button>
-                      <button type="button" className="enlace" onClick={cancelarEdicion}>
-                        cancelar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                <tr key={u.id}>
-                  <td>{u.nombre}</td>
-                  <td>{u.email}</td>
-                  <td>{u.celular ?? <span className="tenue">—</span>}</td>
-                  <td>{u.rol.nombre}</td>
-                  <td>{u.estado}</td>
-                  <td>
-                    <div className="acciones-tabla">
+                      editar
+                    </button>
+                    {u.estado === 'inactivo' && (
                       <button
                         type="button"
                         className="enlace"
-                        onClick={() => iniciarEdicion(u)}
-                        aria-label={`Editar a ${u.nombre}`}
+                        onClick={() => void reactivar(u.id)}
+                        aria-label={`Reactivar a ${u.nombre}`}
                       >
-                        editar
+                        reactivar
                       </button>
-                      {u.estado === 'inactivo' && (
-                        <button
-                          type="button"
-                          className="enlace"
-                          onClick={() => void reactivar(u.id)}
-                          aria-label={`Reactivar a ${u.nombre}`}
-                        >
-                          reactivar
-                        </button>
-                      )}
-                      {u.estado !== 'inactivo' && (
-                        <button
-                          type="button"
-                          className="enlace"
-                          onClick={() => void desactivar(u.id)}
-                          aria-label={`Desactivar a ${u.nombre}`}
-                        >
-                          desactivar
-                        </button>
-                      )}
-                      {u.estado === 'pendiente_activacion' && (
-                        <button
-                          type="button"
-                          className="enlace"
-                          onClick={() => void reenviarActivacion(u)}
-                          aria-label={`Reenviar activación a ${u.nombre}`}
-                        >
-                          reenviar activación
-                        </button>
-                      )}
+                    )}
+                    {u.estado !== 'inactivo' && (
                       <button
                         type="button"
-                        className="enlace enlace-peligro"
-                        onClick={() => pedirReiniciarActivacion(u)}
-                        aria-label={`Reiniciar activación de ${u.nombre}`}
+                        className="enlace"
+                        onClick={() => void desactivar(u.id)}
+                        aria-label={`Desactivar a ${u.nombre}`}
                       >
-                        reiniciar activación
+                        desactivar
                       </button>
+                    )}
+                    {u.estado === 'pendiente_activacion' && (
                       <button
                         type="button"
-                        className="enlace enlace-peligro"
-                        onClick={() => pedirEliminar(u)}
-                        aria-label={`Eliminar a ${u.nombre}`}
+                        className="enlace"
+                        onClick={() => void reenviarActivacion(u)}
+                        aria-label={`Reenviar activación a ${u.nombre}`}
                       >
-                        eliminar
+                        reenviar activación
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ),
-            )}
+                    )}
+                    <button
+                      type="button"
+                      className="enlace enlace-peligro"
+                      onClick={() => pedirReiniciarActivacion(u)}
+                      aria-label={`Reiniciar activación de ${u.nombre}`}
+                    >
+                      reiniciar activación
+                    </button>
+                    <button
+                      type="button"
+                      className="enlace enlace-peligro"
+                      onClick={() => pedirEliminar(u)}
+                      aria-label={`Eliminar a ${u.nombre}`}
+                    >
+                      eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      <Modal abierto={editandoId !== null} titulo="Editar usuario" onCerrar={cancelarEdicion}>
+        <form onSubmit={guardarEdicion} className="form">
+          <label>
+            Nombre
+            <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} required />
+          </label>
+          <label>
+            Correo
+            <input
+              type="email"
+              value={editEmail}
+              onChange={(e) => setEditEmail(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Celular
+            <input
+              type="tel"
+              value={editCelular}
+              onChange={(e) => setEditCelular(e.target.value)}
+              placeholder="+57 300 000 0000"
+            />
+          </label>
+          <label>
+            Rol
+            <select value={editRol} onChange={(e) => setEditRol(e.target.value)}>
+              <option value="colaborador">Colaborador</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </label>
+          <div className="dialogo-acciones">
+            <button type="button" className="boton-secundario" onClick={cancelarEdicion}>
+              Cancelar
+            </button>
+            <button type="submit" className="boton-primario">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       <Dialogo
         abierto={dialogo !== null}

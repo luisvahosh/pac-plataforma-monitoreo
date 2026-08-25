@@ -32,7 +32,16 @@ export class SubactividadService {
   }
 
   listarPorActividad(actividadId: string) {
-    return this.prisma.subactividad.findMany({ where: { actividadId }, orderBy: { orden: 'asc' } });
+    return this.prisma.subactividad.findMany({
+      where: { actividadId },
+      orderBy: { orden: 'asc' },
+      include: {
+        asignaciones: {
+          include: { usuario: { select: { id: true, nombre: true } } },
+          orderBy: { pesoTrabajoPorcentaje: 'desc' },
+        },
+      },
+    });
   }
 
   /** Crea una subactividad nueva dentro de una Actividad (admin). */

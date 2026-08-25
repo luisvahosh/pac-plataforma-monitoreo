@@ -44,6 +44,11 @@ interface Subactividad {
   etapa: string | null;
   pesoPorcentaje: number;
   criterioTerminado: string | null;
+  asignaciones: {
+    id: string;
+    pesoTrabajoPorcentaje: number;
+    usuario: { id: string; nombre: string };
+  }[];
 }
 
 export function DetalleActividad() {
@@ -460,15 +465,24 @@ function SubactividadFila({
       </button>{' '}
       {esAdmin && (
         <button type="button" className="enlace" onClick={() => setMostrarResponsables((v) => !v)}>
-          {mostrarResponsables ? 'ocultar responsables' : 'responsables'}
+          {mostrarResponsables ? 'ocultar responsables' : 'editar responsables'}
         </button>
       )}
+      <div className="tenue">
+        {subactividad.asignaciones.length > 0 ? (
+          <>Responsable(s): {subactividad.asignaciones.map((a) => a.usuario.nombre).join(', ')}</>
+        ) : (
+          'Sin responsable asignado'
+        )}
+      </div>
       {error && (
         <div className="form-error" role="alert">
           {error}
         </div>
       )}
-      {mostrarResponsables && <ResponsablesSubactividad subactividadId={subactividad.id} />}
+      {mostrarResponsables && (
+        <ResponsablesSubactividad subactividadId={subactividad.id} onCambio={onCambio} />
+      )}
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
@@ -578,7 +592,13 @@ function AgregarSubactividad({
 }
 
 // ─── Responsables de una subactividad (admin) ───────────────────────
-function ResponsablesSubactividad({ subactividadId }: { subactividadId: string }) {
+function ResponsablesSubactividad({
+  subactividadId,
+  onCambio,
+}: {
+  subactividadId: string;
+  onCambio: () => Promise<void>;
+}) {
   const [datos, setDatos] = useState<RespAsignaciones | null>(null);
   const [usuarios, setUsuarios] = useState<UsuarioLista[]>([]);
   const [usuarioId, setUsuarioId] = useState('');
@@ -612,6 +632,7 @@ function ResponsablesSubactividad({ subactividadId }: { subactividadId: string }
       setUsuarioId('');
       setPeso('');
       await cargar();
+      await onCambio();
     } catch (e) {
       setError((e as Error).message);
     }
@@ -622,6 +643,7 @@ function ResponsablesSubactividad({ subactividadId }: { subactividadId: string }
       method: 'DELETE',
     });
     await cargar();
+    await onCambio();
   }
 
   return (

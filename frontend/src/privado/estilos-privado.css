@@ -159,12 +159,14 @@ button {
   border: none;
   border-radius: var(--radio-sm);
   padding: 0.55rem 1rem;
-  background: var(--primario);
+  /* --primario-oscuro (no --primario): blanco sobre #00aeef da solo 2.5:1
+     (falla AA); sobre --primario-oscuro #006f99 da 5.5:1. */
+  background: var(--primario-oscuro);
   color: #fff;
   font-weight: 600;
 }
 button:hover:not(:disabled) {
-  background: var(--primario-oscuro);
+  background: var(--enlace-color-hover);
 }
 button:active:not(:disabled) {
   transform: scale(0.97);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
 import { obtenerDashboard, redondear } from './api';
 import type { DashboardResp } from './tipos';
@@ -8,7 +8,11 @@ import { ListaFases } from './components/ListaFases';
 import { Gantt } from './components/Gantt';
 import { ActividadesBitacora } from './components/ActividadesBitacora';
 import { AlertasPublicas } from './components/AlertasPublicas';
-import { EjecutarPlan } from './components/EjecutarPlan/EjecutarPlan';
+// Carga diferida: Recharts (pesado) sale del bundle inicial y se descarga
+// como chunk aparte solo cuando se abre la pestaña "Ejecutar Plan".
+const EjecutarPlan = lazy(() =>
+  import('./components/EjecutarPlan/EjecutarPlan').then((m) => ({ default: m.EjecutarPlan })),
+);
 import { GuiaTab } from './components/GuiaTab';
 import { Esqueleto } from './components/Esqueleto';
 import { TemaBoton } from './components/TemaBoton';
@@ -284,7 +288,17 @@ export function App() {
           </>
         )}
 
-        {pestana === 'ejecutar' && <EjecutarPlan proyecto={proyecto} />}
+        {pestana === 'ejecutar' && (
+          <Suspense
+            fallback={
+              <div className="estado-carga" role="status">
+                Cargando el tablero ejecutivo…
+              </div>
+            }
+          >
+            <EjecutarPlan proyecto={proyecto} />
+          </Suspense>
+        )}
 
         {pestana === 'cronograma' && <Gantt fases={proyecto.fases} />}
 

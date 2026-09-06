@@ -304,7 +304,7 @@ export function DetalleActividad() {
               <h3>Registrar avance</h3>
               <form onSubmit={registrarAvance} className="form">
                 <label>
-                  Porcentaje (0–100)
+                  Avance de ahora (se suma a {Math.round(actividad.avancePorcentaje)}%)
                   <input
                     type="number"
                     min={0}
@@ -535,7 +535,7 @@ function SubactividadFila({
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
-            % avance
+            Avance de ahora (se suma a {Math.round(subactividad.avancePorcentaje)}%)
             <input
               type="number"
               min={0}

@@ -78,11 +78,16 @@ export class SubactividadService {
       throw new ForbiddenException('No estás asignado a esta subactividad ni a su actividad');
     }
 
+    // Reporte INCREMENTAL: el colaborador informa cuánto avanzó ahora y se suma
+    // al total vigente de la Actividad (tope 100 %). En el histórico se guarda el
+    // total acumulado resultante (append-only, RN-05); el caché queda con ese total.
+    const nuevoTotal = Math.min(100, sub.avancePorcentaje + dto.porcentaje);
+
     const avance = await this.prisma.avanceSubactividad.create({
       data: {
         subactividadId,
         usuarioId: autorId,
-        porcentaje: dto.porcentaje,
+        porcentaje: nuevoTotal,
         enlaceEvidencia: dto.enlaceEvidencia,
         observaciones: dto.observaciones,
       },
@@ -90,7 +95,7 @@ export class SubactividadService {
 
     await this.prisma.subactividad.update({
       where: { id: subactividadId },
-      data: { avancePorcentaje: dto.porcentaje },
+      data: { avancePorcentaje: nuevoTotal },
     });
     await this.avances.recalcularActividad(sub.actividadId);
 

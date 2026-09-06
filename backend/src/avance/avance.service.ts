@@ -47,11 +47,21 @@ export class AvanceService {
       );
     }
 
+    // Reporte INCREMENTAL: el colaborador informa cuánto avanzó ahora y se suma
+    // a su último total (tope 100 %). En el histórico se guarda el total
+    // acumulado resultante, de modo que la bitácora sigue mostrando el avance
+    // vigente en cada punto (append-only, RN-05).
+    const ultimoPropio = await this.prisma.avance.findFirst({
+      where: { actividadId, usuarioId: autorId },
+      orderBy: { fechaHora: 'desc' },
+    });
+    const porcentajeTotal = Math.min(100, (ultimoPropio?.porcentaje ?? 0) + dto.porcentaje);
+
     const avance = await this.prisma.avance.create({
       data: {
         actividadId,
         usuarioId: autorId,
-        porcentaje: dto.porcentaje,
+        porcentaje: porcentajeTotal,
         observaciones: dto.observaciones,
       },
     });
@@ -59,7 +69,7 @@ export class AvanceService {
 
     // Confirmación por correo (RNF-16). No debe hacer fallar el registro.
     try {
-      await this.notificaciones.confirmarRegistroAvance(actividadId, autorId, dto.porcentaje);
+      await this.notificaciones.confirmarRegistroAvance(actividadId, autorId, porcentajeTotal);
     } catch (error) {
       this.logger.warn(`No se pudo enviar la confirmación de avance: ${(error as Error).message}`);
     }

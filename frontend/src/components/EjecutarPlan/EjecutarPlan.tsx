@@ -278,6 +278,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                   type="category"
                   dataKey="nombre"
                   width={180}
+                  interval={0}
                   tick={<TickDosLineas max={26} />}
                 />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />
@@ -353,6 +354,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                     type="category"
                     dataKey="nombre"
                     width={170}
+                    interval={0}
                     tick={<TickDosLineas max={22} />}
                   />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />

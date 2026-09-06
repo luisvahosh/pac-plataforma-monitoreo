@@ -19,7 +19,9 @@ export function Layout() {
       <header className="barra-nav">
         <div className="contenedor nav-inner">
           <div className="nav-marca">
-            <strong>PAC · Panel</strong>
+            <a href="/" className="nav-marca-enlace">
+              <strong>PAC · Panel</strong>
+            </a>
             <button
               type="button"
               className="nav-menu-boton"

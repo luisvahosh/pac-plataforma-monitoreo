@@ -455,3 +455,12 @@ a.mis-actividades-tarjeta:hover {
   margin: 0.75rem 0;
   font-size: 0.9rem;
 }
+
+/* Marca "PAC · Panel" como enlace a la raíz del dominio. */
+.nav-marca-enlace {
+  color: inherit;
+  text-decoration: none;
+}
+.nav-marca-enlace:hover strong {
+  text-decoration: underline;
+}

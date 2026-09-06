@@ -126,6 +126,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
     nombre: c.nombre,
     avance: redondear(c.avance),
     actividades: c.actividades,
+    pesoAsignado: c.pesoAsignado,
     usuarioId: c.usuarioId,
   }));
 
@@ -379,6 +380,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                   <tr>
                     <th>Colaborador</th>
                     <th>Actividades</th>
+                    <th title="Suma de sus pesos de trabajo asignados (carga total)">Peso asig.</th>
                     <th>% avance</th>
                   </tr>
                 </thead>
@@ -387,6 +389,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                     <tr key={c.usuarioId}>
                       <td>{c.nombre}</td>
                       <td>{c.actividades}</td>
+                      <td>{c.pesoAsignado}</td>
                       <td>
                         <Punto nivel={nivelSemaforo(c.avance)} /> {c.avance}%
                       </td>
@@ -459,6 +462,44 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                 evidencia · {m.evidencias.sinEvidencia} sin evidencia.
               </p>
             </>
+          )}
+        </section>
+
+        {/* Actividades con asignación incompleta */}
+        <section className="ejec-panel ejec-ancho">
+          <h3>Actividades con asignación incompleta ({m.asignacionIncompleta.length})</h3>
+          <p className="ejec-sub">
+            Los responsables de cada actividad deberían sumar 100 % de peso de trabajo. Aquí están
+            las que aún no lo cumplen (falta —o sobra— asignar).
+          </p>
+          {m.asignacionIncompleta.length === 0 ? (
+            <p className="ejec-vacio">
+              Todas las actividades del filtro tienen su asignación al 100 %.
+            </p>
+          ) : (
+            <div className="ejec-detalle">
+              {m.asignacionIncompleta.map((a) => (
+                <div className="ejec-entregable" key={a.id}>
+                  <div className="ejec-entregable-cab">
+                    <strong>{a.descripcion}</strong>
+                    <span
+                      className={`badge ${a.faltante > 0 ? 'vencida' : 'proxima_a_vencer'}`}
+                      title={a.faltante > 0 ? 'Falta asignar' : 'Sobre-asignada'}
+                    >
+                      {a.responsables === 0
+                        ? 'Sin responsables'
+                        : a.faltante > 0
+                          ? `Falta ${a.faltante}%`
+                          : `Sobra ${Math.abs(a.faltante)}%`}
+                    </span>
+                  </div>
+                  <div className="ejec-entregable-meta">
+                    {a.componente} · {a.entregable} · {a.responsables} responsable(s) · asignado{' '}
+                    {a.sumaPeso}%
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </section>
 

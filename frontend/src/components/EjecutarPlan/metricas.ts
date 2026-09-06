@@ -89,6 +89,17 @@ export interface MetricaColaborador {
   nombre: string;
   actividades: number;
   avance: number; // promedio de avance de sus actividades
+  pesoAsignado: number; // suma de sus pesos de trabajo (carga total asignada, en puntos)
+}
+
+export interface ActividadAsignacion {
+  id: string;
+  descripcion: string;
+  entregable: string;
+  componente: string;
+  sumaPeso: number; // suma de pesos de los responsables (debería ser 100)
+  faltante: number; // 100 - sumaPeso (positivo = falta asignar)
+  responsables: number;
 }
 
 export interface MetricaHitos {
@@ -123,6 +134,8 @@ export interface Metricas {
     trazabilidad: number | null;
   };
   riesgos: RiesgoAnotado[];
+  // Actividades cuyos responsables NO suman 100 % (les falta —o sobra— asignación).
+  asignacionIncompleta: ActividadAsignacion[];
 }
 
 const ESTADO_CERO: ConteoEstados = {
@@ -149,7 +162,8 @@ export function calcularMetricas(
   const porComponente: MetricaComponente[] = [];
   const hitos: MetricaHitos = { total: 0, cumplidos: 0, pendientes: 0, retrasados: 0, proximos: 0 };
   const riesgos: RiesgoAnotado[] = [];
-  const colabMap = new Map<string, { nombre: string; suma: number; n: number }>();
+  const asignacionIncompleta: ActividadAsignacion[] = [];
+  const colabMap = new Map<string, { nombre: string; suma: number; n: number; peso: number }>();
 
   let ejecutadas = 0;
   let conEvidencia = 0;
@@ -212,10 +226,25 @@ export function calcularMetricas(
             texto: s.riesgos,
           });
         }
+        // Cobertura de asignación: los pesos de los responsables deberían sumar
+        // 100 %. Si no, la actividad tiene asignación incompleta (o sobre-asignada).
+        const sumaPeso = s.responsables.reduce((acc, r) => acc + r.pesoTrabajoPorcentaje, 0);
+        if (Math.abs(sumaPeso - 100) > 0.5) {
+          asignacionIncompleta.push({
+            id: s.id,
+            descripcion: s.descripcion,
+            entregable: a.nombre,
+            componente: f.nombre,
+            sumaPeso: Math.round(sumaPeso * 10) / 10,
+            faltante: Math.round((100 - sumaPeso) * 10) / 10,
+            responsables: s.responsables.length,
+          });
+        }
         for (const r of s.responsables) {
-          const prev = colabMap.get(r.usuarioId) ?? { nombre: r.nombre, suma: 0, n: 0 };
+          const prev = colabMap.get(r.usuarioId) ?? { nombre: r.nombre, suma: 0, n: 0, peso: 0 };
           prev.suma += s.avancePorcentaje;
           prev.n += 1;
+          prev.peso += r.pesoTrabajoPorcentaje;
           colabMap.set(r.usuarioId, prev);
         }
       }
@@ -235,6 +264,7 @@ export function calcularMetricas(
       nombre: v.nombre,
       actividades: v.n,
       avance: v.n > 0 ? v.suma / v.n : 0,
+      pesoAsignado: Math.round(v.peso * 10) / 10,
     }))
     .sort((a, b) => b.actividades - a.actividades);
 
@@ -254,5 +284,6 @@ export function calcularMetricas(
       trazabilidad: ejecutadas > 0 ? Math.round((conEvidencia / ejecutadas) * 100) : null,
     },
     riesgos,
+    asignacionIncompleta: asignacionIncompleta.sort((a, b) => b.faltante - a.faltante),
   };
 }

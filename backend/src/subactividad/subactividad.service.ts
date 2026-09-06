@@ -97,6 +97,21 @@ export class SubactividadService {
     return avance;
   }
 
+  /**
+   * Actualiza el texto de Riesgos asociados a la Actividad. Solo Administrador
+   * (se registra desde la parte privada). La normalización a null de la cadena
+   * vacía mantiene consistente el "sin riesgos anotados".
+   */
+  async actualizarRiesgos(subactividadId: string, riesgos?: string) {
+    await this.obtener(subactividadId);
+    const texto = riesgos?.trim() ? riesgos.trim() : null;
+    return this.prisma.subactividad.update({
+      where: { id: subactividadId },
+      data: { riesgos: texto },
+      select: { id: true, riesgos: true },
+    });
+  }
+
   /** Historial cronológico de avances de una subactividad. Colaborador: solo si está asignado (RN-10). */
   async historial(subactividadId: string, solicitanteId: string, esAdmin: boolean) {
     const sub = await this.obtener(subactividadId);

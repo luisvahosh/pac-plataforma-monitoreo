@@ -44,6 +44,7 @@ interface Subactividad {
   etapa: string | null;
   pesoPorcentaje: number;
   criterioTerminado: string | null;
+  riesgos: string | null;
   asignaciones: {
     id: string;
     pesoTrabajoPorcentaje: number;
@@ -408,8 +409,25 @@ function SubactividadFila({
   const [observaciones, setObservaciones] = useState('');
   const [mostrarForm, setMostrarForm] = useState(false);
   const [mostrarResponsables, setMostrarResponsables] = useState(false);
+  const [mostrarRiesgos, setMostrarRiesgos] = useState(false);
+  const [textoRiesgos, setTextoRiesgos] = useState(subactividad.riesgos ?? '');
   const [historial, setHistorial] = useState<AvanceSubactividad[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function guardarRiesgos(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await apiJson(`/api/subactividades/${subactividad.id}/riesgos`, {
+        method: 'PATCH',
+        body: JSON.stringify({ riesgos: textoRiesgos }),
+      });
+      setMostrarRiesgos(false);
+      await onCambio();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
 
   async function registrar(e: FormEvent) {
     e.preventDefault();
@@ -467,6 +485,18 @@ function SubactividadFila({
         <button type="button" className="enlace" onClick={() => setMostrarResponsables((v) => !v)}>
           {mostrarResponsables ? 'ocultar responsables' : 'editar responsables'}
         </button>
+      )}{' '}
+      {esAdmin && (
+        <button
+          type="button"
+          className="enlace"
+          onClick={() => {
+            setTextoRiesgos(subactividad.riesgos ?? '');
+            setMostrarRiesgos((v) => !v);
+          }}
+        >
+          {mostrarRiesgos ? 'ocultar riesgos' : 'editar riesgos'}
+        </button>
       )}
       <div className="tenue">
         {subactividad.asignaciones.length > 0 ? (
@@ -475,6 +505,25 @@ function SubactividadFila({
           'Sin responsable asignado'
         )}
       </div>
+      {subactividad.riesgos && (
+        <div className="tenue" style={{ whiteSpace: 'pre-line' }}>
+          ⚠ Riesgos: {subactividad.riesgos}
+        </div>
+      )}
+      {mostrarRiesgos && (
+        <form onSubmit={guardarRiesgos} className="form-inline">
+          <label style={{ flex: 1 }}>
+            Riesgos asociados (visibles públicamente en «Ejecutar Plan»)
+            <textarea
+              value={textoRiesgos}
+              onChange={(e) => setTextoRiesgos(e.target.value)}
+              rows={3}
+              placeholder="Describe los riesgos asociados a esta actividad…"
+            />
+          </label>
+          <button type="submit">Guardar riesgos</button>
+        </form>
+      )}
       {error && (
         <div className="form-error" role="alert">
           {error}

@@ -241,6 +241,10 @@ model Subactividad {
   fechaFinPlan     DateTime?               @map("fecha_fin_plan")
   criterioTerminado String?                @map("criterio_terminado")
   nota             String? // apoyos/roles no vinculados a una cuenta (texto libre)
+  // Riesgos asociados a la Actividad (texto libre). Se REGISTRA solo desde la
+  // parte privada (autenticado, ver PATCH subactividades/:id/riesgos) y se
+  // MUESTRA públicamente en el dashboard "Ejecutar Plan" (RN sin evidencia).
+  riesgos          String?
   avancePorcentaje Float                   @default(0) @map("avance_porcentaje")
   actividad        Actividad               @relation(fields: [actividadId], references: [id], onDelete: Cascade)
   avances          AvanceSubactividad[]

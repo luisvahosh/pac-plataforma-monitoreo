@@ -33,6 +33,12 @@ export class CronogramaService {
                       orderBy: { fechaHora: 'asc' },
                       include: { usuario: { select: { nombre: true } } },
                     },
+                    // Responsables asignados (nombre + peso), para el bloque de
+                    // cumplimiento por colaborador de "Ejecutar Plan".
+                    asignaciones: {
+                      orderBy: { pesoTrabajoPorcentaje: 'desc' },
+                      include: { usuario: { select: { id: true, nombre: true } } },
+                    },
                   },
                 },
               },
@@ -95,6 +101,19 @@ export class CronogramaService {
           id: s.id,
           descripcion: s.descripcion,
           avancePorcentaje: s.avancePorcentaje,
+          // Riesgos anotados (texto libre). Público a propósito; se registra
+          // solo desde la parte privada (PATCH subactividades/:id/riesgos).
+          riesgos: s.riesgos,
+          // Trazabilidad: SOLO indica si existe algún enlace de evidencia; el
+          // contenido/URL nunca se expone públicamente (RN-06/RN-13).
+          tieneEvidencia: s.avances.some((av) => !!av.enlaceEvidencia),
+          // Responsables asignados a la Actividad (para cumplimiento por
+          // colaborador). Solo identidad y peso; nunca datos sensibles.
+          responsables: s.asignaciones.map((asig) => ({
+            usuarioId: asig.usuario.id,
+            nombre: asig.usuario.nombre,
+            pesoTrabajoPorcentaje: asig.pesoTrabajoPorcentaje,
+          })),
           avances: s.avances.map((av) => ({
             id: av.id,
             porcentaje: av.porcentaje,

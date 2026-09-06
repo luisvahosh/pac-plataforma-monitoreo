@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { SubactividadService } from './subactividad.service';
 import { RegistrarAvanceSubactividadDto } from './dto/registrar-avance-subactividad.dto';
 import { CrearSubactividadDto } from './dto/crear-subactividad.dto';
+import { ActualizarRiesgosSubactividadDto } from './dto/actualizar-riesgos-subactividad.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -47,5 +48,14 @@ export class SubactividadController {
   @Get('subactividades/:id/avances')
   historial(@Param('id') id: string, @UsuarioActual() usuario: JwtPayload) {
     return this.subactividades.historial(id, usuario.sub, usuario.rol === 'administrador');
+  }
+
+  // Registro de Riesgos asociados a la Actividad: solo Administrador (parte
+  // privada). La lectura es pública vía el dashboard "Ejecutar Plan".
+  @Patch('subactividades/:id/riesgos')
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
+  actualizarRiesgos(@Param('id') id: string, @Body() dto: ActualizarRiesgosSubactividadDto) {
+    return this.subactividades.actualizarRiesgos(id, dto.riesgos);
   }
 }

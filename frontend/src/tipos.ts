@@ -1,14 +1,11 @@
 export type EstadoActividad =
-  | 'pendiente'
-  | 'en_ejecucion'
-  | 'finalizada'
-  | 'proxima_a_vencer'
-  | 'vencida';
+  'pendiente' | 'en_ejecucion' | 'finalizada' | 'proxima_a_vencer' | 'vencida';
 
 // Indicador complementario de gestión de proyectos: avance real vs. avance
 // esperado según la Línea Base vigente (no reemplaza `estado`, que es por
 // fecha límite).
-export type EstadoCronograma = 'sin_iniciar' | 'completada' | 'en_tiempo' | 'en_riesgo' | 'atrasada';
+export type EstadoCronograma =
+  'sin_iniciar' | 'completada' | 'en_tiempo' | 'en_riesgo' | 'atrasada';
 
 export interface Hito {
   id: string;
@@ -25,10 +22,22 @@ export interface AvanceObservacion {
   usuario: string;
 }
 
+export interface ResponsableAsignado {
+  usuarioId: string;
+  nombre: string;
+  pesoTrabajoPorcentaje: number;
+}
+
 export interface Subactividad {
   id: string;
   descripcion: string;
   avancePorcentaje: number;
+  // Riesgos anotados (texto libre). Registro solo autenticado; lectura pública.
+  riesgos: string | null;
+  // Solo indica si existe evidencia (no la URL/contenido, privado por RN-06/RN-13).
+  tieneEvidencia: boolean;
+  // Responsables asignados a la Actividad (cumplimiento por colaborador).
+  responsables: ResponsableAsignado[];
   avances: AvanceObservacion[];
 }
 

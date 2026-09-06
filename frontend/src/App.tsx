@@ -8,19 +8,20 @@ import { ListaFases } from './components/ListaFases';
 import { Gantt } from './components/Gantt';
 import { ActividadesBitacora } from './components/ActividadesBitacora';
 import { AlertasPublicas } from './components/AlertasPublicas';
+import { EjecutarPlan } from './components/EjecutarPlan/EjecutarPlan';
 import { GuiaTab } from './components/GuiaTab';
 import { Esqueleto } from './components/Esqueleto';
 import { TemaBoton } from './components/TemaBoton';
 import { useAuth } from './privado/auth-contexto';
 
-type Pestana = 'resumen' | 'cronograma' | 'actividades' | 'alertas';
+type Pestana = 'ejecutar' | 'resumen' | 'cronograma' | 'actividades' | 'alertas';
 
 export function App() {
   const { usuario, logout } = useAuth();
   const [data, setData] = useState<DashboardResp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
-  const [pestana, setPestana] = useState<Pestana>('resumen');
+  const [pestana, setPestana] = useState<Pestana>('ejecutar');
   const [faseId, setFaseId] = useState<string>('todas');
 
   useEffect(() => {
@@ -103,6 +104,7 @@ export function App() {
     faseId === 'todas' ? proyecto.fases : proyecto.fases.filter((f) => f.id === faseId);
 
   const pestanas: { id: Pestana; etiqueta: string }[] = [
+    { id: 'ejecutar', etiqueta: 'Ejecutar Plan' },
     { id: 'resumen', etiqueta: 'Resumen por componente' },
     { id: 'cronograma', etiqueta: 'Cronograma (Gantt)' },
     { id: 'actividades', etiqueta: 'Actividades' },
@@ -169,6 +171,18 @@ export function App() {
           ))}
         </nav>
 
+        {pestana === 'ejecutar' && (
+          <GuiaTab>
+            <h4>Qué estás viendo</h4>
+            <p>
+              El tablero ejecutivo del proyecto: responde en menos de un minuto cómo va, si vamos
+              adelantados o atrasados, qué entregables e hitos requieren atención, quién concentra
+              la carga y si hay evidencia de lo ejecutado. Usa los filtros para acotar por
+              componente, estado, colaborador o período; haz clic en la torta de estados o en un
+              colaborador para profundizar.
+            </p>
+          </GuiaTab>
+        )}
         {pestana === 'resumen' && (
           <GuiaTab>
             <h4>Qué estás viendo</h4>
@@ -269,6 +283,8 @@ export function App() {
             <ListaFases fases={fasesFiltradas} />
           </>
         )}
+
+        {pestana === 'ejecutar' && <EjecutarPlan proyecto={proyecto} />}
 
         {pestana === 'cronograma' && <Gantt fases={proyecto.fases} />}
 

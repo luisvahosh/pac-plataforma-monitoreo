@@ -431,11 +431,10 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
         <section className="ejec-panel ejec-nodisp">
           <h3>No disponible todavía</h3>
           <p>
-            <strong>Presupuesto</strong>: requiere cargar información financiera (comprometido,
-            ejecutado, saldo). <strong>Calidad de entregables</strong> (ciclos de revisión, tiempo
-            de aprobación): requiere un flujo de aprobación con estados y fechas.{' '}
-            <strong>Riesgos con nivel</strong> (probabilidad × impacto, matriz de calor): hoy se
-            capturan como texto; el módulo estructurado se incorpora a futuro.
+            <strong>Calidad de entregables</strong> (ciclos de revisión, tiempo de aprobación):
+            requiere un flujo de aprobación con estados y fechas. <strong>Riesgos con nivel</strong>{' '}
+            (probabilidad × impacto, matriz de calor): hoy se capturan como texto; el módulo
+            estructurado se incorpora a futuro.
           </p>
         </section>
       </div>

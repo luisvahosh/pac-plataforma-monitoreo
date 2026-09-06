@@ -43,6 +43,11 @@ const TOOLTIP_STYLE = {
 };
 const EJE_TICK = { fill: 'var(--texto-tenue)', fontSize: 12 };
 
+/** Acorta etiquetas largas del eje (los nombres de componente) con ellipsis. */
+function truncar(texto: string, max = 26): string {
+  return texto.length > max ? `${texto.slice(0, max - 1)}…` : texto;
+}
+
 function Punto({ nivel }: { nivel: 'verde' | 'amarillo' | 'rojo' }) {
   return (
     <span className="ejec-punto" style={{ background: COLOR_NIVEL[nivel] }} aria-hidden="true" />
@@ -225,18 +230,31 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
           {dataComponentes.length === 0 ? (
             <p className="ejec-vacio">Sin componentes para el filtro actual.</p>
           ) : (
-            <ResponsiveContainer width="100%" height={40 + dataComponentes.length * 46}>
+            <ResponsiveContainer width="100%" height={56 + dataComponentes.length * 56}>
               <BarChart
                 data={dataComponentes}
                 layout="vertical"
+                barCategoryGap="28%"
+                barGap={2}
                 margin={{ left: 8, right: 16, top: 4, bottom: 4 }}
               >
                 <XAxis type="number" domain={[0, 100]} unit="%" tick={EJE_TICK} />
-                <YAxis type="category" dataKey="nombre" width={130} tick={EJE_TICK} />
+                <YAxis
+                  type="category"
+                  dataKey="nombre"
+                  width={180}
+                  tick={EJE_TICK}
+                  tickFormatter={(v: string) => truncar(v)}
+                />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />
                 <Legend />
-                <Bar dataKey="Real" fill="var(--primario)" radius={[0, 4, 4, 0]} />
-                <Bar dataKey="Esperado" fill="var(--pendiente)" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="Real" fill="var(--primario)" radius={[0, 4, 4, 0]} barSize={12} />
+                <Bar
+                  dataKey="Esperado"
+                  fill="var(--pendiente)"
+                  radius={[0, 4, 4, 0]}
+                  barSize={12}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -297,7 +315,13 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                   margin={{ left: 8, right: 24, top: 4, bottom: 4 }}
                 >
                   <XAxis type="number" domain={[0, 100]} unit="%" tick={EJE_TICK} />
-                  <YAxis type="category" dataKey="nombre" width={150} tick={EJE_TICK} />
+                  <YAxis
+                    type="category"
+                    dataKey="nombre"
+                    width={170}
+                    tick={EJE_TICK}
+                    tickFormatter={(v: string) => truncar(v, 22)}
+                  />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />
                   <Bar
                     dataKey="avance"

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Gauge,
+  Target,
   SquaresFour,
   ChartBar,
   ClipboardText,
@@ -55,6 +56,7 @@ export function Guia() {
 
         <nav className="guia-nav" aria-label="Ir a una sección">
           <a href="#que-muestra">Qué muestra la página principal</a>
+          <a href="#ejecutar">Ejecutar Plan</a>
           <a href="#resumen">Resumen por componente</a>
           <a href="#gantt">Cronograma (Gantt)</a>
           <a href="#actividades">Actividades</a>
@@ -70,11 +72,48 @@ export function Guia() {
               cronograma, e hitos cumplidos.
             </li>
             <li>
-              <strong>Cuatro pestañas</strong>: "Resumen por componente", "Cronograma (Gantt)",
+              <strong>Cinco pestañas</strong>: "Ejecutar Plan" (el tablero ejecutivo, es la primera
+              y la que se abre por defecto), "Resumen por componente", "Cronograma (Gantt)",
               "Actividades" y "Alertas". Cada una tiene su propio botón "Guía" que explica qué estás
               viendo.
             </li>
           </ul>
+        </GuiaPanel>
+
+        <GuiaPanel icono={Target} titulo='Pestaña "Ejecutar Plan"' id="ejecutar">
+          <p>
+            El <strong>tablero ejecutivo</strong>: responde en menos de un minuto cómo va el
+            proyecto, si vamos adelantados o atrasados, qué requiere atención y dónde están los
+            cuellos de botella. Reúne en una sola pantalla:
+          </p>
+          <ul>
+            <li>
+              <strong>Indicadores clave</strong>: avance real, avance esperado, desviación (con
+              semáforo), entregables finalizados, hitos cumplidos y trazabilidad de evidencias.
+            </li>
+            <li>
+              <strong>Gráficos</strong>: avance real vs. esperado por componente, estado de
+              entregables (torta), cumplimiento por colaborador, hitos y trazabilidad de evidencias.
+            </li>
+            <li>
+              <strong>Cumplimiento por colaborador</strong>: cuántas actividades tiene asignadas
+              cada persona, su peso de trabajo y su % de avance. Sirve para ver cuellos de botella,
+              no para calificar a las personas.
+            </li>
+            <li>
+              <strong>Actividades con asignación incompleta</strong>: aquellas cuyos responsables
+              aún no suman el 100 % del peso de trabajo.
+            </li>
+            <li>
+              <strong>Riesgos anotados</strong>: los riesgos que el equipo registra por actividad
+              desde el panel privado.
+            </li>
+          </ul>
+          <p>
+            Usa los <strong>filtros</strong> (componente, estado, colaborador y período) para acotar
+            el tablero, y haz clic en la torta de estados o en un colaborador para profundizar. Los
+            indicadores que dependen de datos aún no cargados se muestran como "—" a propósito.
+          </p>
         </GuiaPanel>
 
         <GuiaPanel icono={SquaresFour} titulo='Pestaña "Resumen por componente"' id="resumen">

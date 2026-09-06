@@ -70,17 +70,20 @@ export function Guia() {
               actividades específicas de las que eres responsable.
             </li>
             <li>
-              <strong>Registrar avance</strong>: dentro de una actividad sin tareas puntuales,
-              escribe el porcentaje (0–100) y, si quieres, una observación. Queda un historial
-              completo con fecha y autor — nunca se borra, aunque el porcentaje baje.
+              <strong>Registrar avance (incremental)</strong>: escribe{' '}
+              <strong>cuánto avanzaste ahora</strong>, no el total. El sistema lo{' '}
+              <strong>suma</strong> a lo que ya llevabas (con tope en 100 %). Por ejemplo, si vas en
+              30 % y hiciste 10 % más, escribe 10 y quedará en 40 %. La etiqueta del campo te
+              recuerda el total vigente. Cada reporte queda en un historial con fecha y autor —
+              nunca se borra.
             </li>
             <li>
               <strong>Actividades del entregable</strong>: cada entregable se desglosa en
               actividades específicas (con su etapa y peso). El avance del entregable no se reporta
               directo: se calcula solo, como la <strong>suma ponderada</strong> de sus actividades
-              por su peso. Haz clic en "actualizar avance" junto a cada actividad para reportar su %
-              y, si tienes, el enlace a la evidencia. "ver historial" muestra los reportes
-              anteriores de esa actividad.
+              por su peso. Haz clic en "actualizar avance" junto a cada actividad para reportar{' '}
+              <strong>lo que avanzaste ahora</strong> (se suma al total) y, si tienes, el enlace a
+              la evidencia. "ver historial" muestra los reportes anteriores de esa actividad.
             </li>
             <li>
               <strong>Evidencias</strong>: en cada actividad puedes añadir un enlace (URL) que
@@ -186,6 +189,12 @@ export function Guia() {
                 por su peso (que suman 100 %: 85 % elaboración + 10 % revisión y aval + 5 % revisión
                 final de la Secretaría). La suma de pesos de los responsables de una misma actividad
                 no puede superar 100 %; la pantalla muestra la suma actual.
+              </li>
+              <li>
+                <strong>Riesgos por actividad</strong>: junto a cada actividad, el botón "editar
+                riesgos" permite anotar en texto libre los riesgos asociados. Se registran solo
+                desde aquí (parte privada) pero se muestran públicamente en el tablero "Ejecutar
+                Plan".
               </li>
               <li>
                 El botón "editar" junto al título del entregable permite cambiar nombre, descripción

@@ -43,9 +43,44 @@ const TOOLTIP_STYLE = {
 };
 const EJE_TICK = { fill: 'var(--texto-tenue)', fontSize: 12 };
 
-/** Acorta etiquetas largas del eje (los nombres de componente) con ellipsis. */
+/** Acorta etiquetas largas con ellipsis (segunda línea del tick). */
 function truncar(texto: string, max = 26): string {
   return texto.length > max ? `${texto.slice(0, max - 1)}…` : texto;
+}
+
+/** Parte un texto en dos líneas por palabras, con ~`max` caracteres por línea. */
+function dosLineas(texto: string, max = 24): [string, string] {
+  const palabras = texto.split(/\s+/);
+  let l0 = '';
+  let l1 = '';
+  for (const p of palabras) {
+    if (!l1 && `${l0} ${p}`.trim().length <= max) l0 = `${l0} ${p}`.trim();
+    else l1 = `${l1} ${p}`.trim();
+  }
+  return [l0, truncar(l1, max)];
+}
+
+/** Tick de eje categórico en dos líneas (para nombres largos de componente/persona). */
+function TickDosLineas(props: {
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
+  max?: number;
+}) {
+  const { x = 0, y = 0, payload, max } = props;
+  const [l0, l1] = dosLineas(payload?.value ?? '', max);
+  return (
+    <text x={x} y={y} textAnchor="end" fill="var(--texto-tenue)" fontSize={12}>
+      <tspan x={x} dy={l1 ? '-0.3em' : '0.32em'}>
+        {l0}
+      </tspan>
+      {l1 && (
+        <tspan x={x} dy="1.15em">
+          {l1}
+        </tspan>
+      )}
+    </text>
+  );
 }
 
 function Punto({ nivel }: { nivel: 'verde' | 'amarillo' | 'rojo' }) {
@@ -243,8 +278,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                   type="category"
                   dataKey="nombre"
                   width={180}
-                  tick={EJE_TICK}
-                  tickFormatter={(v: string) => truncar(v)}
+                  tick={<TickDosLineas max={26} />}
                 />
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />
                 <Legend />
@@ -308,7 +342,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
             <p className="ejec-vacio">No hay colaboradores asignados para el filtro actual.</p>
           ) : (
             <div className="ejec-colab">
-              <ResponsiveContainer width="100%" height={40 + dataColab.length * 34}>
+              <ResponsiveContainer width="100%" height={48 + dataColab.length * 46}>
                 <BarChart
                   data={dataColab}
                   layout="vertical"
@@ -319,8 +353,7 @@ export function EjecutarPlan({ proyecto }: { proyecto: Proyecto }) {
                     type="category"
                     dataKey="nombre"
                     width={170}
-                    tick={EJE_TICK}
-                    tickFormatter={(v: string) => truncar(v, 22)}
+                    tick={<TickDosLineas max={22} />}
                   />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => `${v}%`} />
                   <Bar

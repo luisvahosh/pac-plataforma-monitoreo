@@ -200,6 +200,24 @@ export function ActaEditor() {
     }
   }
 
+  async function reabrir() {
+    setError(null);
+    if (
+      !window.confirm(
+        'Reabrir el acta la vuelve a borrador y la retira de la vista pública hasta que la ' +
+          'envíes de nuevo. ¿Continuar?',
+      )
+    )
+      return;
+    try {
+      await apiJson(`/api/actas/${id}/reabrir`, { method: 'POST' });
+      await cargarActa();
+      setMensaje('Acta reabierta: ya puedes editarla. Recuerda enviarla de nuevo al terminar.');
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   if (error && !acta)
     return (
       <div className="form-error" role="alert">
@@ -225,6 +243,16 @@ export function ActaEditor() {
       <h2>
         Acta {String(acta.numero).padStart(2, '0')}{' '}
         <span className={`chip ${acta.estado === 'enviada' ? 'activo' : ''}`}>{acta.estado}</span>
+        {!editable && (
+          <button
+            type="button"
+            className="enlace"
+            style={{ marginLeft: '0.75rem' }}
+            onClick={reabrir}
+          >
+            Reabrir acta
+          </button>
+        )}
       </h2>
 
       {error && (

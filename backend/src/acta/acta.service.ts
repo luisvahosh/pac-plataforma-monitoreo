@@ -208,6 +208,23 @@ export class ActaService {
     return this.obtener(id);
   }
 
+  /**
+   * Reabre un acta enviada: vuelve a 'borrador' para poder editarla y sale
+   * temporalmente de la vista pública hasta que se envíe de nuevo.
+   */
+  async reabrir(id: string) {
+    const acta = await this.prisma.acta.findUnique({ where: { id } });
+    if (!acta) throw new NotFoundException('Acta no encontrada');
+    if (acta.estado !== 'enviada') {
+      throw new BadRequestException('Solo se puede reabrir un acta enviada');
+    }
+    await this.prisma.acta.update({
+      where: { id },
+      data: { estado: 'borrador', enviadaEn: null },
+    });
+    return this.obtener(id);
+  }
+
   // ─── Vistas públicas (solo actas enviadas, sin documentos anexos) ─────
 
   async listarPublicas() {

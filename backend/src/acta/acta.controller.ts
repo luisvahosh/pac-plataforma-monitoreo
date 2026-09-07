@@ -48,4 +48,9 @@ export class ActaController {
   enviar(@Param('id') id: string) {
     return this.actas.enviar(id);
   }
+
+  @Post(':id/reabrir')
+  reabrir(@Param('id') id: string) {
+    return this.actas.reabrir(id);
+  }
 }

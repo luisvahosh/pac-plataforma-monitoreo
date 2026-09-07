@@ -20,7 +20,6 @@ import { AsignacionModule } from './asignacion/asignacion.module';
 import { EvidenciaModule } from './evidencia/evidencia.module';
 import { NotificacionModule } from './notificacion/notificacion.module';
 import { AuditoriaModule } from './auditoria/auditoria.module';
-import { EjecucionModule } from './ejecucion/ejecucion.module';
 import { TareaModule } from './tarea/tarea.module';
 import { RiesgoModule } from './riesgo/riesgo.module';
 import { ActaModule } from './acta/acta.module';
@@ -51,7 +50,6 @@ import { ActaModule } from './acta/acta.module';
     AsignacionModule,
     EvidenciaModule,
     // Gestión de Actas (Fase 15)
-    EjecucionModule,
     TareaModule,
     RiesgoModule,
     ActaModule,

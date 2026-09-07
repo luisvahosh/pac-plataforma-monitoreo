@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsString, IsUrl, Max, Min } from 'class-validator';
 
-export class RegistrarAvanceEjecucionDto {
+export class RegistrarAvanceTareaDto {
   // Reporte INCREMENTAL: cuánto avanzó ahora (se suma al total vigente).
   @IsNumber()
   @Min(0)

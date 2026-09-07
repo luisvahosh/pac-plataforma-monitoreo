@@ -9,6 +9,16 @@
 Estado: **implementado (rama `fase-15-actas`).**
 Fecha: 2026-09-07.
 
+> **Actualización de terminología (2026-09-07):** el nivel 4 se llama **Tarea**
+> (no "subactividad"). Se eliminó el concepto de "compromiso" aparte: solo
+> existe la Tarea, que apoya el desarrollo de una Actividad y es **opcional**
+> (una actividad se puede desarrollar directamente o desglosarse en Tareas). El
+> acta permite seleccionar **varias actividades de varios componentes**. En la
+> BD: modelos `Tarea`/`AvanceTarea` (tablas `tarea`/`avance_tarea`); función de
+> dominio `avanceActividadDesdeTareas`; rutas `subactividades/:id/tareas`,
+> `tareas/:id/avances`, `mis-tareas`. Las secciones de abajo que dicen
+> "subactividad de ejecución" se leen como "Tarea".
+
 ### Estado de implementación
 
 Implementado y verificado (backend compila, frontend build OK, 62/62 pruebas):

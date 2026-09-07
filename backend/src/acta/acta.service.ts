@@ -87,16 +87,9 @@ export class ActaService {
         temas: { orderBy: { orden: 'asc' } },
         conclusiones: { orderBy: { orden: 'asc' } },
         documentos: true,
-        subactividadesEjecucion: {
-          include: {
-            usuario: { select: { id: true, nombre: true } },
-            subactividad: { select: { id: true, descripcion: true } },
-          },
-        },
         tareas: {
           include: {
             usuario: { select: { id: true, nombre: true } },
-            actividad: { select: { id: true, nombre: true } },
             subactividad: { select: { id: true, descripcion: true } },
           },
         },
@@ -189,17 +182,14 @@ export class ActaService {
     await this.prisma.acta.findUnique({ where: { id } }).then((a) => {
       if (!a) throw new NotFoundException('Acta no encontrada');
     });
-    const [subactividades, tareas, riesgosCreados, riesgosActualizados, conclusiones, temas] =
-      await Promise.all([
-        this.prisma.subactividadEjecucion.count({ where: { actaOrigenId: id } }),
-        this.prisma.tarea.count({ where: { actaOrigenId: id } }),
-        this.prisma.riesgo.count({ where: { actaOrigenId: id } }),
-        this.prisma.riesgoActualizacion.count({ where: { actaId: id } }),
-        this.prisma.actaConclusion.count({ where: { actaId: id } }),
-        this.prisma.actaTema.count({ where: { actaId: id } }),
-      ]);
+    const [tareas, riesgosCreados, riesgosActualizados, conclusiones, temas] = await Promise.all([
+      this.prisma.tarea.count({ where: { actaOrigenId: id } }),
+      this.prisma.riesgo.count({ where: { actaOrigenId: id } }),
+      this.prisma.riesgoActualizacion.count({ where: { actaId: id } }),
+      this.prisma.actaConclusion.count({ where: { actaId: id } }),
+      this.prisma.actaTema.count({ where: { actaId: id } }),
+    ]);
     return {
-      subactividadesCreadas: subactividades,
       tareasCreadas: tareas,
       riesgosCreados,
       riesgosActualizados,
@@ -214,6 +204,23 @@ export class ActaService {
     await this.prisma.acta.update({
       where: { id },
       data: { estado: 'enviada', enviadaEn: new Date() },
+    });
+    return this.obtener(id);
+  }
+
+  /**
+   * Reabre un acta enviada: vuelve a 'borrador' para poder editarla y sale
+   * temporalmente de la vista pública hasta que se envíe de nuevo.
+   */
+  async reabrir(id: string) {
+    const acta = await this.prisma.acta.findUnique({ where: { id } });
+    if (!acta) throw new NotFoundException('Acta no encontrada');
+    if (acta.estado !== 'enviada') {
+      throw new BadRequestException('Solo se puede reabrir un acta enviada');
+    }
+    await this.prisma.acta.update({
+      where: { id },
+      data: { estado: 'borrador', enviadaEn: null },
     });
     return this.obtener(id);
   }
@@ -254,9 +261,9 @@ export class ActaService {
         conclusiones: { orderBy: { orden: 'asc' } },
         tareas: {
           select: {
-            descripcion: true,
+            nombre: true,
             estado: true,
-            prioridad: true,
+            avancePorcentaje: true,
             fechaCompromiso: true,
             usuario: { select: { nombre: true } },
           },

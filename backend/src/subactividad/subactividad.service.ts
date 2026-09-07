@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvanceService } from '../avance/avance.service';
 import { RegistrarAvanceSubactividadDto } from './dto/registrar-avance-subactividad.dto';
@@ -76,6 +81,17 @@ export class SubactividadService {
 
     if (!esAdmin && !(await this.tieneAcceso(subactividadId, sub.actividadId, autorId))) {
       throw new ForbiddenException('No estás asignado a esta subactividad ni a su actividad');
+    }
+
+    // Si la Actividad se desglosó en Subactividades de ejecución (nivel 4, Fase
+    // 15), su avance se deriva de ellas: el reporte directo queda deshabilitado.
+    const tieneEjecuciones =
+      (await this.prisma.subactividadEjecucion.count({ where: { subactividadId } })) > 0;
+    if (tieneEjecuciones) {
+      throw new BadRequestException(
+        'Esta actividad tiene subactividades de ejecución: su avance se calcula ' +
+          'automáticamente. Reporta el avance en cada subactividad.',
+      );
     }
 
     // Reporte INCREMENTAL: el colaborador informa cuánto avanzó ahora y se suma

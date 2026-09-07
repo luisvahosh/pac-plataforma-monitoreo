@@ -22,6 +22,8 @@ import { Componentes } from './privado/paginas/admin/Componentes';
 import { LineaBase } from './privado/paginas/admin/LineaBase';
 import { Alertas } from './privado/paginas/admin/Alertas';
 import { Auditoria } from './privado/paginas/admin/Auditoria';
+import { Actas } from './privado/paginas/admin/Actas';
+import { ActaEditor } from './privado/paginas/admin/ActaEditor';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -91,6 +93,22 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 element={
                   <RutaProtegida rol="administrador">
                     <Auditoria />
+                  </RutaProtegida>
+                }
+              />
+              <Route
+                path="admin/actas"
+                element={
+                  <RutaProtegida rol="administrador">
+                    <Actas />
+                  </RutaProtegida>
+                }
+              />
+              <Route
+                path="admin/actas/:id"
+                element={
+                  <RutaProtegida rol="administrador">
+                    <ActaEditor />
                   </RutaProtegida>
                 }
               />

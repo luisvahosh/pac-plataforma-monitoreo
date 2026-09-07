@@ -8,6 +8,7 @@ import { ListaFases } from './components/ListaFases';
 import { Gantt } from './components/Gantt';
 import { ActividadesBitacora } from './components/ActividadesBitacora';
 import { AlertasPublicas } from './components/AlertasPublicas';
+import { ActasPublicas } from './components/ActasPublicas';
 // Carga diferida: Recharts (pesado) sale del bundle inicial y se descarga
 // como chunk aparte solo cuando se abre la pestaña "Ejecutar Plan".
 const EjecutarPlan = lazy(() =>
@@ -18,7 +19,7 @@ import { Esqueleto } from './components/Esqueleto';
 import { TemaBoton } from './components/TemaBoton';
 import { useAuth } from './privado/auth-contexto';
 
-type Pestana = 'ejecutar' | 'resumen' | 'cronograma' | 'actividades' | 'alertas';
+type Pestana = 'ejecutar' | 'resumen' | 'cronograma' | 'actividades' | 'alertas' | 'actas';
 
 export function App() {
   const { usuario, logout } = useAuth();
@@ -113,6 +114,7 @@ export function App() {
     { id: 'cronograma', etiqueta: 'Cronograma (Gantt)' },
     { id: 'actividades', etiqueta: 'Actividades' },
     { id: 'alertas', etiqueta: 'Alertas' },
+    { id: 'actas', etiqueta: 'Actas' },
   ];
 
   return (
@@ -307,6 +309,8 @@ export function App() {
         )}
 
         {pestana === 'alertas' && <AlertasPublicas fases={proyecto.fases} />}
+
+        {pestana === 'actas' && <ActasPublicas />}
       </main>
     </>
   );

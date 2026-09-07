@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { NotificacionService } from '../notificacion/notificacion.service';
 import {
   AporteColaborador,
+  avanceActividadDesdeEjecuciones,
   avanceActividadPonderado,
   avanceEntregablePonderado,
 } from '../dominio/calculo-avance';
@@ -139,5 +140,27 @@ export class AvanceService {
       where: { id: actividadId },
       data: { avancePorcentaje: nuevo },
     });
+  }
+
+  /**
+   * Recalcula el avance de una Actividad (nivel 3, tabla `subactividad`) a
+   * partir de sus Subactividades de ejecución (nivel 4, Fase 15) y encadena el
+   * recálculo del Entregable. Si la Actividad no tiene ejecuciones, no toca su
+   * avance (lo maneja el reporte directo en SubactividadService).
+   */
+  async recalcularSubactividad(subactividadId: string): Promise<void> {
+    const sub = await this.prisma.subactividad.findUnique({ where: { id: subactividadId } });
+    if (!sub) return;
+    const ejecuciones = await this.prisma.subactividadEjecucion.findMany({
+      where: { subactividadId },
+    });
+    if (ejecuciones.length > 0) {
+      const nuevo = avanceActividadDesdeEjecuciones(ejecuciones);
+      await this.prisma.subactividad.update({
+        where: { id: subactividadId },
+        data: { avancePorcentaje: nuevo },
+      });
+    }
+    await this.recalcularActividad(sub.actividadId);
   }
 }

@@ -395,6 +395,17 @@ interface AvanceSubactividad {
   usuario: { nombre: string };
 }
 
+// Subactividad de ejecución (nivel 4, Fase 15): nace en las actas y su avance
+// suma al de la actividad (roll-up).
+interface EjecucionN4 {
+  id: string;
+  nombre: string;
+  pesoPorcentaje: number;
+  avancePorcentaje: number;
+  estado: string;
+  usuario: { id: string; nombre: string };
+}
+
 function SubactividadFila({
   subactividad,
   onCambio,
@@ -404,6 +415,7 @@ function SubactividadFila({
   onCambio: () => Promise<void>;
   esAdmin: boolean;
 }) {
+  const { usuario } = useAuth();
   const [porcentaje, setPorcentaje] = useState('');
   const [enlace, setEnlace] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -412,7 +424,25 @@ function SubactividadFila({
   const [mostrarRiesgos, setMostrarRiesgos] = useState(false);
   const [textoRiesgos, setTextoRiesgos] = useState(subactividad.riesgos ?? '');
   const [historial, setHistorial] = useState<AvanceSubactividad[] | null>(null);
+  const [ejecuciones, setEjecuciones] = useState<EjecucionN4[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const cargarEjecuciones = useCallback(async () => {
+    try {
+      const r = await apiJson<{ ejecuciones: EjecucionN4[] }>(
+        `/api/subactividades/${subactividad.id}/ejecuciones`,
+      );
+      setEjecuciones(r.ejecuciones);
+    } catch {
+      /* silencioso: la actividad puede no tener ejecuciones */
+    }
+  }, [subactividad.id]);
+
+  useEffect(() => {
+    void cargarEjecuciones();
+  }, [cargarEjecuciones]);
+
+  const tieneEjecuciones = ejecuciones.length > 0;
 
   async function guardarRiesgos(e: FormEvent) {
     e.preventDefault();
@@ -475,9 +505,11 @@ function SubactividadFila({
         peso {subactividad.pesoPorcentaje.toFixed(2).replace(/\.00$/, '')}% · avance{' '}
         {Math.round(subactividad.avancePorcentaje)}%
       </span>{' '}
-      <button type="button" className="enlace" onClick={() => setMostrarForm((v) => !v)}>
-        {mostrarForm ? 'cancelar' : 'actualizar avance'}
-      </button>{' '}
+      {!tieneEjecuciones && (
+        <button type="button" className="enlace" onClick={() => setMostrarForm((v) => !v)}>
+          {mostrarForm ? 'cancelar' : 'actualizar avance'}
+        </button>
+      )}{' '}
       <button type="button" className="enlace" onClick={alternarHistorial}>
         {historial ? 'ocultar historial' : 'ver historial'}
       </button>{' '}
@@ -532,6 +564,24 @@ function SubactividadFila({
       {mostrarResponsables && (
         <ResponsablesSubactividad subactividadId={subactividad.id} onCambio={onCambio} />
       )}
+      {tieneEjecuciones && (
+        <div className="tenue" style={{ marginTop: '0.5rem' }}>
+          Subactividades (su avance se suma a esta actividad):
+          <ul className="lista-simple">
+            {ejecuciones.map((ej) => (
+              <FilaEjecucion
+                key={ej.id}
+                ejecucion={ej}
+                puedeReportar={esAdmin || usuario?.sub === ej.usuario.id}
+                onCambio={async () => {
+                  await cargarEjecuciones();
+                  await onCambio();
+                }}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
       {mostrarForm && (
         <form onSubmit={registrar} className="form-inline">
           <label>
@@ -582,6 +632,95 @@ function SubactividadFila({
           ))}
           {historial.length === 0 && <li className="tenue">Sin avances aún.</li>}
         </ul>
+      )}
+    </li>
+  );
+}
+
+// ─── Fila de una subactividad de ejecución (nivel 4): reporte de avance ─
+function FilaEjecucion({
+  ejecucion,
+  puedeReportar,
+  onCambio,
+}: {
+  ejecucion: EjecucionN4;
+  puedeReportar: boolean;
+  onCambio: () => Promise<void>;
+}) {
+  const [mostrar, setMostrar] = useState(false);
+  const [porcentaje, setPorcentaje] = useState('');
+  const [enlace, setEnlace] = useState('');
+  const [observaciones, setObservaciones] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  async function registrar(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await apiJson(`/api/ejecuciones/${ejecucion.id}/avances`, {
+        method: 'POST',
+        body: JSON.stringify({
+          porcentaje: Number(porcentaje),
+          enlaceEvidencia: enlace || undefined,
+          observaciones: observaciones || undefined,
+        }),
+      });
+      setPorcentaje('');
+      setEnlace('');
+      setObservaciones('');
+      setMostrar(false);
+      await onCambio();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  return (
+    <li>
+      {ejecucion.nombre} — {ejecucion.usuario.nombre}
+      <span className="tenue">
+        {' '}
+        · peso {Math.round(ejecucion.pesoPorcentaje)}% · avance{' '}
+        {Math.round(ejecucion.avancePorcentaje)}% · {ejecucion.estado}
+      </span>{' '}
+      {puedeReportar && (
+        <button type="button" className="enlace" onClick={() => setMostrar((v) => !v)}>
+          {mostrar ? 'cancelar' : 'reportar avance'}
+        </button>
+      )}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {mostrar && (
+        <form onSubmit={registrar} className="form-inline">
+          <label>
+            Avance de ahora (se suma a {Math.round(ejecucion.avancePorcentaje)}%)
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={porcentaje}
+              onChange={(e) => setPorcentaje(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Enlace de evidencia
+            <input
+              type="url"
+              value={enlace}
+              onChange={(e) => setEnlace(e.target.value)}
+              placeholder="https://…"
+            />
+          </label>
+          <label>
+            Observaciones
+            <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} />
+          </label>
+          <button type="submit">Guardar</button>
+        </form>
       )}
     </li>
   );

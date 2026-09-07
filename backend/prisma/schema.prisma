@@ -36,19 +36,20 @@ model Proyecto {
   fechaFin    DateTime? @map("fecha_fin")
   creadoEn    DateTime  @default(now()) @map("creado_en")
   fases       Fase[]
+  actas       Acta[]
 
   @@map("proyecto")
 }
 
 model Fase {
-  id             String      @id @default(uuid())
-  proyectoId     String      @map("proyecto_id")
-  nombre         String
-  descripcion    String?
-  pesoPorcentaje Float       @default(0) @map("peso_porcentaje") // aporte al Proyecto; el conjunto suma 100
-  orden          Int         @default(0)
-  proyecto       Proyecto    @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
-  actividades    Actividad[]
+  id                     String                 @id @default(uuid())
+  proyectoId             String                 @map("proyecto_id")
+  nombre                 String
+  descripcion            String?
+  pesoPorcentaje         Float                  @default(0) @map("peso_porcentaje") // aporte al Proyecto; el conjunto suma 100
+  orden                  Int                    @default(0)
+  proyecto               Proyecto               @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
+  actividades            Actividad[]
   asignacionesComponente AsignacionComponente[]
 
   @@map("fase")
@@ -70,6 +71,7 @@ model Actividad {
   asignaciones        Asignacion[]
   avances             Avance[]
   evidencias          Evidencia[]
+  tareas              Tarea[] // compromisos de acta ligados al Entregable (Fase 15)
 
   // Dependencias entre entregables (p.ej. P9 depende de P6 y P14).
   dependeDe       DependenciaActividad[] @relation("ActividadDependiente")
@@ -148,16 +150,24 @@ model Usuario {
   bloqueadoHasta    DateTime? @map("bloqueado_hasta")
   creadoEn          DateTime  @default(now()) @map("creado_en")
 
-  rol              Rol               @relation(fields: [rolId], references: [id])
-  tokens           TokenCuenta[]
-  refreshTokens    RefreshToken[]
-  cambiosLineaBase CambioLineaBase[]
-  asignaciones     Asignacion[]
+  rol                      Rol                      @relation(fields: [rolId], references: [id])
+  tokens                   TokenCuenta[]
+  refreshTokens            RefreshToken[]
+  cambiosLineaBase         CambioLineaBase[]
+  asignaciones             Asignacion[]
   asignacionesComponente   AsignacionComponente[]
   asignacionesSubactividad AsignacionSubactividad[]
-  avances          Avance[]
-  avancesSubactividad AvanceSubactividad[]
-  evidencias       Evidencia[]
+  avances                  Avance[]
+  avancesSubactividad      AvanceSubactividad[]
+  evidencias               Evidencia[]
+
+  // Gestión de Actas (Fase 15)
+  subactividadesEjecucion      SubactividadEjecucion[]
+  avancesSubactividadEjecucion AvanceSubactividadEjecucion[]
+  tareas                       Tarea[]
+  riesgosResponsable           Riesgo[]
+  asistencias                  ActaAsistente[]
+  actaDocumentos               ActaDocumento[]
 
   @@map("usuario")
 }
@@ -209,9 +219,9 @@ model Asignacion {
 // Registro histórico (append-only) de avances. Puede subir o bajar (RN-05);
 // nunca se sobrescribe. Trazado con autor y fecha/hora.
 model Avance {
-  id            String    @id @default(uuid())
-  actividadId   String    @map("actividad_id")
-  usuarioId     String    @map("usuario_id")
+  id            String      @id @default(uuid())
+  actividadId   String      @map("actividad_id")
+  usuarioId     String      @map("usuario_id")
   porcentaje    Float // 0..100
   observaciones String?
   fechaHora     DateTime    @default(now()) @map("fecha_hora")
@@ -227,28 +237,34 @@ model Avance {
 // principales" de un entregable). avancePorcentaje es un caché del último
 // AvanceSubactividad registrado; ver AvanceSubactividad para el histórico.
 model Subactividad {
-  id               String                  @id @default(uuid())
-  actividadId      String                  @map("actividad_id")
-  codigo           String?                 // p.ej. "P1-A01" (identidad estable para la siembra idempotente)
-  etapa            String?                 // "Elaboración" | "Revisión y aval" | "Revisión final Secretaría"
-  descripcion      String
-  orden            Int                     @default(0)
+  id                String                   @id @default(uuid())
+  actividadId       String                   @map("actividad_id")
+  codigo            String? // p.ej. "P1-A01" (identidad estable para la siembra idempotente)
+  etapa             String? // "Elaboración" | "Revisión y aval" | "Revisión final Secretaría"
+  descripcion       String
+  orden             Int                      @default(0)
   // Peso de la Subactividad (Actividad, en el lenguaje del negocio) dentro de
   // su Entregable. La suma por Entregable es 100 %. El avance del Entregable
   // (Actividad de la BD) se deriva como la SUMA PONDERADA por este peso.
-  pesoPorcentaje   Float                   @default(0) @map("peso_porcentaje")
-  fechaInicioPlan  DateTime?               @map("fecha_inicio_plan")
-  fechaFinPlan     DateTime?               @map("fecha_fin_plan")
-  criterioTerminado String?                @map("criterio_terminado")
-  nota             String? // apoyos/roles no vinculados a una cuenta (texto libre)
+  pesoPorcentaje    Float                    @default(0) @map("peso_porcentaje")
+  fechaInicioPlan   DateTime?                @map("fecha_inicio_plan")
+  fechaFinPlan      DateTime?                @map("fecha_fin_plan")
+  criterioTerminado String?                  @map("criterio_terminado")
+  nota              String? // apoyos/roles no vinculados a una cuenta (texto libre)
   // Riesgos asociados a la Actividad (texto libre). Se REGISTRA solo desde la
   // parte privada (autenticado, ver PATCH subactividades/:id/riesgos) y se
   // MUESTRA públicamente en el dashboard "Ejecutar Plan" (RN sin evidencia).
-  riesgos          String?
-  avancePorcentaje Float                   @default(0) @map("avance_porcentaje")
-  actividad        Actividad               @relation(fields: [actividadId], references: [id], onDelete: Cascade)
-  avances          AvanceSubactividad[]
-  asignaciones     AsignacionSubactividad[]
+  riesgos           String?
+  avancePorcentaje  Float                    @default(0) @map("avance_porcentaje")
+  actividad         Actividad                @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  avances           AvanceSubactividad[]
+  asignaciones      AsignacionSubactividad[]
+
+  // Gestión de Actas (Fase 15): nivel 4 (subactividades de ejecución), tareas
+  // y riesgos estructurados asociados a esta Actividad (nivel 3).
+  ejecuciones          SubactividadEjecucion[]
+  tareas               Tarea[]
+  riesgosEstructurados Riesgo[]
 
   @@map("subactividad")
 }
@@ -360,23 +376,232 @@ model NotificacionEnviada {
 // El CONTENIDO/enlace de toda Evidencia es privado (RN-06, RN-13): nunca
 // accesible sin autenticación. Se sirve solo por endpoint autenticado.
 model Evidencia {
-  id            String     @id @default(uuid())
-  actividadId   String     @map("actividad_id")
-  avanceId      String?    @map("avance_id")
-  autorId       String     @map("autor_id")
+  id            String    @id @default(uuid())
+  actividadId   String    @map("actividad_id")
+  avanceId      String?   @map("avance_id")
+  autorId       String    @map("autor_id")
   tipo          String // enlace | imagen | archivo | documento | observacion
   url           String? // solo tipo enlace
-  archivoRef    String?    @map("archivo_ref") // nombre del archivo en el volumen; NUNCA público
-  nombreArchivo String?    @map("nombre_archivo")
+  archivoRef    String?   @map("archivo_ref") // nombre del archivo en el volumen; NUNCA público
+  nombreArchivo String?   @map("nombre_archivo")
   mime          String?
-  tamanoBytes   Int?       @map("tamano_bytes")
+  tamanoBytes   Int?      @map("tamano_bytes")
   checksum      String? // SHA-256 para integridad
   observacion   String?
-  fechaHora     DateTime   @default(now()) @map("fecha_hora")
-  actividad     Actividad  @relation(fields: [actividadId], references: [id], onDelete: Cascade)
-  avance        Avance?    @relation(fields: [avanceId], references: [id], onDelete: SetNull)
-  autor         Usuario    @relation(fields: [autorId], references: [id])
+  fechaHora     DateTime  @default(now()) @map("fecha_hora")
+  actividad     Actividad @relation(fields: [actividadId], references: [id], onDelete: Cascade)
+  avance        Avance?   @relation(fields: [avanceId], references: [id], onDelete: SetNull)
+  autor         Usuario   @relation(fields: [autorId], references: [id])
 
   @@index([actividadId])
   @@map("evidencia")
+}
+
+// ─── Gestión de Actas (Fase 15) ─────────────────────────────────────
+// Documenta las reuniones de seguimiento y, desde ellas, amplía el seguimiento
+// del proyecto (subactividades de ejecución, tareas/compromisos y riesgos). No
+// duplica entidades ni el motor de avance. Solo Administrador crea/gestiona
+// actas; el público solo ve las 'enviada' (sin documentos anexos).
+
+model Acta {
+  id            String    @id @default(uuid())
+  proyectoId    String    @map("proyecto_id")
+  numero        Int // correlativo por proyecto
+  fecha         DateTime
+  lugar         String?
+  horaInicio    String?   @map("hora_inicio")
+  horaFin       String?   @map("hora_fin")
+  actividadTema String?   @map("actividad_tema") // "Actividad o tema" (FO-GINF-102)
+  objetivo      String?
+  elaboradoPor  String?   @map("elaborado_por") // texto libre (FO-GINF-102)
+  convocadaPor  String?   @map("convocada_por")
+  estado        String    @default("borrador") // borrador | enviada
+  enviadaEn     DateTime? @map("enviada_en")
+  creadoEn      DateTime  @default(now()) @map("creado_en")
+  proyecto      Proyecto  @relation(fields: [proyectoId], references: [id], onDelete: Cascade)
+
+  asistentes              ActaAsistente[]
+  temas                   ActaTema[]
+  conclusiones            ActaConclusion[]
+  documentos              ActaDocumento[]
+  subactividadesEjecucion SubactividadEjecucion[]
+  tareas                  Tarea[]
+  riesgosOrigen           Riesgo[]                @relation("RiesgoActaOrigen")
+
+  @@unique([proyectoId, numero])
+  @@map("acta")
+}
+
+// Asistentes al acta: colaboradores del sistema (usuarioId) O invitados externos
+// (texto libre, sin cuenta). Uno de los dos por fila.
+model ActaAsistente {
+  id           String   @id @default(uuid())
+  actaId       String   @map("acta_id")
+  usuarioId    String?  @map("usuario_id") // asistente que ES usuario del sistema
+  nombre       String? // requerido si es invitado externo (sin usuarioId)
+  organizacion String? // opcional, para invitados (empresa/entidad)
+  rolEnReunion String?  @map("rol_en_reunion") // convocado | invitado | responsable
+  esInvitado   Boolean  @default(false) @map("es_invitado")
+  acta         Acta     @relation(fields: [actaId], references: [id], onDelete: Cascade)
+  usuario      Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([actaId])
+  @@map("acta_asistente")
+}
+
+// Nivel 4: subactividad de ejecución de una Actividad (BD Subactividad, nivel 3).
+// Su avance SUMA al de la actividad (roll-up). El peso es % absoluto de la
+// actividad y la suma por colaborador no puede superar su ponderado de
+// asignación en esa actividad (RN-ACTA-06).
+model SubactividadEjecucion {
+  id               String                        @id @default(uuid())
+  subactividadId   String                        @map("subactividad_id") // actividad nivel 3
+  actaOrigenId     String?                       @map("acta_origen_id") // acta donde nació
+  usuarioId        String                        @map("usuario_id") // responsable (1 colaborador)
+  nombre           String
+  descripcion      String?
+  pesoPorcentaje   Float                         @default(0) @map("peso_porcentaje")
+  fechaCompromiso  DateTime?                     @map("fecha_compromiso")
+  estado           String                        @default("pendiente") // pendiente | en_ejecucion | finalizada
+  avancePorcentaje Float                         @default(0) @map("avance_porcentaje") // caché del último avance
+  observaciones    String?
+  creadoEn         DateTime                      @default(now()) @map("creado_en")
+  subactividad     Subactividad                  @relation(fields: [subactividadId], references: [id], onDelete: Cascade)
+  actaOrigen       Acta?                         @relation(fields: [actaOrigenId], references: [id], onDelete: SetNull)
+  usuario          Usuario                       @relation(fields: [usuarioId], references: [id])
+  avances          AvanceSubactividadEjecucion[]
+
+  @@index([subactividadId, usuarioId])
+  @@map("subactividad_ejecucion")
+}
+
+// Histórico append-only de avances del nivel 4 (RN-05).
+model AvanceSubactividadEjecucion {
+  id                      String                @id @default(uuid())
+  subactividadEjecucionId String                @map("subactividad_ejecucion_id")
+  usuarioId               String                @map("usuario_id")
+  porcentaje              Float
+  enlaceEvidencia         String?               @map("enlace_evidencia")
+  observaciones           String?
+  fechaHora               DateTime              @default(now()) @map("fecha_hora")
+  subactividadEjecucion   SubactividadEjecucion @relation(fields: [subactividadEjecucionId], references: [id], onDelete: Cascade)
+  usuario                 Usuario               @relation(fields: [usuarioId], references: [id])
+
+  @@index([subactividadEjecucionId, usuarioId])
+  @@map("avance_subactividad_ejecucion")
+}
+
+// Tarea / compromiso (action-item). NO pesa en el avance del proyecto.
+model Tarea {
+  id              String        @id @default(uuid())
+  actaOrigenId    String?       @map("acta_origen_id")
+  actividadId     String?       @map("actividad_id") // entregable (opcional)
+  subactividadId  String?       @map("subactividad_id") // actividad nivel 3 (opcional)
+  usuarioId       String?       @map("usuario_id") // responsable
+  descripcion     String
+  fechaCompromiso DateTime?     @map("fecha_compromiso")
+  prioridad       String        @default("media") // alta | media | baja
+  estado          String        @default("pendiente") // pendiente | en_progreso | hecha | vencida
+  observaciones   String?
+  creadoEn        DateTime      @default(now()) @map("creado_en")
+  actaOrigen      Acta?         @relation(fields: [actaOrigenId], references: [id], onDelete: SetNull)
+  actividad       Actividad?    @relation(fields: [actividadId], references: [id], onDelete: SetNull)
+  subactividad    Subactividad? @relation(fields: [subactividadId], references: [id], onDelete: SetNull)
+  usuario         Usuario?      @relation(fields: [usuarioId], references: [id])
+
+  @@index([actividadId])
+  @@index([subactividadId])
+  @@map("tarea")
+}
+
+// Riesgo por actividad (nivel 3). Los 'abierto' se arrastran a la siguiente acta.
+model Riesgo {
+  id              String                @id @default(uuid())
+  subactividadId  String                @map("subactividad_id") // actividad nivel 3
+  actaOrigenId    String?               @map("acta_origen_id")
+  descripcion     String
+  probabilidad    String? // alta | media | baja
+  impacto         String? // alto | medio | bajo
+  nivel           String? // alto | medio | bajo
+  estado          String                @default("abierto") // abierto | mitigado | cerrado
+  responsableId   String?               @map("responsable_id")
+  mitigacion      String?
+  observaciones   String?
+  creadoEn        DateTime              @default(now()) @map("creado_en")
+  actualizadoEn   DateTime              @default(now()) @updatedAt @map("actualizado_en")
+  subactividad    Subactividad          @relation(fields: [subactividadId], references: [id], onDelete: Cascade)
+  actaOrigen      Acta?                 @relation("RiesgoActaOrigen", fields: [actaOrigenId], references: [id], onDelete: SetNull)
+  responsable     Usuario?              @relation(fields: [responsableId], references: [id])
+  actualizaciones RiesgoActualizacion[]
+
+  @@index([subactividadId, estado])
+  @@map("riesgo")
+}
+
+// Histórico de cambios de un riesgo (qué se revisó en cada acta). actaId es un
+// puntero blando (sin FK) al acta donde se hizo la actualización.
+model RiesgoActualizacion {
+  id           String   @id @default(uuid())
+  riesgoId     String   @map("riesgo_id")
+  actaId       String?  @map("acta_id")
+  estado       String?
+  probabilidad String?
+  impacto      String?
+  nivel        String?
+  nota         String?
+  fechaHora    DateTime @default(now()) @map("fecha_hora")
+  riesgo       Riesgo   @relation(fields: [riesgoId], references: [id], onDelete: Cascade)
+
+  @@index([riesgoId])
+  @@map("riesgo_actualizacion")
+}
+
+// Desarrollo temático del acta. actividadId/subactividadId son punteros blandos
+// (sin FK) a la actividad/entregable relacionado.
+model ActaTema {
+  id             String  @id @default(uuid())
+  actaId         String  @map("acta_id")
+  actividadId    String? @map("actividad_id")
+  subactividadId String? @map("subactividad_id")
+  tema           String
+  descripcion    String?
+  decisiones     String?
+  observaciones  String?
+  orden          Int     @default(0)
+  acta           Acta    @relation(fields: [actaId], references: [id], onDelete: Cascade)
+
+  @@index([actaId])
+  @@map("acta_tema")
+}
+
+model ActaConclusion {
+  id     String @id @default(uuid())
+  actaId String @map("acta_id")
+  texto  String
+  orden  Int    @default(0)
+  acta   Acta   @relation(fields: [actaId], references: [id], onDelete: Cascade)
+
+  @@index([actaId])
+  @@map("acta_conclusion")
+}
+
+// Documento anexo — PRIVADO (nunca público). Reutiliza el patrón de Evidencia
+// (archivo en volumen, servido solo autenticado).
+model ActaDocumento {
+  id            String   @id @default(uuid())
+  actaId        String   @map("acta_id")
+  autorId       String   @map("autor_id")
+  tipo          String // enlace | archivo | documento
+  url           String?
+  archivoRef    String?  @map("archivo_ref")
+  nombreArchivo String?  @map("nombre_archivo")
+  mime          String?
+  tamanoBytes   Int?     @map("tamano_bytes")
+  checksum      String?
+  fechaHora     DateTime @default(now()) @map("fecha_hora")
+  acta          Acta     @relation(fields: [actaId], references: [id], onDelete: Cascade)
+  autor         Usuario  @relation(fields: [autorId], references: [id])
+
+  @@index([actaId])
+  @@map("acta_documento")
 }

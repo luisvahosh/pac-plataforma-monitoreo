@@ -464,3 +464,21 @@ a.mis-actividades-tarjeta:hover {
 .nav-marca-enlace:hover strong {
   text-decoration: underline;
 }
+
+/* Tablas administrativas (Gestión de Actas, Fase 15) */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--borde, #e2e8f0);
+}
+.tabla th {
+  font-size: 0.85rem;
+  color: var(--tenue, #64748b);
+  font-weight: 600;
+}

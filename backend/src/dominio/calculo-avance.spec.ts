@@ -1,4 +1,5 @@
 import {
+  avanceActividadDesdeEjecuciones,
   avanceActividadPonderado,
   avanceEntregablePonderado,
   avanceFase,
@@ -57,6 +58,37 @@ describe('calculo-avance (RN-02)', () => {
           { pesoPorcentaje: 0, avancePorcentaje: 80 },
         ]),
       ).toBe(60);
+    });
+  });
+
+  describe('avanceActividadDesdeEjecuciones — roll-up nivel 4 (Fase 15)', () => {
+    it('sin ejecuciones devuelve 0', () => {
+      expect(avanceActividadDesdeEjecuciones([])).toBe(0);
+    });
+
+    it('usa peso ABSOLUTO: la porción no desglosada cuenta como 0', () => {
+      // Juan 25% al 100 % + Ana 25% al 0 % = 25 % (el 50% restante no desglosado no suma)
+      expect(
+        avanceActividadDesdeEjecuciones([
+          { pesoPorcentaje: 25, avancePorcentaje: 100 },
+          { pesoPorcentaje: 25, avancePorcentaje: 0 },
+        ]),
+      ).toBe(25);
+    });
+
+    it('llega a 100 solo con la actividad totalmente desglosada y completa', () => {
+      expect(
+        avanceActividadDesdeEjecuciones([
+          { pesoPorcentaje: 50, avancePorcentaje: 100 },
+          { pesoPorcentaje: 50, avancePorcentaje: 100 },
+        ]),
+      ).toBe(100);
+    });
+
+    it('acota a [0, 100]', () => {
+      expect(
+        avanceActividadDesdeEjecuciones([{ pesoPorcentaje: 100, avancePorcentaje: 100 }]),
+      ).toBe(100);
     });
   });
 

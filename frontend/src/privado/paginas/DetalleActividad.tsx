@@ -395,9 +395,9 @@ interface AvanceSubactividad {
   usuario: { nombre: string };
 }
 
-// Subactividad de ejecución (nivel 4, Fase 15): nace en las actas y su avance
-// suma al de la actividad (roll-up).
-interface EjecucionN4 {
+// Tarea (nivel 4, Fase 15): apoya el desarrollo de la actividad; su avance suma
+// al de la actividad (roll-up).
+interface TareaN4 {
   id: string;
   nombre: string;
   pesoPorcentaje: number;
@@ -424,25 +424,25 @@ function SubactividadFila({
   const [mostrarRiesgos, setMostrarRiesgos] = useState(false);
   const [textoRiesgos, setTextoRiesgos] = useState(subactividad.riesgos ?? '');
   const [historial, setHistorial] = useState<AvanceSubactividad[] | null>(null);
-  const [ejecuciones, setEjecuciones] = useState<EjecucionN4[]>([]);
+  const [tareas, setTareas] = useState<TareaN4[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const cargarEjecuciones = useCallback(async () => {
+  const cargarTareas = useCallback(async () => {
     try {
-      const r = await apiJson<{ ejecuciones: EjecucionN4[] }>(
-        `/api/subactividades/${subactividad.id}/ejecuciones`,
+      const r = await apiJson<{ tareas: TareaN4[] }>(
+        `/api/subactividades/${subactividad.id}/tareas`,
       );
-      setEjecuciones(r.ejecuciones);
+      setTareas(r.tareas);
     } catch {
-      /* silencioso: la actividad puede no tener ejecuciones */
+      /* silencioso: la actividad puede no tener tareas */
     }
   }, [subactividad.id]);
 
   useEffect(() => {
-    void cargarEjecuciones();
-  }, [cargarEjecuciones]);
+    void cargarTareas();
+  }, [cargarTareas]);
 
-  const tieneEjecuciones = ejecuciones.length > 0;
+  const tieneTareas = tareas.length > 0;
 
   async function guardarRiesgos(e: FormEvent) {
     e.preventDefault();
@@ -505,7 +505,7 @@ function SubactividadFila({
         peso {subactividad.pesoPorcentaje.toFixed(2).replace(/\.00$/, '')}% · avance{' '}
         {Math.round(subactividad.avancePorcentaje)}%
       </span>{' '}
-      {!tieneEjecuciones && (
+      {!tieneTareas && (
         <button type="button" className="enlace" onClick={() => setMostrarForm((v) => !v)}>
           {mostrarForm ? 'cancelar' : 'actualizar avance'}
         </button>
@@ -564,17 +564,17 @@ function SubactividadFila({
       {mostrarResponsables && (
         <ResponsablesSubactividad subactividadId={subactividad.id} onCambio={onCambio} />
       )}
-      {tieneEjecuciones && (
+      {tieneTareas && (
         <div className="tenue" style={{ marginTop: '0.5rem' }}>
-          Subactividades (su avance se suma a esta actividad):
+          Tareas (su avance se suma a esta actividad):
           <ul className="lista-simple">
-            {ejecuciones.map((ej) => (
-              <FilaEjecucion
-                key={ej.id}
-                ejecucion={ej}
-                puedeReportar={esAdmin || usuario?.sub === ej.usuario.id}
+            {tareas.map((t) => (
+              <FilaTarea
+                key={t.id}
+                tarea={t}
+                puedeReportar={esAdmin || usuario?.sub === t.usuario.id}
                 onCambio={async () => {
-                  await cargarEjecuciones();
+                  await cargarTareas();
                   await onCambio();
                 }}
               />
@@ -637,13 +637,13 @@ function SubactividadFila({
   );
 }
 
-// ─── Fila de una subactividad de ejecución (nivel 4): reporte de avance ─
-function FilaEjecucion({
-  ejecucion,
+// ─── Fila de una Tarea (nivel 4): reporte de avance ─────────────────
+function FilaTarea({
+  tarea,
   puedeReportar,
   onCambio,
 }: {
-  ejecucion: EjecucionN4;
+  tarea: TareaN4;
   puedeReportar: boolean;
   onCambio: () => Promise<void>;
 }) {
@@ -657,7 +657,7 @@ function FilaEjecucion({
     e.preventDefault();
     setError(null);
     try {
-      await apiJson(`/api/ejecuciones/${ejecucion.id}/avances`, {
+      await apiJson(`/api/tareas/${tarea.id}/avances`, {
         method: 'POST',
         body: JSON.stringify({
           porcentaje: Number(porcentaje),
@@ -677,11 +677,11 @@ function FilaEjecucion({
 
   return (
     <li>
-      {ejecucion.nombre} — {ejecucion.usuario.nombre}
+      {tarea.nombre} — {tarea.usuario.nombre}
       <span className="tenue">
         {' '}
-        · peso {Math.round(ejecucion.pesoPorcentaje)}% · avance{' '}
-        {Math.round(ejecucion.avancePorcentaje)}% · {ejecucion.estado}
+        · peso {Math.round(tarea.pesoPorcentaje)}% · avance {Math.round(tarea.avancePorcentaje)}% ·{' '}
+        {tarea.estado}
       </span>{' '}
       {puedeReportar && (
         <button type="button" className="enlace" onClick={() => setMostrar((v) => !v)}>
@@ -696,7 +696,7 @@ function FilaEjecucion({
       {mostrar && (
         <form onSubmit={registrar} className="form-inline">
           <label>
-            Avance de ahora (se suma a {Math.round(ejecucion.avancePorcentaje)}%)
+            Avance de ahora (se suma a {Math.round(tarea.avancePorcentaje)}%)
             <input
               type="number"
               min={0}
@@ -759,11 +759,11 @@ function AgregarSubactividad({
   return (
     <form onSubmit={crear} className="form-inline" style={{ marginTop: '1rem' }}>
       <label>
-        Nueva subactividad
+        Nueva actividad
         <input
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Describe la tarea…"
+          placeholder="Describe la actividad…"
           required
         />
       </label>

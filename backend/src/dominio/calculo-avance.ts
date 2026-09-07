@@ -50,27 +50,24 @@ export function avanceEntregablePonderado(actividades: ActividadPonderada[]): nu
   );
 }
 
-// ─── Avance de una Actividad (nivel 3) desde sus Subactividades de ejecución ─
+// ─── Avance de una Actividad (nivel 3) desde sus Tareas ─────────────
 // (nivel 4, Fase 15). A diferencia del Entregable, aquí el peso es un %
 // ABSOLUTO de la Actividad y la porción NO desglosada (100 − Σpesos) cuenta como
 // 0 %: hay que desglosar para "ganar" ese avance (RN-ACTA / roll-up).
 
-export interface EjecucionPonderada {
+export interface TareaPonderada {
   pesoPorcentaje: number; // % absoluto de la Actividad (no se normaliza)
   avancePorcentaje: number; // 0..100
 }
 
 /**
- * Avance de una Actividad = Σ (peso/100 × avance) de sus subactividades de
- * ejecución, acotado a [0, 100]. Sin ejecuciones => 0 (el llamador decide si
- * cae al reporte directo). La porción no desglosada aporta 0.
+ * Avance de una Actividad = Σ (peso/100 × avance) de sus Tareas, acotado a
+ * [0, 100]. Sin tareas => 0 (el llamador decide si cae al reporte directo). La
+ * porción no desglosada aporta 0.
  */
-export function avanceActividadDesdeEjecuciones(ejecuciones: EjecucionPonderada[]): number {
-  if (ejecuciones.length === 0) return 0;
-  const suma = ejecuciones.reduce(
-    (acc, e) => acc + (e.pesoPorcentaje / 100) * e.avancePorcentaje,
-    0,
-  );
+export function avanceActividadDesdeTareas(tareas: TareaPonderada[]): number {
+  if (tareas.length === 0) return 0;
+  const suma = tareas.reduce((acc, t) => acc + (t.pesoPorcentaje / 100) * t.avancePorcentaje, 0);
   return Math.max(0, Math.min(100, suma));
 }
 

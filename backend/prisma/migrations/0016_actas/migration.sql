@@ -1,5 +1,6 @@
 -- Gestión de Actas (Fase 15). Todas las tablas son nuevas; no altera datos
 -- existentes. Ver docs/fase-15-actas/00-plan-gestion-actas.md.
+-- Nivel 4 = "Tarea" (apoya el desarrollo de una Actividad; opcional).
 
 -- CreateTable
 CREATE TABLE "acta" (
@@ -35,7 +36,7 @@ CREATE TABLE "acta_asistente" (
 );
 
 -- CreateTable
-CREATE TABLE "subactividad_ejecucion" (
+CREATE TABLE "tarea" (
     "id" TEXT NOT NULL,
     "subactividad_id" TEXT NOT NULL,
     "acta_origen_id" TEXT,
@@ -49,37 +50,20 @@ CREATE TABLE "subactividad_ejecucion" (
     "observaciones" TEXT,
     "creado_en" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "subactividad_ejecucion_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "tarea_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "avance_subactividad_ejecucion" (
+CREATE TABLE "avance_tarea" (
     "id" TEXT NOT NULL,
-    "subactividad_ejecucion_id" TEXT NOT NULL,
+    "tarea_id" TEXT NOT NULL,
     "usuario_id" TEXT NOT NULL,
     "porcentaje" DOUBLE PRECISION NOT NULL,
     "enlace_evidencia" TEXT,
     "observaciones" TEXT,
     "fecha_hora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "avance_subactividad_ejecucion_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "tarea" (
-    "id" TEXT NOT NULL,
-    "acta_origen_id" TEXT,
-    "actividad_id" TEXT,
-    "subactividad_id" TEXT,
-    "usuario_id" TEXT,
-    "descripcion" TEXT NOT NULL,
-    "fecha_compromiso" TIMESTAMP(3),
-    "prioridad" TEXT NOT NULL DEFAULT 'media',
-    "estado" TEXT NOT NULL DEFAULT 'pendiente',
-    "observaciones" TEXT,
-    "creado_en" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "tarea_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "avance_tarea_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -165,16 +149,10 @@ CREATE UNIQUE INDEX "acta_proyecto_id_numero_key" ON "acta"("proyecto_id", "nume
 CREATE INDEX "acta_asistente_acta_id_idx" ON "acta_asistente"("acta_id");
 
 -- CreateIndex
-CREATE INDEX "subactividad_ejecucion_subactividad_id_usuario_id_idx" ON "subactividad_ejecucion"("subactividad_id", "usuario_id");
+CREATE INDEX "tarea_subactividad_id_usuario_id_idx" ON "tarea"("subactividad_id", "usuario_id");
 
 -- CreateIndex
-CREATE INDEX "avance_subactividad_ejecucion_subactividad_ejecucion_id_usu_idx" ON "avance_subactividad_ejecucion"("subactividad_ejecucion_id", "usuario_id");
-
--- CreateIndex
-CREATE INDEX "tarea_actividad_id_idx" ON "tarea"("actividad_id");
-
--- CreateIndex
-CREATE INDEX "tarea_subactividad_id_idx" ON "tarea"("subactividad_id");
+CREATE INDEX "avance_tarea_tarea_id_usuario_id_idx" ON "avance_tarea"("tarea_id", "usuario_id");
 
 -- CreateIndex
 CREATE INDEX "riesgo_subactividad_id_estado_idx" ON "riesgo"("subactividad_id", "estado");
@@ -201,31 +179,19 @@ ALTER TABLE "acta_asistente" ADD CONSTRAINT "acta_asistente_acta_id_fkey" FOREIG
 ALTER TABLE "acta_asistente" ADD CONSTRAINT "acta_asistente_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "subactividad_ejecucion" ADD CONSTRAINT "subactividad_ejecucion_subactividad_id_fkey" FOREIGN KEY ("subactividad_id") REFERENCES "subactividad"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subactividad_ejecucion" ADD CONSTRAINT "subactividad_ejecucion_acta_origen_id_fkey" FOREIGN KEY ("acta_origen_id") REFERENCES "acta"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subactividad_ejecucion" ADD CONSTRAINT "subactividad_ejecucion_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "avance_subactividad_ejecucion" ADD CONSTRAINT "avance_subactividad_ejecucion_subactividad_ejecucion_id_fkey" FOREIGN KEY ("subactividad_ejecucion_id") REFERENCES "subactividad_ejecucion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "avance_subactividad_ejecucion" ADD CONSTRAINT "avance_subactividad_ejecucion_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tarea" ADD CONSTRAINT "tarea_subactividad_id_fkey" FOREIGN KEY ("subactividad_id") REFERENCES "subactividad"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tarea" ADD CONSTRAINT "tarea_acta_origen_id_fkey" FOREIGN KEY ("acta_origen_id") REFERENCES "acta"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tarea" ADD CONSTRAINT "tarea_actividad_id_fkey" FOREIGN KEY ("actividad_id") REFERENCES "actividad"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "tarea" ADD CONSTRAINT "tarea_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tarea" ADD CONSTRAINT "tarea_subactividad_id_fkey" FOREIGN KEY ("subactividad_id") REFERENCES "subactividad"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "avance_tarea" ADD CONSTRAINT "avance_tarea_tarea_id_fkey" FOREIGN KEY ("tarea_id") REFERENCES "tarea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tarea" ADD CONSTRAINT "tarea_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "avance_tarea" ADD CONSTRAINT "avance_tarea_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "riesgo" ADD CONSTRAINT "riesgo_subactividad_id_fkey" FOREIGN KEY ("subactividad_id") REFERENCES "subactividad"("id") ON DELETE CASCADE ON UPDATE CASCADE;

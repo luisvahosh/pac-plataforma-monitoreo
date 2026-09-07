@@ -45,7 +45,7 @@ interface Acta {
   asistentes: Asistente[];
   temas: Tema[];
   conclusiones: Conclusion[];
-  subactividadesEjecucion: {
+  tareas: {
     id: string;
     nombre: string;
     pesoPorcentaje: number;
@@ -53,23 +53,16 @@ interface Acta {
     usuario: { nombre: string };
     subactividad: { descripcion: string };
   }[];
-  tareas: {
-    id: string;
-    descripcion: string;
-    estado: string;
-    prioridad: string;
-    usuario: { nombre: string } | null;
-  }[];
   riesgosOrigen: { id: string; descripcion: string; estado: string }[];
 }
 interface TareaPendiente {
   id: string;
-  descripcion: string;
+  nombre: string;
   estado: string;
+  avancePorcentaje: number;
   fechaCompromiso: string | null;
   usuario: { nombre: string } | null;
-  actividad: { nombre: string } | null;
-  subactividad: { descripcion: string } | null;
+  subactividad: { descripcion: string; actividad: { nombre: string } } | null;
 }
 interface RiesgoAbierto {
   id: string;
@@ -194,7 +187,6 @@ export function ActaEditor() {
       const r = await apiJson<Record<string, number>>(`/api/actas/${id}/resumen`);
       const texto =
         `Se enviará el acta con:\n` +
-        `· ${r.subactividadesCreadas} subactividades creadas\n` +
         `· ${r.tareasCreadas} tareas creadas\n` +
         `· ${r.riesgosCreados} riesgos creados · ${r.riesgosActualizados} actualizados\n` +
         `· ${r.temasRevisados} temas · ${r.conclusiones} conclusiones\n\n` +
@@ -331,20 +323,11 @@ export function ActaEditor() {
       </div>
 
       {/* ── Seguimiento del acta anterior ── */}
-      <SeguimientoAnterior
-        contexto={contexto}
-        onCambio={() => setMensaje('Actualizado.')}
-        editable={editable}
-      />
+      <SeguimientoAnterior contexto={contexto} editable={editable} />
 
-      {/* ── Seleccionar actividad + crear subactividades/tareas/riesgos ── */}
+      {/* ── Seleccionar actividades (varias, de cualquier componente) ── */}
       {editable && dashboard?.proyecto && (
-        <SelectorActividad
-          fases={dashboard.proyecto.fases}
-          usuarios={usuarios}
-          actaId={id}
-          onCambio={cargarActa}
-        />
+        <SelectorActividades fases={dashboard.proyecto.fases} actaId={id} onCambio={cargarActa} />
       )}
 
       {/* ── Desarrollo temático ── */}
@@ -375,17 +358,11 @@ export function ActaEditor() {
       <div className="panel">
         <h3>Registrado en esta acta</h3>
         <ul className="lista-simple">
-          {acta.subactividadesEjecucion.map((s) => (
-            <li key={s.id}>
-              <strong>Subactividad:</strong> {s.nombre} — {s.usuario.nombre} · peso{' '}
-              {Math.round(s.pesoPorcentaje)}% · avance {Math.round(s.avancePorcentaje)}%{' '}
-              <span className="tenue">(en {s.subactividad.descripcion})</span>
-            </li>
-          ))}
           {acta.tareas.map((t) => (
             <li key={t.id}>
-              <strong>Tarea:</strong> {t.descripcion} — {t.usuario?.nombre ?? 'sin responsable'} ·{' '}
-              {t.prioridad} · {t.estado}
+              <strong>Tarea:</strong> {t.nombre} — {t.usuario.nombre} · peso{' '}
+              {Math.round(t.pesoPorcentaje)}% · avance {Math.round(t.avancePorcentaje)}%{' '}
+              <span className="tenue">(en {t.subactividad.descripcion})</span>
             </li>
           ))}
           {acta.riesgosOrigen.map((r) => (
@@ -393,9 +370,9 @@ export function ActaEditor() {
               <strong>Riesgo:</strong> {r.descripcion} · {r.estado}
             </li>
           ))}
-          {acta.subactividadesEjecucion.length === 0 &&
-            acta.tareas.length === 0 &&
-            acta.riesgosOrigen.length === 0 && <li className="tenue">Aún no se ha creado nada.</li>}
+          {acta.tareas.length === 0 && acta.riesgosOrigen.length === 0 && (
+            <li className="tenue">Aún no se ha creado nada.</li>
+          )}
         </ul>
       </div>
 
@@ -517,17 +494,11 @@ function Asistentes({
 function SeguimientoAnterior({
   contexto,
   editable,
-  onCambio,
 }: {
   contexto: Contexto | null;
   editable: boolean;
-  onCambio: () => void;
 }) {
   if (!contexto) return null;
-  async function marcarTarea(id: string, estado: string) {
-    await apiJson(`/api/tareas/${id}`, { method: 'PATCH', body: JSON.stringify({ estado }) });
-    onCambio();
-  }
   return (
     <div className="panel">
       <h3>Seguimiento del acta anterior</h3>
@@ -540,29 +511,25 @@ function SeguimientoAnterior({
         <p className="tenue">No hay acta anterior; esta es la primera.</p>
       )}
 
-      <h4>Compromisos pendientes</h4>
+      <h4>Tareas pendientes</h4>
       <ul className="lista-simple">
         {contexto.tareasPendientes.map((t) => (
           <li key={t.id}>
-            {t.descripcion} — {t.usuario?.nombre ?? 'sin responsable'}
+            {t.nombre} — {t.usuario?.nombre ?? 'sin responsable'}
             <span className="tenue">
               {' '}
-              · {t.actividad?.nombre ?? t.subactividad?.descripcion ?? '—'}
+              · {t.subactividad?.actividad.nombre ?? '—'} / {t.subactividad?.descripcion ?? '—'} ·
+              avance {Math.round(t.avancePorcentaje)}%
               {t.fechaCompromiso
                 ? ` · vence ${new Date(t.fechaCompromiso).toLocaleDateString('es-CO')}`
                 : ''}
               {' · '}
               {t.estado}
             </span>
-            {editable && t.estado !== 'hecha' && (
-              <button type="button" className="enlace" onClick={() => marcarTarea(t.id, 'hecha')}>
-                marcar hecha
-              </button>
-            )}
           </li>
         ))}
         {contexto.tareasPendientes.length === 0 && (
-          <li className="tenue">Sin compromisos pendientes.</li>
+          <li className="tenue">Sin tareas pendientes.</li>
         )}
       </ul>
 
@@ -580,33 +547,60 @@ function SeguimientoAnterior({
         ))}
         {contexto.riesgosAbiertos.length === 0 && <li className="tenue">Sin riesgos abiertos.</li>}
       </ul>
+      {editable && (
+        <p className="tenue">
+          Las tareas y riesgos se actualizan desde el detalle de cada actividad o abajo, al
+          seleccionar la actividad en la reunión.
+        </p>
+      )}
     </div>
   );
 }
 
-// ─── Selector de actividad (Componente → Entregable → Actividad) ────
-function SelectorActividad({
+// ─── Selector de actividades (varias, de cualquier componente) ──────
+function SelectorActividades({
   fases,
-  usuarios,
   actaId,
   onCambio,
 }: {
   fases: Fase[];
-  usuarios: UsuarioLista[];
   actaId: string;
   onCambio: () => Promise<void>;
 }) {
   const [faseId, setFaseId] = useState('');
   const [entregableId, setEntregableId] = useState('');
   const [subId, setSubId] = useState('');
+  // Actividades agregadas a la reunión (varias, de distintos componentes).
+  const [revisadas, setRevisadas] = useState<
+    { faseNombre: string; entregableNombre: string; subId: string; descripcion: string }[]
+  >([]);
 
   const fase = fases.find((f) => f.id === faseId);
   const entregable = fase?.actividades.find((a) => a.id === entregableId);
-  const sub = entregable?.subactividades.find((s) => s.id === subId);
+
+  function agregar() {
+    if (!fase || !entregable || !subId) return;
+    if (revisadas.some((r) => r.subId === subId)) return;
+    const sub = entregable.subactividades.find((s) => s.id === subId);
+    if (!sub) return;
+    setRevisadas([
+      ...revisadas,
+      {
+        faseNombre: fase.nombre,
+        entregableNombre: entregable.nombre,
+        subId: sub.id,
+        descripcion: sub.descripcion,
+      },
+    ]);
+    setSubId('');
+  }
 
   return (
     <div className="panel">
-      <h3>Seleccionar actividad</h3>
+      <h3>Actividades revisadas en la reunión</h3>
+      <p className="tenue">
+        Agrega una o varias actividades (de cualquier componente) para tratarlas en esta reunión.
+      </p>
       <div className="form-inline">
         <label>
           Componente
@@ -658,17 +652,23 @@ function SelectorActividad({
             </select>
           </label>
         )}
+        <button type="button" onClick={agregar} disabled={!subId}>
+          + Agregar actividad
+        </button>
       </div>
 
-      {sub && (
+      {revisadas.map((r) => (
         <PanelActividad
-          key={sub.id}
-          subactividadId={sub.id}
-          descripcion={sub.descripcion}
-          usuarios={usuarios}
+          key={r.subId}
+          subactividadId={r.subId}
+          titulo={`${r.faseNombre} › ${r.entregableNombre} › ${r.descripcion}`}
           actaId={actaId}
           onCambio={onCambio}
+          onQuitar={() => setRevisadas(revisadas.filter((x) => x.subId !== r.subId))}
         />
+      ))}
+      {revisadas.length === 0 && (
+        <p className="tenue">Aún no has agregado actividades a la reunión.</p>
       )}
     </div>
   );
@@ -682,7 +682,7 @@ interface Presupuesto {
   usado: number;
   disponible: number;
 }
-interface Ejecucion {
+interface TareaN4 {
   id: string;
   nombre: string;
   pesoPorcentaje: number;
@@ -700,42 +700,39 @@ interface Riesgo {
 
 function PanelActividad({
   subactividadId,
-  descripcion,
-  usuarios,
+  titulo,
   actaId,
   onCambio,
+  onQuitar,
 }: {
   subactividadId: string;
-  descripcion: string;
-  usuarios: UsuarioLista[];
+  titulo: string;
   actaId: string;
   onCambio: () => Promise<void>;
+  onQuitar: () => void;
 }) {
-  const [ejecuciones, setEjecuciones] = useState<Ejecucion[]>([]);
+  const [tareas, setTareas] = useState<TareaN4[]>([]);
   const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
   const [riesgos, setRiesgos] = useState<Riesgo[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // form crear subactividad (nivel 4)
-  const [subUsuario, setSubUsuario] = useState('');
-  const [subNombre, setSubNombre] = useState('');
-  const [subPeso, setSubPeso] = useState('');
-  // form crear tarea
-  const [tareaDesc, setTareaDesc] = useState('');
-  const [tareaUsuario, setTareaUsuario] = useState('');
+  // form crear tarea (nivel 4)
+  const [tUsuario, setTUsuario] = useState('');
+  const [tNombre, setTNombre] = useState('');
+  const [tPeso, setTPeso] = useState('');
   // form crear riesgo
   const [riesgoDesc, setRiesgoDesc] = useState('');
 
   const cargar = useCallback(async () => {
     try {
-      const [ej, ri] = await Promise.all([
-        apiJson<{ ejecuciones: Ejecucion[]; presupuestos: Presupuesto[] }>(
-          `/api/subactividades/${subactividadId}/ejecuciones`,
+      const [tk, ri] = await Promise.all([
+        apiJson<{ tareas: TareaN4[]; presupuestos: Presupuesto[] }>(
+          `/api/subactividades/${subactividadId}/tareas`,
         ),
         apiJson<Riesgo[]>(`/api/subactividades/${subactividadId}/riesgos`),
       ]);
-      setEjecuciones(ej.ejecuciones);
-      setPresupuestos(ej.presupuestos);
+      setTareas(tk.tareas);
+      setPresupuestos(tk.presupuestos);
       setRiesgos(ri);
     } catch (e) {
       setError((e as Error).message);
@@ -746,46 +743,25 @@ function PanelActividad({
     void cargar();
   }, [cargar]);
 
-  const dispUsuario = presupuestos.find((p) => p.usuarioId === subUsuario)?.disponible ?? null;
-
-  async function crearSub(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    try {
-      await apiJson(`/api/subactividades/${subactividadId}/ejecuciones`, {
-        method: 'POST',
-        body: JSON.stringify({
-          usuarioId: subUsuario,
-          nombre: subNombre,
-          pesoPorcentaje: Number(subPeso),
-          actaOrigenId: actaId,
-        }),
-      });
-      setSubUsuario('');
-      setSubNombre('');
-      setSubPeso('');
-      await cargar();
-      await onCambio();
-    } catch (e) {
-      setError((e as Error).message);
-    }
-  }
+  const dispUsuario = presupuestos.find((p) => p.usuarioId === tUsuario)?.disponible ?? null;
 
   async function crearTarea(e: FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      await apiJson('/api/tareas', {
+      await apiJson(`/api/subactividades/${subactividadId}/tareas`, {
         method: 'POST',
         body: JSON.stringify({
-          descripcion: tareaDesc,
-          subactividadId,
-          usuarioId: tareaUsuario || undefined,
+          usuarioId: tUsuario,
+          nombre: tNombre,
+          pesoPorcentaje: Number(tPeso),
           actaOrigenId: actaId,
         }),
       });
-      setTareaDesc('');
-      setTareaUsuario('');
+      setTUsuario('');
+      setTNombre('');
+      setTPeso('');
+      await cargar();
       await onCambio();
     } catch (e) {
       setError((e as Error).message);
@@ -812,7 +788,12 @@ function PanelActividad({
     <div
       style={{ marginTop: '1rem', borderTop: '1px solid var(--borde, #ddd)', paddingTop: '1rem' }}
     >
-      <h4>{descripcion}</h4>
+      <h4 style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+        <span>{titulo}</span>
+        <button type="button" className="enlace" onClick={onQuitar}>
+          quitar
+        </button>
+      </h4>
       {error && (
         <div className="form-error" role="alert">
           {error}
@@ -832,11 +813,15 @@ function PanelActividad({
         )}
       </ul>
 
-      <h5>+ Crear subactividad</h5>
-      <form onSubmit={crearSub} className="form-inline">
+      <h5>+ Crear tarea</h5>
+      <p className="tenue">
+        Opcional: si esta actividad se desarrolla directamente, no crees tareas. Si la desglosas, su
+        avance se calculará a partir de las tareas.
+      </p>
+      <form onSubmit={crearTarea} className="form-inline">
         <label>
           Responsable
-          <select value={subUsuario} onChange={(e) => setSubUsuario(e.target.value)} required>
+          <select value={tUsuario} onChange={(e) => setTUsuario(e.target.value)} required>
             <option value="">—</option>
             {presupuestos.map((p) => (
               <option key={p.usuarioId} value={p.usuarioId}>
@@ -847,7 +832,7 @@ function PanelActividad({
         </label>
         <label>
           Nombre
-          <input value={subNombre} onChange={(e) => setSubNombre(e.target.value)} required />
+          <input value={tNombre} onChange={(e) => setTNombre(e.target.value)} required />
         </label>
         <label>
           Peso %{dispUsuario !== null ? ` (máx ${Math.round(dispUsuario)})` : ''}
@@ -855,42 +840,22 @@ function PanelActividad({
             type="number"
             min={0}
             max={dispUsuario ?? 100}
-            value={subPeso}
-            onChange={(e) => setSubPeso(e.target.value)}
+            value={tPeso}
+            onChange={(e) => setTPeso(e.target.value)}
             required
           />
         </label>
         <button type="submit">Crear</button>
       </form>
       <ul className="lista-simple">
-        {ejecuciones.map((ej) => (
-          <li key={ej.id}>
-            {ej.nombre} — {ej.usuario.nombre} · peso {Math.round(ej.pesoPorcentaje)}% · avance{' '}
-            {Math.round(ej.avancePorcentaje)}% · {ej.estado}
+        {tareas.map((t) => (
+          <li key={t.id}>
+            {t.nombre} — {t.usuario.nombre} · peso {Math.round(t.pesoPorcentaje)}% · avance{' '}
+            {Math.round(t.avancePorcentaje)}% · {t.estado}
           </li>
         ))}
-        {ejecuciones.length === 0 && <li className="tenue">Sin subactividades aún.</li>}
+        {tareas.length === 0 && <li className="tenue">Sin tareas aún.</li>}
       </ul>
-
-      <h5>+ Crear tarea (compromiso)</h5>
-      <form onSubmit={crearTarea} className="form-inline">
-        <label>
-          Descripción
-          <input value={tareaDesc} onChange={(e) => setTareaDesc(e.target.value)} required />
-        </label>
-        <label>
-          Responsable
-          <select value={tareaUsuario} onChange={(e) => setTareaUsuario(e.target.value)}>
-            <option value="">—</option>
-            {usuarios.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.nombre}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button type="submit">Crear tarea</button>
-      </form>
 
       <h5>Riesgos de la actividad</h5>
       <ul className="lista-simple">

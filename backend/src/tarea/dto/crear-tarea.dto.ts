@@ -1,38 +1,34 @@
-import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
 
+// Crear una Tarea (nivel 4) dentro de una Actividad (BD Subactividad, nivel 3).
 export class CrearTareaDto {
   @IsString()
+  usuarioId!: string; // responsable (debe estar asignado a la actividad)
+
+  @IsString()
   @MinLength(1)
-  descripcion!: string;
+  nombre!: string;
 
   @IsOptional()
   @IsString()
-  actividadId?: string; // entregable
+  descripcion?: string;
 
-  @IsOptional()
-  @IsString()
-  subactividadId?: string; // actividad nivel 3
-
-  @IsOptional()
-  @IsString()
-  usuarioId?: string; // responsable
+  // Peso absoluto de la tarea dentro de la actividad. La suma por colaborador no
+  // puede superar su ponderado de asignación (RN-ACTA-06).
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  pesoPorcentaje!: number;
 
   @IsOptional()
   @IsString()
   fechaCompromiso?: string;
 
   @IsOptional()
-  @IsIn(['alta', 'media', 'baja'])
-  prioridad?: string;
-
-  @IsOptional()
-  @IsIn(['pendiente', 'en_progreso', 'hecha', 'vencida'])
-  estado?: string;
-
-  @IsOptional()
   @IsString()
   observaciones?: string;
 
+  // Acta desde la que se crea (trazabilidad). Opcional para altas fuera de acta.
   @IsOptional()
   @IsString()
   actaOrigenId?: string;

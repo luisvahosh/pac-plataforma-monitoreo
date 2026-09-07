@@ -31,9 +31,9 @@ interface ActaDetalle extends ActaResumen {
   temas: Tema[];
   conclusiones: { texto: string }[];
   tareas: {
-    descripcion: string;
+    nombre: string;
     estado: string;
-    prioridad: string;
+    avancePorcentaje: number;
     fechaCompromiso: string | null;
     usuario: { nombre: string } | null;
   }[];
@@ -122,14 +122,14 @@ export function ActasPublicas() {
 
         {detalle.tareas.length > 0 && (
           <>
-            <h4>Tareas / compromisos</h4>
+            <h4>Tareas</h4>
             <ul className="lista-simple">
               {detalle.tareas.map((t, i) => (
                 <li key={i}>
-                  {t.descripcion} — {t.usuario?.nombre ?? 'sin responsable'}
+                  {t.nombre} — {t.usuario?.nombre ?? 'sin responsable'}
                   <span className="tenue">
                     {' '}
-                    · {t.prioridad} · {t.estado}
+                    · avance {Math.round(t.avancePorcentaje)}% · {t.estado}
                     {t.fechaCompromiso ? ` · vence ${formatearFecha(t.fechaCompromiso)}` : ''}
                   </span>
                 </li>

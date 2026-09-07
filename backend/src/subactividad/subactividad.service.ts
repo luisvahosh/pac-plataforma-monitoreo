@@ -83,14 +83,13 @@ export class SubactividadService {
       throw new ForbiddenException('No estás asignado a esta subactividad ni a su actividad');
     }
 
-    // Si la Actividad se desglosó en Subactividades de ejecución (nivel 4, Fase
-    // 15), su avance se deriva de ellas: el reporte directo queda deshabilitado.
-    const tieneEjecuciones =
-      (await this.prisma.subactividadEjecucion.count({ where: { subactividadId } })) > 0;
-    if (tieneEjecuciones) {
+    // Si la Actividad se desglosó en Tareas (nivel 4, Fase 15), su avance se
+    // deriva de ellas: el reporte directo queda deshabilitado.
+    const tieneTareas = (await this.prisma.tarea.count({ where: { subactividadId } })) > 0;
+    if (tieneTareas) {
       throw new BadRequestException(
-        'Esta actividad tiene subactividades de ejecución: su avance se calcula ' +
-          'automáticamente. Reporta el avance en cada subactividad.',
+        'Esta actividad tiene tareas: su avance se calcula automáticamente. ' +
+          'Reporta el avance en cada tarea.',
       );
     }
 

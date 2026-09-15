@@ -1,1850 +1,2621 @@
 {
-  "generadoDe": "Propuesta_asignacion_actividades_PAC.xlsx",
-  "nota": "Generado por scripts/gen_json (no editar a mano). Pesos por entregable normalizados a 100 en enriquecer.",
+  "generadoDe": "PAC_actividades_personas_y_pesos.xlsx",
+  "nota": "Generado por generar-actividades-json.py (no editar a mano).",
   "entregables": [
     {
       "codigo": "P1",
       "componente": "C1",
-      "nombre": "Documento de caracterización socioeconómica, vulnerabilidad y brechas de equidad para la acción climática",
+      "nombre": "Documento de caracterización socioeconómica, vulnerabilidad y brechas de equidad para la acción climática.",
       "actividades": [
         {
-          "codigo": "P1-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar y organizar los insumos documentales, bases y antecedentes requeridos para la caracterización",
-          "responsables": ["Sebastián Cartagena", "Marcos Arango Tamayo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-17",
-          "fechaFin": "2026-08-24",
-          "criterio": "Matriz de fuentes e insumos con vacíos identificados"
+          "codigo": "C1-A4",
+          "etapa": "Contractual",
+          "descripcion": "Caracterización socioeconómica del territorio con enfoque diferencial, de equidad y justicia climática que permita la identificación y priorización de comunidades, grupos poblacionales y/o sectores más vulnerables ante las amenazas identificadas.",
+          "pesoPorcentaje": 46.75,
+          "criterio": "Matriz de fuentes e insumos con vacíos identificados\nSección socioeconómica y matriz de población vulnerable\nBorrador técnico completo de P1",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P1-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar inventarios de GEI y analizar trayectorias de emisiones 2030, 2040 y 2050",
-          "responsables": ["Juliana Valencia"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-08-18",
-          "fechaFin": "2026-08-28",
-          "criterio": "Memoria técnica, tablas y gráficos de emisiones"
+          "codigo": "C1-A5",
+          "etapa": "Contractual",
+          "descripcion": "Descripción de factores estructurales que condicionan la vulnerabilidad y la capacidad adaptativa del Distrito.",
+          "pesoPorcentaje": 38.25,
+          "criterio": "Memoria técnica, tablas y gráficos de emisiones\nSección técnica integrada y matriz de hallazgos\nMapas, capas y síntesis territorial",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 9.8039
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P1-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar riesgos climáticos, adaptación, recurso hídrico, biodiversidad y soluciones basadas en la naturaleza",
-          "responsables": ["Vanessa García Leoz", "Jeiner de Jesús Castellanos Barliza"],
-          "apoyos": ["Harlem Acevedo Agudelo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-20",
-          "fechaFin": "2026-08-31",
-          "criterio": "Sección técnica integrada y matriz de hallazgos"
-        },
-        {
-          "codigo": "P1-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Desarrollar la caracterización socioeconómica con enfoque diferencial, equidad y justicia climática",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-22",
-          "fechaFin": "2026-09-03",
-          "criterio": "Sección socioeconómica y matriz de población vulnerable"
-        },
-        {
-          "codigo": "P1-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Realizar el análisis territorial y geoespacial de vulnerabilidad y capacidad adaptativa",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-08-26",
-          "fechaFin": "2026-09-07",
-          "criterio": "Mapas, capas y síntesis territorial"
-        },
-        {
-          "codigo": "P1-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar el documento de caracterización",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Juliana Valencia", "Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-08-31",
-          "fechaFin": "2026-09-10",
-          "criterio": "Borrador técnico completo de P1"
-        },
-        {
-          "codigo": "P1-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-11",
-          "fechaFin": "2026-09-13",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P1-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-09-14",
-          "fechaFin": "2026-09-17",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P2",
       "componente": "C1",
-      "nombre": "Capítulo de diagnóstico y prospectiva climática consolidado",
+      "nombre": "Capítulo de diagnóstico y prospectiva climática consolidado.",
       "actividades": [
         {
-          "codigo": "P2-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar la consistencia y suficiencia de los insumos que alimentan el diagnóstico consolidado",
-          "responsables": ["Sebastián Cartagena", "Marcos Arango Tamayo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-17",
-          "fechaFin": "2026-08-28",
-          "criterio": "Lista de chequeo y matriz de vacíos"
+          "codigo": "C1-A1",
+          "etapa": "Contractual",
+          "descripcion": "Consolidación y análisis de la serie histórica de inventarios de emisiones de GEI con base en información suministrada por la Secretaría de Medio Ambiente.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Lista de chequeo y matriz de vacíos\nSíntesis de evidencia y escenarios",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P2-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar la evidencia climática, hidrológica y las trayectorias de emisiones",
-          "responsables": ["Juliana Valencia"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-08-19",
-          "fechaFin": "2026-09-03",
-          "criterio": "Síntesis de evidencia y escenarios"
+          "codigo": "C1-A2",
+          "etapa": "Contractual",
+          "descripcion": "Consolidación y análisis de las trayectorias de emisiones al 2030, 2040 y 2050, considerando entre otros insumos los resultados del soporte técnico proporcionado por parte del Grupo de Liderazgo Climático de Ciudades C40.",
+          "pesoPorcentaje": 34.0,
+          "criterio": "Síntesis de evidencia y escenarios\nEscenarios y conclusiones prospectivas\nBorrador técnico completo de P2",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P2-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar los resultados de vulnerabilidad, adaptación, biodiversidad y recurso hídrico",
-          "responsables": ["Vanessa García Leoz"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza", "Harlem Acevedo Agudelo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-23",
-          "fechaFin": "2026-09-08",
-          "criterio": "Síntesis de vulnerabilidad y adaptación"
+          "codigo": "C1-A3",
+          "etapa": "Contractual",
+          "descripcion": "Integración de los resultados de la Evaluación de Riesgos Climáticos actualizada.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Síntesis de vulnerabilidad y adaptación",
+          "asignaciones": [
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P2-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Construir la lectura prospectiva territorial y sectorial",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Juliana Valencia", "Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-28",
-          "fechaFin": "2026-09-12",
-          "criterio": "Escenarios y conclusiones prospectivas"
-        },
-        {
-          "codigo": "P2-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Estructurar y redactar el capítulo consolidado de diagnóstico y prospectiva",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Juliana Valencia", "Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-09-04",
-          "fechaFin": "2026-09-17",
-          "criterio": "Borrador técnico completo de P2"
-        },
-        {
-          "codigo": "P2-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-18",
-          "fechaFin": "2026-09-20",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P2-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-09-21",
-          "fechaFin": "2026-09-24",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P3",
       "componente": "C2",
-      "nombre": "Capítulo de direccionamiento estratégico del PAC ajustado",
+      "nombre": "Capítulo de direccionamiento estratégico del PAC ajustado.",
       "actividades": [
         {
-          "codigo": "P3-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar el diagnóstico, los instrumentos vigentes y las restricciones de implementación",
-          "responsables": ["Sebastián Cartagena", "Paola Andrea Ruiz Franco"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-06",
-          "fechaFin": "2026-09-16",
-          "criterio": "Matriz de referentes y restricciones"
+          "codigo": "C2-A1",
+          "etapa": "Contractual",
+          "descripcion": "Revisión y reformulación de objetivos estratégicos y sectoriales del Plan de Acción Climática bajo criterios SMART (específicos, medibles, realizables, realistas y temporales).",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Matriz de objetivos SMART\nBorrador técnico completo de P3",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 88.2353
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P3-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Definir y reformular objetivos estratégicos y sectoriales bajo criterios SMART",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-08",
-          "fechaFin": "2026-09-20",
-          "criterio": "Matriz de objetivos SMART"
+          "codigo": "C2-A2",
+          "etapa": "Contractual",
+          "descripcion": "Actualización de la teoría de cambio y la cadena de valor del instrumento.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Teoría de cambio y cadena de valor ajustadas",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 88.2353
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P3-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Actualizar la teoría de cambio y la cadena de valor del PAC",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-10",
-          "fechaFin": "2026-09-25",
-          "criterio": "Teoría de cambio y cadena de valor ajustadas"
+          "codigo": "C2-A3",
+          "etapa": "Contractual",
+          "descripcion": "Revisión y depuración de acciones con dificultades de implementación derivadas de restricciones competenciales o de gobernanza.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de referentes y restricciones",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P3-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Definir medidas de gestión, medios e instrumentos de implementación",
-          "responsables": ["Harlem Acevedo Agudelo"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza", "Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-13",
-          "fechaFin": "2026-09-29",
-          "criterio": "Matriz de instrumentos de implementación"
+          "codigo": "C2-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diseño e incorporación de medidas de gestión, medios de implementación, proyectos o instrumentos de implementación para el cumplimiento de los objetivos SMART y las acciones sectoriales.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Matriz de instrumentos de implementación",
+          "asignaciones": [
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P3-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Incorporar resiliencia, biodiversidad, economía circular y transición energética",
-          "responsables": ["Jeiner de Jesús Castellanos Barliza", "Harlem Acevedo Agudelo"],
-          "apoyos": ["Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-18",
-          "fechaFin": "2026-10-04",
-          "criterio": "Matriz de transversalización"
+          "codigo": "C2-A5",
+          "etapa": "Contractual",
+          "descripcion": "Incorporación transversal de los enfoques de resiliencia, biodiversidad, economía circular y transición energética en el marco estratégico del plan.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Matriz de transversalización",
+          "asignaciones": [
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P3-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar el capítulo de direccionamiento estratégico",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-25",
-          "fechaFin": "2026-10-08",
-          "criterio": "Borrador técnico completo de P3"
-        },
-        {
-          "codigo": "P3-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-09",
-          "fechaFin": "2026-10-11",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P3-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-10-12",
-          "fechaFin": "2026-10-15",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P4",
       "componente": "C2",
-      "nombre": "Matriz de coherencia estratégica del Plan",
+      "nombre": "Documento anexo con matriz de coherencia estratégica del Plan, que presente la relación entre objetivos, acciones y medidas.",
       "actividades": [
         {
-          "codigo": "P4-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir la estructura, campos y reglas de diligenciamiento de la matriz de coherencia",
-          "responsables": ["Paola Andrea Ruiz Franco", "Sebastián Cartagena"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-13",
-          "fechaFin": "2026-09-22",
-          "criterio": "Plantilla y criterios de coherencia"
+          "codigo": "C2-A1",
+          "etapa": "Contractual",
+          "descripcion": "Revisión y reformulación de objetivos estratégicos y sectoriales del Plan de Acción Climática bajo criterios SMART (específicos, medibles, realizables, realistas y temporales).",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Plantilla y criterios de coherencia\nMatriz de relaciones diligenciada\nMatriz P4 completa y memoria metodológica",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P4-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Relacionar objetivos estratégicos, objetivos sectoriales, acciones y medidas",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-09-15",
-          "fechaFin": "2026-09-27",
-          "criterio": "Matriz de relaciones diligenciada"
+          "codigo": "C2-A3",
+          "etapa": "Contractual",
+          "descripcion": "Revisión y depuración de acciones con dificultades de implementación derivadas de restricciones competenciales o de gobernanza.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Matriz de articulación transversal",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P4-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Verificar coherencia con el diagnóstico, escenarios y enfoque territorial",
-          "responsables": ["Juliana Valencia", "Marcos Arango Tamayo"],
-          "apoyos": ["Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-18",
-          "fechaFin": "2026-10-01",
-          "criterio": "Concepto de coherencia técnica"
+          "codigo": "C2-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diseño e incorporación de medidas de gestión, medios de implementación, proyectos o instrumentos de implementación para el cumplimiento de los objetivos SMART y las acciones sectoriales.",
+          "pesoPorcentaje": 29.75,
+          "criterio": "Matriz de articulación transversal",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P4-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Verificar articulación con priorización, financiamiento, implementación y MERL",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Alejandro Silva Cortés", "Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-22",
-          "fechaFin": "2026-10-04",
-          "criterio": "Matriz de articulación transversal"
+          "codigo": "C2-A5",
+          "etapa": "Contractual",
+          "descripcion": "Incorporación transversal de los enfoques de resiliencia, biodiversidad, economía circular y transición energética en el marco estratégico del plan.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Concepto de coherencia técnica",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P4-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar, depurar y documentar la matriz final",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-09-27",
-          "fechaFin": "2026-10-08",
-          "criterio": "Matriz P4 completa y memoria metodológica"
-        },
-        {
-          "codigo": "P4-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-09",
-          "fechaFin": "2026-10-11",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P4-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-10-12",
-          "fechaFin": "2026-10-15",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P5",
       "componente": "C3",
-      "nombre": "Catálogo caracterizado de medidas de mitigación y adaptación",
+      "nombre": "Informe o capítulo con catálogo caracterizado de medidas de mitigación y adaptación para Medellín, con territorialización cuando sea posible y fichas técnicas sectoriales estandarizadas.",
       "actividades": [
         {
-          "codigo": "P5-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar instrumentos, HIA, inventarios y antecedentes de medidas",
-          "responsables": ["Sebastián Cartagena", "Marcos Arango Tamayo"],
-          "apoyos": ["Juliana Valencia"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-20",
-          "fechaFin": "2026-09-28",
-          "criterio": "Matriz de fuentes y medidas candidatas"
+          "codigo": "C3-A1",
+          "etapa": "Contractual",
+          "descripcion": "Integración de las Acciones de Alto Impacto (High Impact Actions – HIA) promovidas por C40, en coherencia con evidencia y evaluación de pertinencia y oportunidad para el Distrito.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Matriz de fuentes y medidas candidatas",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P5-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar y depurar el inventario sectorial de medidas de mitigación y adaptación",
-          "responsables": ["Harlem Acevedo Agudelo"],
-          "apoyos": ["Juliana Valencia", "Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-21",
-          "fechaFin": "2026-10-02",
-          "criterio": "Inventario consolidado y clasificado"
+          "codigo": "C3-A2",
+          "etapa": "Contractual",
+          "descripcion": "Identificación y caracterización del inventario de acciones y medidas planteadas para el PAC, mediante la estandarización y estructuración de metas, opciones tecnológicas, reducción de emisiones, SbN y medidas político-institucionales de mitigación y adaptación, alineadas con instrumentos de mayor jerarquía y C40.",
+          "pesoPorcentaje": 29.75,
+          "criterio": "Inventario consolidado y clasificado\nFichas técnicas sectoriales\nCampos de costos y financiación diligenciados\nCatálogo P5 consolidado",
+          "asignaciones": [
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 7.3529
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 7.3529
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P5-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Caracterizar técnicamente medidas, SbN, biodiversidad, recurso hídrico y construcción sostenible",
-          "responsables": ["Jeiner de Jesús Castellanos Barliza", "Vanessa García Leoz"],
-          "apoyos": ["Harlem Acevedo Agudelo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-23",
-          "fechaFin": "2026-10-05",
-          "criterio": "Fichas técnicas sectoriales"
+          "codigo": "C3-A3",
+          "etapa": "Contractual",
+          "descripcion": "Estimación cuantitativa del potencial de reducción de emisiones de GEI (ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Memoria de cálculo de tCO2e",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P5-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Estimar el potencial de reducción de GEI por medida y sector",
-          "responsables": ["Juliana Valencia"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-25",
-          "fechaFin": "2026-10-09",
-          "criterio": "Memoria de cálculo de tCO2e"
+          "codigo": "C3-A4",
+          "etapa": "Contractual",
+          "descripcion": "Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Matriz de adaptación y territorialización",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P5-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Valorar resiliencia, vulnerabilidad y territorialización de las medidas",
-          "responsables": ["Vanessa García Leoz", "Marcos Arango Tamayo"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-29",
-          "fechaFin": "2026-10-13",
-          "criterio": "Matriz de adaptación y territorialización"
+          "codigo": "C3-A5",
+          "etapa": "Contractual",
+          "descripcion": "Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de adaptación y territorialización",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P5-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Estimar costos preliminares e identificar fuentes de financiación",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-03",
-          "fechaFin": "2026-10-16",
-          "criterio": "Campos de costos y financiación diligenciados"
-        },
-        {
-          "codigo": "P5-A07",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar, normalizar y redactar el catálogo y sus fichas",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-08",
-          "fechaFin": "2026-10-19",
-          "criterio": "Catálogo P5 consolidado"
-        },
-        {
-          "codigo": "P5-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-20",
-          "fechaFin": "2026-10-20",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P5-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-10-21",
-          "fechaFin": "2026-10-22",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P6",
       "componente": "C3",
-      "nombre": "Documento técnico de priorización de medidas mediante AHP/ANP",
+      "nombre": "Documento técnico de priorización de medidas de mitigación y adaptación derivado del análisis multicriterio sistémico, con modelo AHP/ANP anexo.",
       "actividades": [
         {
-          "codigo": "P6-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir criterios, subcriterios, escalas y reglas del modelo AHP/ANP",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Juliana Valencia", "Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-11",
-          "fechaFin": "2026-10-16",
-          "criterio": "Marco de criterios y escalas"
+          "codigo": "C3-A1",
+          "etapa": "Contractual",
+          "descripcion": "Integración de las Acciones de Alto Impacto (High Impact Actions – HIA) promovidas por C40, en coherencia con evidencia y evaluación de pertinencia y oportunidad para el Distrito.",
+          "pesoPorcentaje": 8.5,
+          "criterio": "Base normalizada para el modelo",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Preparar y validar la matriz de datos de las medidas candidatas",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": [
-            "Juliana Valencia",
-            "Vanessa García Leoz",
-            "Jeiner de Jesús Castellanos Barliza"
-          ],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-12",
-          "fechaFin": "2026-10-18",
-          "criterio": "Base normalizada para el modelo"
+          "codigo": "C3-A2",
+          "etapa": "Contractual",
+          "descripcion": "Identificación y caracterización del inventario de acciones y medidas planteadas para el PAC, mediante la estandarización y estructuración de metas, opciones tecnológicas, reducción de emisiones, SbN y medidas político-institucionales de mitigación y adaptación, alineadas con instrumentos de mayor jerarquía y C40.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Base normalizada para el modelo",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Construir y parametrizar el modelo de priorización multicriterio",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-13",
-          "fechaFin": "2026-10-20",
-          "criterio": "Modelo AHP/ANP documentado"
+          "codigo": "C3-A3",
+          "etapa": "Contractual",
+          "descripcion": "Estimación cuantitativa del potencial de reducción de emisiones de GEI (ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Base normalizada para el modelo",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar y facilitar la valoración y ponderación con actores expertos",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-14",
-          "fechaFin": "2026-10-22",
-          "criterio": "Instrumentos y acta de ponderación"
+          "codigo": "C3-A4",
+          "etapa": "Contractual",
+          "descripcion": "Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Base normalizada para el modelo",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Realizar análisis de consistencia, sensibilidad y robustez",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-17",
-          "fechaFin": "2026-10-24",
-          "criterio": "Informe de sensibilidad"
+          "codigo": "C3-A5",
+          "etapa": "Contractual",
+          "descripcion": "Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.",
+          "pesoPorcentaje": 8.5,
+          "criterio": "Base normalizada para el modelo",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Interpretar resultados y redactar el documento de priorización",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Marcos Arango Tamayo", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-20",
-          "fechaFin": "2026-10-26",
-          "criterio": "Documento técnico P6 y ranking final"
+          "codigo": "C3-A6",
+          "etapa": "Contractual",
+          "descripcion": "Diseño y aplicación de un modelo de análisis multicriterio basado en el Proceso de Redes Analíticas (ANP) para la priorización del portafolio, incorporando co-beneficios y criterios socioeconómicos clave.",
+          "pesoPorcentaje": 29.75,
+          "criterio": "Marco de criterios y escalas\nModelo AHP/ANP documentado\nInstrumentos y acta de ponderación\nInforme de sensibilidad\nDocumento técnico P6 y ranking final",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P6-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-27",
-          "fechaFin": "2026-10-27",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P6-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-10-29",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P7",
       "componente": "C3",
-      "nombre": "Hoja de ruta de descarbonización y resiliencia climática al 2050",
+      "nombre": "Capítulo con hoja de ruta de descarbonización y resiliencia climática al 2050, con escenarios de trayectoria validados con apoyo de C40 y actores del Distrito.",
       "actividades": [
         {
-          "codigo": "P7-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir supuestos y escenarios de descarbonización y resiliencia al 2050",
-          "responsables": ["Juliana Valencia"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-18",
-          "fechaFin": "2026-10-23",
-          "criterio": "Documento de supuestos y escenarios"
+          "codigo": "C3-A2",
+          "etapa": "Contractual",
+          "descripcion": "Identificación y caracterización del inventario de acciones y medidas planteadas para el PAC, mediante la estandarización y estructuración de metas, opciones tecnológicas, reducción de emisiones, SbN y medidas político-institucionales de mitigación y adaptación, alineadas con instrumentos de mayor jerarquía y C40.",
+          "pesoPorcentaje": 8.5,
+          "criterio": "Borrador técnico completo de P7",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Construir la trayectoria sectorial de mitigación y transición sostenible",
-          "responsables": ["Juliana Valencia", "Harlem Acevedo Agudelo"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-19",
-          "fechaFin": "2026-10-25",
-          "criterio": "Trayectoria de mitigación"
+          "codigo": "C3-A3",
+          "etapa": "Contractual",
+          "descripcion": "Estimación cuantitativa del potencial de reducción de emisiones de GEI (ton CO2e) por medida y sector frente a la Línea Base (Business as Usual - BaU).",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Trayectoria de mitigación",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Construir la trayectoria de adaptación, recurso hídrico, biodiversidad y SbN",
-          "responsables": ["Vanessa García Leoz", "Jeiner de Jesús Castellanos Barliza"],
-          "apoyos": ["Harlem Acevedo Agudelo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-20",
-          "fechaFin": "2026-10-27",
-          "criterio": "Trayectoria de adaptación y resiliencia"
+          "codigo": "C3-A4",
+          "etapa": "Contractual",
+          "descripcion": "Valoración cuali-cuantitativa del aporte directo de cada medida a la reducción de la vulnerabilidad y el aumento de la resiliencia climática del territorio.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Trayectoria de adaptación y resiliencia",
+          "asignaciones": [
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Territorializar medidas e hitos de corto, mediano y largo plazo",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-21",
-          "fechaFin": "2026-10-29",
-          "criterio": "Mapas y secuencia territorial"
+          "codigo": "C3-A5",
+          "etapa": "Contractual",
+          "descripcion": "Territorialización de medidas priorizadas con base en la caracterización socioeconómica y el análisis sectorial y de factores estructurales.",
+          "pesoPorcentaje": 8.5,
+          "criterio": "Mapas y secuencia territorial",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Evaluar viabilidad económica, institucional y financiera de la hoja de ruta",
-          "responsables": ["Alejandro Silva Cortés", "Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-24",
-          "fechaFin": "2026-10-31",
-          "criterio": "Matriz de viabilidad"
+          "codigo": "C3-A6",
+          "etapa": "Contractual",
+          "descripcion": "Diseño y aplicación de un modelo de análisis multicriterio basado en el Proceso de Redes Analíticas (ANP) para la priorización del portafolio, incorporando co-beneficios y criterios socioeconómicos clave.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de viabilidad",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar la hoja de ruta con metas, responsables e hitos",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Paola Andrea Ruiz Franco", "Juliana Valencia"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-27",
-          "fechaFin": "2026-11-02",
-          "criterio": "Borrador técnico completo de P7"
+          "codigo": "C3-A7",
+          "etapa": "Contractual",
+          "descripcion": "Modelación de escenarios y trayectorias de descarbonización y resiliencia para la implementación en el corto, mediano y largo plazo a partir de los resultados del modelo ANP y herramientas de C40.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Documento de supuestos y escenarios\nTrayectoria de mitigación\nTrayectoria de adaptación y resiliencia\nBorrador técnico completo de P7",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Harlem Acevedo Agudelo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P7-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-03",
-          "fechaFin": "2026-11-03",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P7-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-04",
-          "fechaFin": "2026-11-05",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P8",
       "componente": "C4",
-      "nombre": "Hoja de articulación con el sistema de CTeI y agenda de innovación",
+      "nombre": "Informe Hoja de articulación con el sistema de CTeI incluyendo apropiación social del conocimiento, divulgación de la ciencia climática y agenda de innovación para la acción climática.",
       "actividades": [
         {
-          "codigo": "P8-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar políticas, planes, capacidades y actores del sistema distrital de CTeI",
-          "responsables": ["Daniel González Montoya"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-20",
-          "fechaFin": "2026-10-01",
-          "criterio": "Mapa documental e institucional"
+          "codigo": "C4-A1",
+          "etapa": "Contractual",
+          "descripcion": "Armonización del PAC con la Política Distrital de CTeI para la Sostenibilidad y el Plan Decenal de CTeI.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Mapa documental e institucional",
+          "asignaciones": [
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P8-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar retos climáticos susceptibles de innovación y tecnologías emergentes",
-          "responsables": ["Daniel González Montoya", "Sebastián Cartagena"],
-          "apoyos": ["Luis Eduardo Vahos Hernández"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-22",
-          "fechaFin": "2026-10-06",
-          "criterio": "Portafolio de retos de innovación"
+          "codigo": "C4-A2",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de retos climáticos susceptibles de ser abordados mediante innovación y tecnologías emergentes.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Portafolio de retos de innovación",
+          "asignaciones": [
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P8-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Definir mecanismos de articulación academia–Estado–empresa–sociedad",
-          "responsables": ["Daniel González Montoya"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-24",
-          "fechaFin": "2026-10-11",
-          "criterio": "Modelo de articulación CTeI"
+          "codigo": "C4-A3",
+          "etapa": "Contractual",
+          "descripcion": "Definición de mecanismos de articulación con el sistema de CTeI.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Modelo de articulación CTeI\nBorrador técnico completo de P8",
+          "asignaciones": [
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P8-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar la estrategia de apropiación social del conocimiento climático",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-28",
-          "fechaFin": "2026-10-16",
-          "criterio": "Estrategia de apropiación social"
+          "codigo": "C4-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diseño de estrategias para la apropiación social del conocimiento climático.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Estrategia de apropiación social",
+          "asignaciones": [
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P8-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar oportunidades de IA, analítica, sistemas de información y Cuarta Revolución Industrial",
-          "responsables": ["Luis Eduardo Vahos Hernández", "León Darío Orrego Espejo"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-04",
-          "fechaFin": "2026-10-21",
-          "criterio": "Mapa de oportunidades tecnológicas"
+          "codigo": "C4-A5",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.",
+          "pesoPorcentaje": 12.75,
+          "criterio": "Mapa de oportunidades tecnológicas",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P8-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar la hoja de articulación y agenda de innovación",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Daniel González Montoya", "Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-11",
-          "fechaFin": "2026-10-26",
-          "criterio": "Borrador técnico completo de P8"
-        },
-        {
-          "codigo": "P8-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-27",
-          "fechaFin": "2026-10-27",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P8-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-10-29",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P9",
       "componente": "C4",
-      "nombre": "Sistema de Gobierno de Datos Climáticos, indicadores y dashboard MERL",
+      "nombre": "Sistema de Gobierno de Datos Climáticos para el PAC de Medellín que contiene indicadores y dashboard de seguimiento en el marco del sistema MERL.",
       "actividades": [
         {
-          "codigo": "P9-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Levantar requerimientos de información, indicadores, usuarios y entidades proveedoras",
-          "responsables": ["Daniel González Montoya"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-11",
-          "fechaFin": "2026-10-20",
-          "criterio": "Matriz de requerimientos"
+          "codigo": "C4-A3",
+          "etapa": "Contractual",
+          "descripcion": "Definición de mecanismos de articulación con el sistema de CTeI.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de requerimientos\nModelo de gobierno de datos",
+          "asignaciones": [
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P9-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar el modelo de gobierno de datos, roles, políticas y calidad",
-          "responsables": ["León Darío Orrego Espejo"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-12",
-          "fechaFin": "2026-10-24",
-          "criterio": "Modelo de gobierno de datos"
+          "codigo": "C4-A5",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Arquitectura y flujos de datos",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P9-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar la arquitectura de información e interoperabilidad",
-          "responsables": ["León Darío Orrego Espejo", "Luis Eduardo Vahos Hernández"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-14",
-          "fechaFin": "2026-10-28",
-          "criterio": "Arquitectura y flujos de datos"
+          "codigo": "C4-A6",
+          "etapa": "Contractual",
+          "descripcion": "Desarrollo de herramientas para la integración del PAC con la estrategia del Plan Maestro Distrito Inteligente, relacionadas con plataformas de seguimiento de datos y asistentes inteligentes para la consulta de información.",
+          "pesoPorcentaje": 51.0,
+          "criterio": "Catálogo de indicadores y prototipo\nProtocolos de datos\nDocumento técnico y pruebas de P9",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P9-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Definir indicadores y prototipar el dashboard de seguimiento MERL",
-          "responsables": ["Luis Eduardo Vahos Hernández"],
-          "apoyos": ["Daniel González Montoya", "León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-17",
-          "fechaFin": "2026-11-01",
-          "criterio": "Catálogo de indicadores y prototipo"
-        },
-        {
-          "codigo": "P9-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Definir protocolos de trazabilidad, seguridad, actualización y control de calidad",
-          "responsables": ["León Darío Orrego Espejo"],
-          "apoyos": ["Luis Eduardo Vahos Hernández"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-22",
-          "fechaFin": "2026-11-05",
-          "criterio": "Protocolos de datos"
-        },
-        {
-          "codigo": "P9-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Documentar, probar y ajustar el sistema propuesto",
-          "responsables": ["Luis Eduardo Vahos Hernández"],
-          "apoyos": ["León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-11-09",
-          "criterio": "Documento técnico y pruebas de P9"
-        },
-        {
-          "codigo": "P9-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-10",
-          "fechaFin": "2026-11-10",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P9-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-11",
-          "fechaFin": "2026-11-12",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P10",
       "componente": "C4",
-      "nombre": "Asistente inteligente para consulta y trazabilidad de información climática",
+      "nombre": "Asistente inteligente para consulta y trazabilidad de información climática.",
       "actividades": [
         {
-          "codigo": "P10-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir usuarios, necesidades, preguntas y casos de uso del asistente",
-          "responsables": ["Sebastián Cartagena", "Daniel González Montoya"],
-          "apoyos": ["Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-25",
-          "fechaFin": "2026-11-01",
-          "criterio": "Catálogo de casos de uso"
+          "codigo": "C4-A5",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de oportunidades para el uso de tecnologías de Cuarta Revolución Industrial en la gestión climática.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Diseño funcional y técnico",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P10-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Seleccionar, organizar y gobernar las fuentes de conocimiento climático",
-          "responsables": ["León Darío Orrego Espejo"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-26",
-          "fechaFin": "2026-11-04",
-          "criterio": "Inventario y modelo de fuentes"
+          "codigo": "C4-A6",
+          "etapa": "Contractual",
+          "descripcion": "Desarrollo de herramientas para la integración del PAC con la estrategia del Plan Maestro Distrito Inteligente, relacionadas con plataformas de seguimiento de datos y asistentes inteligentes para la consulta de información.",
+          "pesoPorcentaje": 59.5,
+          "criterio": "Catálogo de casos de uso\nInventario y modelo de fuentes\nPrototipo funcional\nInforme de pruebas y ajustes\nDocumentación completa de P10",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 9.8039
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P10-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar la arquitectura de IA, búsqueda, analítica y trazabilidad",
-          "responsables": ["Luis Eduardo Vahos Hernández"],
-          "apoyos": ["León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-11-07",
-          "criterio": "Diseño funcional y técnico"
-        },
-        {
-          "codigo": "P10-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Desarrollar o configurar el prototipo funcional del asistente",
-          "responsables": ["Luis Eduardo Vahos Hernández", "León Darío Orrego Espejo"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-30",
-          "fechaFin": "2026-11-10",
-          "criterio": "Prototipo funcional"
-        },
-        {
-          "codigo": "P10-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Ejecutar pruebas de precisión, usabilidad, seguridad y trazabilidad",
-          "responsables": ["Daniel González Montoya"],
-          "apoyos": ["Liliana Restrepo", "Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-02",
-          "fechaFin": "2026-11-13",
-          "criterio": "Informe de pruebas y ajustes"
-        },
-        {
-          "codigo": "P10-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Elaborar documentación técnica, manual de uso y memoria del producto",
-          "responsables": ["Luis Eduardo Vahos Hernández"],
-          "apoyos": ["León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-07",
-          "fechaFin": "2026-11-16",
-          "criterio": "Documentación completa de P10"
-        },
-        {
-          "codigo": "P10-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-17",
-          "fechaFin": "2026-11-17",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P10-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-18",
-          "fechaFin": "2026-11-19",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P11",
       "componente": "C5",
-      "nombre": "Matriz de gestión de riesgos y barreras para la implementación",
+      "nombre": "Informe con Matriz de Gestión de Riesgos y Barreras para la Implementación con sus respectivas acciones de mitigación institucional.",
       "actividades": [
         {
-          "codigo": "P11-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir taxonomía, metodología y escalas para valorar riesgos y barreras",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-18",
-          "fechaFin": "2026-10-25",
-          "criterio": "Metodología de valoración"
+          "codigo": "C5-A1",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de análisis de barreras, riesgos y gestión de la implementación, incluidos cuellos de botella normativos, técnicos, institucionales, políticos o de apropiación social y estrategias de mitigación del riesgo.",
+          "pesoPorcentaje": 85.0,
+          "criterio": "Metodología de valoración\nMatriz de barreras institucionales\nMatriz de barreras técnicas y sociales\nMatriz de riesgos financieros\nPlan de tratamiento de riesgos\nDocumento y matriz P11",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 6.3025
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 6.3025
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P11-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar barreras normativas, institucionales, políticas y de gobernanza",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-19",
-          "fechaFin": "2026-10-28",
-          "criterio": "Matriz de barreras institucionales"
-        },
-        {
-          "codigo": "P11-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar barreras técnicas, climáticas, territoriales y de apropiación social",
-          "responsables": ["Juliana Valencia", "Vanessa García Leoz"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza", "Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-21",
-          "fechaFin": "2026-10-31",
-          "criterio": "Matriz de barreras técnicas y sociales"
-        },
-        {
-          "codigo": "P11-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Analizar riesgos financieros, costos, mercado y acceso a recursos",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-23",
-          "fechaFin": "2026-11-03",
-          "criterio": "Matriz de riesgos financieros"
-        },
-        {
-          "codigo": "P11-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar acciones de mitigación, responsables y controles",
-          "responsables": ["Diana Carolina Ríos Echeverri", "Alejandro Silva Cortés"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-26",
-          "fechaFin": "2026-11-06",
-          "criterio": "Plan de tratamiento de riesgos"
-        },
-        {
-          "codigo": "P11-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar y redactar la matriz y su memoria técnica",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-31",
-          "fechaFin": "2026-11-09",
-          "criterio": "Documento y matriz P11"
-        },
-        {
-          "codigo": "P11-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-10",
-          "fechaFin": "2026-11-10",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P11-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-11",
-          "fechaFin": "2026-11-12",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P12",
       "componente": "C5",
-      "nombre": "Cartera priorizada de proyectos climáticos bancables",
+      "nombre": "Informe con Cartera priorizada de proyectos climáticos bancables estructurada bajo criterios de viabilidad y articulada con el Diagnóstico de Oportunidades de Inversión Climática del Distrito.",
       "actividades": [
         {
-          "codigo": "P12-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir criterios de elegibilidad, viabilidad y bancabilidad",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-25",
-          "fechaFin": "2026-11-01",
-          "criterio": "Marco de criterios"
+          "codigo": "C5-A1",
+          "etapa": "Contractual",
+          "descripcion": "Identificación de análisis de barreras, riesgos y gestión de la implementación, incluidos cuellos de botella normativos, técnicos, institucionales, políticos o de apropiación social y estrategias de mitigación del riesgo.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de viabilidad",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P12-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Seleccionar y perfilar proyectos derivados de las medidas priorizadas",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Juliana Valencia", "Vanessa García Leoz"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-26",
-          "fechaFin": "2026-11-04",
-          "criterio": "Fichas preliminares de proyectos"
+          "codigo": "C5-A2",
+          "etapa": "Contractual",
+          "descripcion": "Estimación de requerimientos de inversión (CAPEX), costos operativos (OPEX) y viabilidad física e institucional de las medidas priorizadas para el corto y mediano plazo.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Modelo financiero preliminar",
+          "asignaciones": [
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P12-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Estimar CAPEX, OPEX, flujos y necesidades de inversión",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-11-07",
-          "criterio": "Modelo financiero preliminar"
+          "codigo": "C5-A3",
+          "etapa": "Contractual",
+          "descripcion": "Estructuración de la Cartera de Proyectos Climáticos bajo criterios de Viabilidad y Bancabilidad, articulada con el Diagnóstico de Oportunidades de Inversión Climática del Distrito.",
+          "pesoPorcentaje": 42.5,
+          "criterio": "Marco de criterios\nFichas preliminares de proyectos\nMapa proyecto–fuente\nCartera P12 consolidada",
+          "asignaciones": [
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 22.0588
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 11.0294
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 11.0294
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P12-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Evaluar barreras, riesgos y viabilidad institucional de cada proyecto",
-          "responsables": ["Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-30",
-          "fechaFin": "2026-11-10",
-          "criterio": "Matriz de viabilidad"
-        },
-        {
-          "codigo": "P12-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Relacionar proyectos con fuentes, instrumentos y oportunidades de inversión",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-02",
-          "fechaFin": "2026-11-13",
-          "criterio": "Mapa proyecto–fuente"
-        },
-        {
-          "codigo": "P12-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Priorizar, consolidar y redactar la cartera de proyectos bancables",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Paola Andrea Ruiz Franco", "Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-07",
-          "fechaFin": "2026-11-16",
-          "criterio": "Cartera P12 consolidada"
-        },
-        {
-          "codigo": "P12-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-17",
-          "fechaFin": "2026-11-17",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P12-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-18",
-          "fechaFin": "2026-11-19",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P13",
       "componente": "C5",
-      "nombre": "Plan Financiero y Estrategia de Movilización de Recursos",
+      "nombre": "Informe de Plan Financiero y Estrategia de Movilización de Recursos.",
       "actividades": [
         {
-          "codigo": "P13-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar antecedentes, brechas y oportunidades de financiamiento climático",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-01",
-          "fechaFin": "2026-11-08",
-          "criterio": "Diagnóstico financiero"
+          "codigo": "C5-A2",
+          "etapa": "Contractual",
+          "descripcion": "Estimación de requerimientos de inversión (CAPEX), costos operativos (OPEX) y viabilidad física e institucional de las medidas priorizadas para el corto y mediano plazo.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Plan de necesidades de inversión",
+          "asignaciones": [
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P13-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar necesidades de inversión y costos de implementación",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Diana Carolina Ríos Echeverri"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-02",
-          "fechaFin": "2026-11-11",
-          "criterio": "Plan de necesidades de inversión"
+          "codigo": "C5-A3",
+          "etapa": "Contractual",
+          "descripcion": "Estructuración de la Cartera de Proyectos Climáticos bajo criterios de Viabilidad y Bancabilidad, articulada con el Diagnóstico de Oportunidades de Inversión Climática del Distrito.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Mapa de fuentes",
+          "asignaciones": [
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P13-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar y caracterizar fuentes públicas, privadas y de cooperación",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-04",
-          "fechaFin": "2026-11-14",
-          "criterio": "Mapa de fuentes"
+          "codigo": "C5-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diseño de la Estrategia de Financiamiento y Movilización de Recursos.",
+          "pesoPorcentaje": 42.5,
+          "criterio": "Diagnóstico financiero\nPortafolio de instrumentos\nHoja de ruta financiera\nBorrador técnico completo de P13",
+          "asignaciones": [
+            {
+              "nombre": "Diana Carolina Ríos Echeverri",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P13-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar instrumentos y mecanismos de movilización de recursos",
-          "responsables": ["Alejandro Silva Cortés", "Diana Carolina Ríos Echeverri"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-06",
-          "fechaFin": "2026-11-17",
-          "criterio": "Portafolio de instrumentos"
-        },
-        {
-          "codigo": "P13-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Definir gobernanza, responsables, metas y hoja de ruta financiera",
-          "responsables": ["Paola Andrea Ruiz Franco", "Sebastián Cartagena"],
-          "apoyos": ["Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-09",
-          "fechaFin": "2026-11-20",
-          "criterio": "Hoja de ruta financiera"
-        },
-        {
-          "codigo": "P13-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar el Plan Financiero y la Estrategia de Movilización",
-          "responsables": ["Alejandro Silva Cortés"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-14",
-          "fechaFin": "2026-11-23",
-          "criterio": "Borrador técnico completo de P13"
-        },
-        {
-          "codigo": "P13-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-24",
-          "fechaFin": "2026-11-24",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P13-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-25",
-          "fechaFin": "2026-11-26",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P14",
       "componente": "C5",
-      "nombre": "Documento técnico de formulación del Sistema MERL",
+      "nombre": "Informe Documento Técnico de Formulación del Sistema MERL con indicadores, estructura de gobernanza de datos y protocolos para reporte, seguimiento y actualización periódica.",
       "actividades": [
         {
-          "codigo": "P14-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar la estructura institucional y la gobernanza del Sistema MERL",
-          "responsables": ["Daniel González Montoya"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-18",
-          "fechaFin": "2026-10-29",
-          "criterio": "Modelo de gobernanza MERL"
+          "codigo": "C5-A5",
+          "etapa": "Contractual",
+          "descripcion": "Estructuración del marco institucional y operativo del Sistema MERL, definiendo la gobernanza y la interoperabilidad de datos climáticos.",
+          "pesoPorcentaje": 34.0,
+          "criterio": "Modelo de gobernanza MERL\nArquitectura de datos MERL",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P14-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar, ajustar y concertar la batería de indicadores",
-          "responsables": ["Daniel González Montoya", "Juliana Valencia"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-20",
-          "fechaFin": "2026-11-03",
-          "criterio": "Ficha y matriz de indicadores"
+          "codigo": "C5-A6",
+          "etapa": "Contractual",
+          "descripcion": "Revisión, ajuste y concertación de la batería de indicadores de gestión, resultados e impactos climáticos y socioeconómicos, articulada con sistemas de monitoreo nacionales e instrumentos regionales.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Ficha y matriz de indicadores",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P14-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Definir arquitectura, interoperabilidad y calidad de datos",
-          "responsables": ["León Darío Orrego Espejo", "Luis Eduardo Vahos Hernández"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-22",
-          "fechaFin": "2026-11-08",
-          "criterio": "Arquitectura de datos MERL"
+          "codigo": "C5-A7",
+          "etapa": "Contractual",
+          "descripcion": "Diseño de protocolos de reporte, seguimiento y actualización del plan, incluyendo guías metodológicas, periodicidad, flujos de información y responsabilidades institucionales.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Protocolos MERL\nMatriz RACI y calendario de reporte\nBorrador técnico completo de P14",
+          "asignaciones": [
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P14-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar protocolos de reporte, validación, seguimiento y actualización",
-          "responsables": ["León Darío Orrego Espejo"],
-          "apoyos": ["Luis Eduardo Vahos Hernández"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-26",
-          "fechaFin": "2026-11-13",
-          "criterio": "Protocolos MERL"
-        },
-        {
-          "codigo": "P14-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Asignar roles, periodicidades, flujos de decisión y mecanismos de aprendizaje",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-01",
-          "fechaFin": "2026-11-18",
-          "criterio": "Matriz RACI y calendario de reporte"
-        },
-        {
-          "codigo": "P14-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar y redactar el documento técnico del Sistema MERL",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Daniel González Montoya", "León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-08",
-          "fechaFin": "2026-11-23",
-          "criterio": "Borrador técnico completo de P14"
-        },
-        {
-          "codigo": "P14-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-24",
-          "fechaFin": "2026-11-24",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P14-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-25",
-          "fechaFin": "2026-11-26",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P15",
       "componente": "C6",
-      "nombre": "Memoria del proceso participativo y estrategia de comunicación y divulgación",
+      "nombre": "Informe con Memoria del proceso participativo y estrategia de comunicación y divulgación.",
       "actividades": [
         {
-          "codigo": "P15-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar metodología, agenda e instrumentos de participación",
-          "responsables": ["Paola Andrea Ruiz Franco", "Liliana Restrepo"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-08-31",
-          "fechaFin": "2026-09-25",
-          "criterio": "Plan e instrumentos de participación"
+          "codigo": "C6-A1",
+          "etapa": "Contractual",
+          "descripcion": "Diseño e implementación de espacios de participación con actores institucionales, comunitarios, académicos y productivos.",
+          "pesoPorcentaje": 38.25,
+          "criterio": "Plan e instrumentos de participación\nMapa y registro de actores\nActas, registros y sistematización\nBorrador técnico completo de P15",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P15-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Identificar, caracterizar y convocar actores clave",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-09-04",
-          "fechaFin": "2026-10-08",
-          "criterio": "Mapa y registro de actores"
+          "codigo": "C6-A2",
+          "etapa": "Contractual",
+          "descripcion": "Validación técnica y social de los resultados del proceso.",
+          "pesoPorcentaje": 21.25,
+          "criterio": "Matriz de observaciones y respuestas",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 88.2353
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P15-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Implementar y documentar espacios de participación",
-          "responsables": ["Liliana Restrepo", "Paola Andrea Ruiz Franco"],
-          "apoyos": [],
-          "apoyosTexto": ["Equipo técnico por temática"],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-09-10",
-          "fechaFin": "2026-10-19",
-          "criterio": "Actas, registros y sistematización"
+          "codigo": "C6-A3",
+          "etapa": "Contractual",
+          "descripcion": "Elaboración de materiales de comunicación y divulgación.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Estrategia de comunicación",
+          "asignaciones": [
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P15-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Coordinar la validación técnica y social de resultados",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": ["líderes técnicos"],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-18",
-          "fechaFin": "2026-10-30",
-          "criterio": "Matriz de observaciones y respuestas"
-        },
-        {
-          "codigo": "P15-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar la estrategia de comunicación y divulgación",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-02",
-          "fechaFin": "2026-11-11",
-          "criterio": "Estrategia de comunicación"
-        },
-        {
-          "codigo": "P15-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Sistematizar y redactar la memoria del proceso participativo",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Sebastián Cartagena", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-19",
-          "fechaFin": "2026-11-23",
-          "criterio": "Borrador técnico completo de P15"
-        },
-        {
-          "codigo": "P15-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-24",
-          "fechaFin": "2026-11-24",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P15-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-11-25",
-          "fechaFin": "2026-11-29",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P16",
       "componente": "C6",
-      "nombre": "Versión ciudadana del PAC",
+      "nombre": "Versión ciudadana del PAC.",
       "actividades": [
         {
-          "codigo": "P16-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir públicos, objetivos comunicativos, estructura y extensión de la versión ciudadana",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-18",
-          "fechaFin": "2026-10-31",
-          "criterio": "Guion editorial"
+          "codigo": "C6-A2",
+          "etapa": "Contractual",
+          "descripcion": "Validación técnica y social de los resultados del proceso.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Informe de validación",
+          "asignaciones": [
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 88.2353
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P16-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Traducir los contenidos técnicos del PAC a lenguaje claro",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Juliana Valencia", "Vanessa García Leoz", "Alejandro Silva Cortés"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-10-20",
-          "fechaFin": "2026-11-07",
-          "criterio": "Textos ciudadanos por capítulo"
+          "codigo": "C6-A3",
+          "etapa": "Contractual",
+          "descripcion": "Elaboración de materiales de comunicación y divulgación.",
+          "pesoPorcentaje": 42.5,
+          "criterio": "Guion editorial\nTextos ciudadanos por capítulo\nMatriz de mensajes y narrativa\nPropuesta visual e infografías",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 8.8235
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 8.8235
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 8.8235
+            },
+            {
+              "nombre": "Alejandro Silva Cortés",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 8.8235
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P16-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar narrativa, mensajes clave y recursos pedagógicos",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-23",
-          "fechaFin": "2026-11-13",
-          "criterio": "Matriz de mensajes y narrativa"
+          "codigo": "C6-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diagramación y publicación de los documentos finales.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Borrador completo de P16",
+          "asignaciones": [
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 44.1176
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P16-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar contenidos visuales, infografías y apoyos gráficos",
-          "responsables": ["Liliana Restrepo", "Sebastián Cartagena"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-28",
-          "fechaFin": "2026-11-19",
-          "criterio": "Propuesta visual e infografías"
-        },
-        {
-          "codigo": "P16-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Validar claridad, accesibilidad, enfoque diferencial y pertinencia ciudadana",
-          "responsables": ["Paola Andrea Ruiz Franco"],
-          "apoyos": ["Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-04",
-          "fechaFin": "2026-11-25",
-          "criterio": "Informe de validación"
-        },
-        {
-          "codigo": "P16-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar, editar y preparar el borrador de la versión ciudadana",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-13",
-          "fechaFin": "2026-12-01",
-          "criterio": "Borrador completo de P16"
-        },
-        {
-          "codigo": "P16-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-12-02",
-          "fechaFin": "2026-12-02",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P16-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-12-03",
-          "fechaFin": "2026-12-03",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P17",
       "componente": "C6",
-      "nombre": "Publicación digital del PAC actualizado",
+      "nombre": "Publicación digital del PAC actualizado.",
       "actividades": [
         {
-          "codigo": "P17-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Definir plan editorial, arquitectura de publicación y formatos digitales",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": ["León Darío Orrego Espejo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-10-25",
-          "fechaFin": "2026-11-06",
-          "criterio": "Plan editorial y técnico"
+          "codigo": "C6-A2",
+          "etapa": "Contractual",
+          "descripcion": "Validación técnica y social de los resultados del proceso.",
+          "pesoPorcentaje": 8.5,
+          "criterio": "Informe de control de calidad",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 58.8235
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P17-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Consolidar y controlar versiones de contenidos finales",
-          "responsables": ["Paola Andrea Ruiz Franco", "Sebastián Cartagena"],
-          "apoyos": [],
-          "apoyosTexto": ["Líderes de componentes"],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-27",
-          "fechaFin": "2026-11-12",
-          "criterio": "Paquete editorial validado"
+          "codigo": "C6-A3",
+          "etapa": "Contractual",
+          "descripcion": "Elaboración de materiales de comunicación y divulgación.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Paquete editorial validado\nArtes y piezas diagramadas",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 29.4118
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P17-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar arquitectura de información, navegación y accesibilidad",
-          "responsables": ["León Darío Orrego Espejo", "Luis Eduardo Vahos Hernández"],
-          "apoyos": ["Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-30",
-          "fechaFin": "2026-11-17",
-          "criterio": "Prototipo de navegación"
+          "codigo": "C6-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diagramación y publicación de los documentos finales.",
+          "pesoPorcentaje": 59.5,
+          "criterio": "Plan editorial y técnico\nPrototipo de navegación\nPublicación digital funcional",
+          "asignaciones": [
+            {
+              "nombre": "Luis Eduardo Vahos Hernández",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "León Darío Orrego Espejo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 19.6078
+            },
+            {
+              "nombre": "Daniel González Montoya",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 9.8039
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P17-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Diagramar y adaptar contenidos para publicación digital",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": [],
-          "apoyosTexto": ["Diagramador por confirmar"],
-          "pesoPorcentaje": 20.0,
-          "fechaInicio": "2026-11-03",
-          "fechaFin": "2026-11-22",
-          "criterio": "Artes y piezas diagramadas"
-        },
-        {
-          "codigo": "P17-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Implementar y publicar la versión digital",
-          "responsables": ["León Darío Orrego Espejo", "Luis Eduardo Vahos Hernández"],
-          "apoyos": ["Daniel González Montoya"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-11-09",
-          "fechaFin": "2026-11-28",
-          "criterio": "Publicación digital funcional"
-        },
-        {
-          "codigo": "P17-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Ejecutar control de calidad editorial, funcional y de accesibilidad",
-          "responsables": ["Sebastián Cartagena"],
-          "apoyos": ["Liliana Restrepo", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-17",
-          "fechaFin": "2026-12-03",
-          "criterio": "Informe de control de calidad"
-        },
-        {
-          "codigo": "P17-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-12-04",
-          "fechaFin": "2026-12-06",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P17-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-12-07",
-          "fechaFin": "2026-12-07",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     },
     {
       "codigo": "P18",
       "componente": "C6",
-      "nombre": "Documento divulgativo de la Evaluación de Riesgos Climáticos",
+      "nombre": "Documento divulgativo de la Evaluación de Riesgos Climáticos.",
       "actividades": [
         {
-          "codigo": "P18-A01",
-          "etapa": "Elaboración",
-          "descripcion": "Revisar la Evaluación de Riesgos Climáticos y seleccionar hallazgos divulgables",
-          "responsables": ["Juliana Valencia", "Vanessa García Leoz"],
-          "apoyos": ["Marcos Arango Tamayo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-09-30",
-          "fechaFin": "2026-10-19",
-          "criterio": "Matriz de hallazgos priorizados"
+          "codigo": "C6-A2",
+          "etapa": "Contractual",
+          "descripcion": "Validación técnica y social de los resultados del proceso.",
+          "pesoPorcentaje": 17.0,
+          "criterio": "Matriz de hallazgos priorizados\nBorrador completo de P18",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 25.2101
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 12.605
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P18-A02",
-          "etapa": "Elaboración",
-          "descripcion": "Definir públicos, mensajes clave y estructura del documento divulgativo",
-          "responsables": ["Liliana Restrepo", "Juliana Valencia"],
-          "apoyos": ["Sebastián Cartagena"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-03",
-          "fechaFin": "2026-10-28",
-          "criterio": "Guion y matriz de mensajes"
+          "codigo": "C6-A3",
+          "etapa": "Contractual",
+          "descripcion": "Elaboración de materiales de comunicación y divulgación.",
+          "pesoPorcentaje": 42.5,
+          "criterio": "Guion y matriz de mensajes\nTextos divulgativos\nPaquete de visualizaciones\nPropuesta editorial y gráfica",
+          "asignaciones": [
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Marcos Arango Tamayo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Vanessa García Leoz",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Liliana Restrepo",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 14.7059
+            },
+            {
+              "nombre": "Jeiner de Jesús Castellanos Barliza",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 7.3529
+            },
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 7.3529
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P18-A03",
-          "etapa": "Elaboración",
-          "descripcion": "Traducir amenazas, exposición, vulnerabilidad y adaptación a lenguaje claro",
-          "responsables": ["Liliana Restrepo", "Vanessa García Leoz"],
-          "apoyos": ["Jeiner de Jesús Castellanos Barliza"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-07",
-          "fechaFin": "2026-11-05",
-          "criterio": "Textos divulgativos"
+          "codigo": "C6-A4",
+          "etapa": "Contractual",
+          "descripcion": "Diagramación y publicación de los documentos finales.",
+          "pesoPorcentaje": 25.5,
+          "criterio": "Borrador completo de P18",
+          "asignaciones": [
+            {
+              "nombre": "Sebastián Cartagena",
+              "rol": "Elaboración técnica",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Curaduría Museo",
+              "rol": "Corresponsable de apropiación social y divulgación",
+              "pesoPorcentaje": 35.2941
+            },
+            {
+              "nombre": "Juliana Valencia",
+              "rol": "Apoyo técnico",
+              "pesoPorcentaje": 17.6471
+            },
+            {
+              "nombre": "Paola Andrea Ruiz Franco",
+              "rol": "Coordinación técnica, integración y seguimiento",
+              "pesoPorcentaje": 11.7647
+            }
+          ]
         },
         {
-          "codigo": "P18-A04",
-          "etapa": "Elaboración",
-          "descripcion": "Preparar mapas, gráficos y visualizaciones territoriales",
-          "responsables": ["Marcos Arango Tamayo"],
-          "apoyos": ["Liliana Restrepo"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-14",
-          "fechaFin": "2026-11-14",
-          "criterio": "Paquete de visualizaciones"
-        },
-        {
-          "codigo": "P18-A05",
-          "etapa": "Elaboración",
-          "descripcion": "Diseñar narrativa, recursos pedagógicos y propuesta gráfica",
-          "responsables": ["Liliana Restrepo"],
-          "apoyos": [],
-          "apoyosTexto": ["Material de divulgación por confirmar"],
-          "pesoPorcentaje": 15.0,
-          "fechaInicio": "2026-10-24",
-          "fechaFin": "2026-11-22",
-          "criterio": "Propuesta editorial y gráfica"
-        },
-        {
-          "codigo": "P18-A06",
-          "etapa": "Elaboración",
-          "descripcion": "Integrar, validar y preparar el borrador final",
-          "responsables": ["Paola Andrea Ruiz Franco", "Sebastián Cartagena"],
-          "apoyos": ["Juliana Valencia"],
-          "apoyosTexto": [],
-          "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-11-05",
-          "fechaFin": "2026-12-01",
-          "criterio": "Borrador completo de P18"
-        },
-        {
-          "codigo": "P18-R01",
+          "codigo": "R01",
           "etapa": "Revisión y aval",
           "descripcion": "Revisar integralmente la calidad técnica, coherencia, trazabilidad contractual y suficiencia del entregable",
-          "responsables": ["María José Suárez", "Guillermo Penagos"],
-          "apoyos": [],
-          "apoyosTexto": ["Responsables técnicos del entregable"],
           "pesoPorcentaje": 10.0,
-          "fechaInicio": "2026-12-02",
-          "fechaFin": "2026-12-02",
-          "criterio": "Concepto consolidado de revisión y aval"
+          "criterio": "Concepto consolidado de revisión y aval",
+          "asignaciones": [
+            {
+              "nombre": "Guillermo Penagos",
+              "rol": "Revisión técnica y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            },
+            {
+              "nombre": "María José Suárez",
+              "rol": "Revisión integral y cierre para envío a Secretaría",
+              "pesoPorcentaje": 50.0
+            }
+          ]
         },
         {
-          "codigo": "P18-R02",
+          "codigo": "R02",
           "etapa": "Revisión final Secretaría",
           "descripcion": "Realizar la revisión final institucional y emitir observaciones o conformidad para el cierre del entregable",
-          "responsables": ["Juana — Secretaría de Medio Ambiente"],
-          "apoyos": ["María José Suárez", "Paola Andrea Ruiz Franco"],
-          "apoyosTexto": [],
           "pesoPorcentaje": 5.0,
-          "fechaInicio": "2026-12-03",
-          "fechaFin": "2026-12-09",
-          "criterio": "Concepto u observaciones finales de la Secretaría"
+          "criterio": "Concepto u observaciones finales de la Secretaría",
+          "asignaciones": [
+            {
+              "nombre": "Juana — Secretaría de Medio Ambiente",
+              "rol": "Validación y revisión final institucional",
+              "pesoPorcentaje": 100.0
+            }
+          ]
         }
       ]
     }

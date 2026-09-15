@@ -2,9 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-// Enriquecimiento del Proyecto PAC ya sembrado (ver seed-pac.ts) con la
-// "Propuesta de asignación de actividades" (Documentosbase/
-// Propuesta_asignacion_actividades_PAC.xlsx, exportada a actividades-pac.json):
+// Enriquecimiento del Proyecto PAC ya sembrado (ver seed-pac.ts) con el
+// documento oficial de actividades, personas y pesos (Documentosbase/
+// PAC_actividades_personas_y_pesos.xlsx, exportado a actividades-pac.json
+// por generar-actividades-json.py):
 //
 //   Componente (Fase) → Entregable (Actividad) → Actividad (Subactividad) → Integrante
 //
@@ -15,14 +16,21 @@ import { join } from 'path';
 //
 // Además siembra dos niveles de asignación:
 //   1) AsignacionComponente  — distribución % de responsabilidad por Componente (suma 100 %).
-//   2) AsignacionSubactividad — responsable(s) específico(s) de cada Actividad.
+//   2) AsignacionSubactividad — peso EXACTO de cada colaborador en la Actividad,
+//      tal como viene en la hoja "Asignaciones" del Excel oficial. Ese peso es
+//      el presupuesto máximo que el colaborador puede repartir entre Tareas
+//      (nivel 4, Gestión de Actas — RN-ACTA-06).
 //
 // A diferencia de seed-pac.ts, este script es de ACTUALIZACIÓN en línea:
 // nunca borra ni recrea Fase/Actividad (evita perder Avances/Evidencias/
 // Hitos), y es seguro de volver a ejecutar (upsert por claves estables:
-// Subactividad.codigo "P1-A01", (fase,usuario), (subactividad,usuario)).
+// Subactividad.codigo p.ej. "C1-A4" dentro de su Entregable, (fase,usuario),
+// (subactividad,usuario)). Las Actividades (Subactividad) que ya no existen en
+// el Excel se eliminan SOLO si no tienen avances registrados; si los tienen,
+// se conservan y se reportan para revisión manual (no se pierde historial).
 //
 // Ejecutar:
+//   python prisma/generar-actividades-json.py   (regenera actividades-pac.json)
 //   npm run enriquecer:pac
 
 const prisma = new PrismaClient();
@@ -75,6 +83,12 @@ const PERSONAS = {
   juanaSma: {
     nombre: 'Juana — Secretaría de Medio Ambiente',
     email: `juana.sma@${DOMINIO_PROVISIONAL}`,
+  },
+  // Equipo del Museo (apoyo en curaduría/divulgación, sin cuenta individual
+  // identificada aún). Correo provisional, igual que Juana.
+  curaduriaMuseo: {
+    nombre: 'Curaduría Museo',
+    email: `curaduria.museo@${DOMINIO_PROVISIONAL}`,
   },
 } as const;
 
@@ -234,22 +248,23 @@ const META: MetaEntregable[] = [
 ];
 
 // ─── Actividades por entregable (generado desde el Excel) ────────────
+interface AsignacionFuente {
+  nombre: string; // nombre canónico (usuario conocido)
+  rol: string | null;
+  pesoPorcentaje: number; // peso EXACTO del colaborador en la Actividad (suma 100 % por actividad)
+}
 interface ActividadFuente {
   codigo: string;
-  etapa: string;
+  etapa: string | null;
   descripcion: string;
-  responsables: string[]; // nombres canónicos (usuarios conocidos)
-  apoyos: string[]; // nombres canónicos (usuarios conocidos)
-  apoyosTexto: string[]; // roles sin cuenta (texto libre)
-  pesoPorcentaje: number;
-  fechaInicio: string | null;
-  fechaFin: string | null;
+  pesoPorcentaje: number; // peso de la Actividad en su Entregable (suma 100 % por entregable)
   criterio: string | null;
+  asignaciones: AsignacionFuente[];
 }
 interface EntregableFuente {
   codigo: string;
   componente: string;
-  nombre: string;
+  nombre: string | null;
   actividades: ActividadFuente[];
 }
 interface ActividadesJson {
@@ -278,16 +293,6 @@ const HITOS_MAESTROS: { nombre: string; fechaObjetivo: string; productoCierre: s
     productoCierre: 'P18',
   },
 ];
-
-/** Reparte un porcentaje entre N ítems, ajustando el último para que sume exacto. */
-function repartir(pctTotal: number, n: number): number[] {
-  if (n === 0) return [];
-  const base = Math.round((pctTotal / n) * 100) / 100;
-  const pesos = new Array(n).fill(base) as number[];
-  const suma = pesos.reduce((a, b) => a + b, 0);
-  pesos[n - 1] = Math.round((pesos[n - 1] + (pctTotal - suma)) * 100) / 100;
-  return pesos;
-}
 
 async function main(): Promise<void> {
   const proyecto = await prisma.proyecto.findFirst();
@@ -351,8 +356,12 @@ async function main(): Promise<void> {
   console.log('Entregables: insumos y tramo de pago actualizados.');
 
   // ── 4) Actividades (Subactividades) por entregable ────────────────
-  // Limpieza previa: quitar subactividades heredadas (sin código, de la versión
-  // anterior "Tareas principales") SOLO si no tienen avances registrados.
+  // Limpieza previa: quitar subactividades heredadas (código de la versión
+  // anterior, que no existe en el Excel oficial) SOLO si no tienen NADA
+  // enganchado que se perdería por el cascade: avances (nivel 3), Tareas
+  // (nivel 4, Gestión de Actas — con sus propios AvanceTarea en cascada) ni
+  // Riesgos estructurados. Si tiene algo de eso, se conserva intacta para
+  // revisión manual (RN: no perder historial de Actas).
   let legadoBorrado = 0;
   let legadoConservado = 0;
   for (const e of DATOS.entregables) {
@@ -362,11 +371,14 @@ async function main(): Promise<void> {
     const existentes = await prisma.subactividad.findMany({ where: { actividadId } });
     for (const sub of existentes) {
       if (sub.codigo && codigosValidos.has(sub.codigo)) continue; // se actualiza abajo
-      const conAvances =
-        (await prisma.avanceSubactividad.count({ where: { subactividadId: sub.id } })) > 0;
-      if (conAvances) {
+      const [avances, tareas, riesgos] = await Promise.all([
+        prisma.avanceSubactividad.count({ where: { subactividadId: sub.id } }),
+        prisma.tarea.count({ where: { subactividadId: sub.id } }),
+        prisma.riesgo.count({ where: { subactividadId: sub.id } }),
+      ]);
+      if (avances > 0 || tareas > 0 || riesgos > 0) {
         legadoConservado += 1;
-        continue; // no destruir avances reales
+        continue; // no destruir avances, Tareas de Actas ni Riesgos reales
       }
       await prisma.subactividad.delete({ where: { id: sub.id } });
       legadoBorrado += 1;
@@ -381,24 +393,25 @@ async function main(): Promise<void> {
     );
   }
 
-  // Upsert de cada Actividad por (actividadId, codigo) y su responsable(s).
+  // Upsert de cada Actividad por (actividadId, codigo) y sus asignaciones.
+  // No se incluyen fechaInicioPlan/fechaFinPlan: el Excel oficial no trae
+  // fechas por Actividad (nivel 3), así que se preservan las que ya existan
+  // (se omiten del payload de actualización) y quedan sin definir en las
+  // Actividades nuevas.
   let creadas = 0;
   let actualizadas = 0;
+  let asignacionesSinUsuario = 0;
   for (const e of DATOS.entregables) {
     const actividadId = actividadIdPorProducto.get(e.codigo);
     if (!actividadId) continue;
 
     for (const [i, a] of e.actividades.entries()) {
-      const nota = a.apoyosTexto.length ? `Apoyos: ${a.apoyosTexto.join('; ')}` : null;
       const datos = {
         etapa: a.etapa,
         descripcion: a.descripcion,
         orden: i,
         pesoPorcentaje: a.pesoPorcentaje,
-        fechaInicioPlan: a.fechaInicio ? new Date(a.fechaInicio) : null,
-        fechaFinPlan: a.fechaFin ? new Date(a.fechaFin) : null,
         criterioTerminado: a.criterio,
-        nota,
       };
       const existente = await prisma.subactividad.findFirst({
         where: { actividadId, codigo: a.codigo },
@@ -409,27 +422,21 @@ async function main(): Promise<void> {
         : ((creadas += 1),
           await prisma.subactividad.create({ data: { actividadId, codigo: a.codigo, ...datos } }));
 
-      // Responsable(s) de la Actividad (AsignacionSubactividad, informativa).
-      // Responsables comparten el 85 %; apoyos con cuenta, el 15 %. Sin apoyos,
-      // los responsables comparten el 100 %.
-      const respIds = a.responsables.map(idDe).filter((x): x is string => !!x);
-      const apoyoIds = a.apoyos.map(idDe).filter((x): x is string => !!x);
+      // Peso EXACTO de cada colaborador en la Actividad (AsignacionSubactividad),
+      // tal como viene del Excel oficial (hoja "Asignaciones"). Este peso es el
+      // presupuesto máximo que el colaborador puede repartir entre Tareas
+      // (RN-ACTA-06, ver backend/src/tarea/tarea.service.ts).
       const pesos = new Map<string, number>();
-      if (respIds.length && apoyoIds.length) {
-        repartir(85, respIds.length).forEach((p, k) =>
-          pesos.set(respIds[k], (pesos.get(respIds[k]) ?? 0) + p),
-        );
-        repartir(15, apoyoIds.length).forEach((p, k) =>
-          pesos.set(apoyoIds[k], (pesos.get(apoyoIds[k]) ?? 0) + p),
-        );
-      } else if (respIds.length) {
-        repartir(100, respIds.length).forEach((p, k) =>
-          pesos.set(respIds[k], (pesos.get(respIds[k]) ?? 0) + p),
-        );
-      } else if (apoyoIds.length) {
-        repartir(100, apoyoIds.length).forEach((p, k) =>
-          pesos.set(apoyoIds[k], (pesos.get(apoyoIds[k]) ?? 0) + p),
-        );
+      for (const asig of a.asignaciones) {
+        const usuarioId = idDe(asig.nombre);
+        if (!usuarioId) {
+          asignacionesSinUsuario += 1;
+          console.warn(
+            `Aviso: "${asig.nombre}" no está en PERSONAS; se omite su asignación en ${e.codigo}/${a.codigo}.`,
+          );
+          continue;
+        }
+        pesos.set(usuarioId, (pesos.get(usuarioId) ?? 0) + asig.pesoPorcentaje);
       }
 
       // Sincronizar: quitar asignaciones de usuarios ya no listados.
@@ -467,12 +474,16 @@ async function main(): Promise<void> {
     });
   }
   console.log(
-    `Actividades: ${creadas} creadas, ${actualizadas} actualizadas (con peso, fechas y criterio).`,
+    `Actividades: ${creadas} creadas, ${actualizadas} actualizadas (con peso y criterio).` +
+      (asignacionesSinUsuario
+        ? ` ${asignacionesSinUsuario} asignaciones omitidas por nombre no reconocido (revisar PERSONAS).`
+        : ''),
   );
 
   // ── 5) Asignación por Componente (Fase): distribución % que suma 100 ─
-  // Cada Actividad reparte su peso: 85 % a responsables, 15 % a apoyos con
-  // cuenta; se acumula por Componente y se normaliza a 100 %.
+  // Crédito de cada colaborador = peso de la Actividad en su Entregable ×
+  // peso exacto del colaborador en esa Actividad; se acumula por Componente
+  // (sumando sobre todos sus Entregables/Actividades) y se normaliza a 100 %.
   const fases = await prisma.fase.findMany({ where: { proyectoId: proyecto.id } });
   const faseIdPorCodigo = new Map<string, string>();
   for (const f of fases) {
@@ -483,17 +494,12 @@ async function main(): Promise<void> {
   const creditoPorComponente = new Map<string, Map<string, number>>(); // comp → (usuarioId → crédito)
   for (const e of DATOS.entregables) {
     const acc = creditoPorComponente.get(e.componente) ?? new Map<string, number>();
+    const sumar = (id: string, v: number) => acc.set(id, (acc.get(id) ?? 0) + v);
     for (const a of e.actividades) {
-      const respIds = a.responsables.map(idDe).filter((x): x is string => !!x);
-      const apoyoIds = a.apoyos.map(idDe).filter((x): x is string => !!x);
-      const sumar = (id: string, v: number) => acc.set(id, (acc.get(id) ?? 0) + v);
-      if (respIds.length && apoyoIds.length) {
-        respIds.forEach((id) => sumar(id, (a.pesoPorcentaje * 0.85) / respIds.length));
-        apoyoIds.forEach((id) => sumar(id, (a.pesoPorcentaje * 0.15) / apoyoIds.length));
-      } else if (respIds.length) {
-        respIds.forEach((id) => sumar(id, a.pesoPorcentaje / respIds.length));
-      } else if (apoyoIds.length) {
-        apoyoIds.forEach((id) => sumar(id, a.pesoPorcentaje / apoyoIds.length));
+      for (const asig of a.asignaciones) {
+        const usuarioId = idDe(asig.nombre);
+        if (!usuarioId) continue;
+        sumar(usuarioId, (a.pesoPorcentaje * asig.pesoPorcentaje) / 100);
       }
     }
     creditoPorComponente.set(e.componente, acc);

@@ -300,13 +300,28 @@ async function main(): Promise<void> {
     throw new Error('No existe ningún Proyecto todavía. Ejecuta primero "npm run seed:pac".');
   }
 
-  // ── 1) Crear/actualizar las personas del equipo (incluida Juana) ──
+  // ── 1) Crear/reutilizar las personas del equipo (incluida Juana) ──
+  // IMPORTANTE: se busca primero por NOMBRE, no por correo. Un administrador
+  // reemplaza el correo provisional por el real desde el panel apenas se crea
+  // la cuenta (ver mensaje final de este script) — si volviéramos a hacer
+  // upsert por `persona.email` (el provisional), esa persona ya NO haría match
+  // por email y el script crearía una cuenta DUPLICADA con el correo viejo,
+  // dejando además sus Actividades/Tareas apuntando al usuario equivocado.
+  // Solo se crea una cuenta nueva cuando el nombre no existe todavía.
   const rolColaborador = await prisma.rol.findUnique({ where: { nombre: 'colaborador' } });
   if (!rolColaborador)
     throw new Error('No existe el rol "colaborador". Ejecuta primero las migraciones/seed base.');
 
   const usuarioIdPorNombre = new Map<string, string>();
+  let cuentasExistentes = 0;
+  let cuentasCreadas = 0;
   for (const persona of Object.values(PERSONAS)) {
+    const existente = await prisma.usuario.findFirst({ where: { nombre: persona.nombre } });
+    if (existente) {
+      cuentasExistentes += 1;
+      usuarioIdPorNombre.set(persona.nombre, existente.id);
+      continue;
+    }
     const usuario = await prisma.usuario.upsert({
       where: { email: persona.email },
       update: {},
@@ -317,10 +332,12 @@ async function main(): Promise<void> {
         estado: 'pendiente_activacion',
       },
     });
+    cuentasCreadas += 1;
     usuarioIdPorNombre.set(persona.nombre, usuario.id);
   }
   console.log(
-    `Equipo: ${usuarioIdPorNombre.size} cuentas (correos provisionales @${DOMINIO_PROVISIONAL}).`,
+    `Equipo: ${cuentasExistentes} cuentas ya existentes reutilizadas (por nombre), ` +
+      `${cuentasCreadas} cuentas nuevas creadas (correo provisional @${DOMINIO_PROVISIONAL}).`,
   );
 
   const idDe = (nombre: string): string | undefined => usuarioIdPorNombre.get(nombre);

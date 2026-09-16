@@ -373,14 +373,19 @@ async function main(): Promise<void> {
   console.log('Entregables: insumos y tramo de pago actualizados.');
 
   // ── 4) Actividades (Subactividades) por entregable ────────────────
-  // Limpieza previa: quitar subactividades heredadas (código de la versión
-  // anterior, que no existe en el Excel oficial) SOLO si no tienen NADA
-  // enganchado que se perdería por el cascade: avances (nivel 3), Tareas
-  // (nivel 4, Gestión de Actas — con sus propios AvanceTarea en cascada) ni
-  // Riesgos estructurados. Si tiene algo de eso, se conserva intacta para
-  // revisión manual (RN: no perder historial de Actas).
+  // Limpieza previa: quitar TODA subactividad heredada (código que no existe
+  // en el Excel oficial), aunque tenga avances (nivel 3), Tareas (nivel 4,
+  // Gestión de Actas) o Riesgos estructurados. Solo deben quedar las
+  // actividades del Excel — decisión explícita del usuario (2026-09-16):
+  // no conservar histórico huérfano.
+  //
+  // Avance/Tarea/Riesgo cascadean solos vía FK (onDelete: Cascade) al borrar
+  // la Subactividad. El único puntero SIN FK real es `ActaTema.subactividadId`
+  // (ver comentario en el modelo): si no se limpia antes, queda apuntando a un
+  // id que ya no existe. Se pone en null (se conserva el texto del tema/acta,
+  // solo se suelta el enlace a la actividad borrada).
   let legadoBorrado = 0;
-  let legadoConservado = 0;
+  let temasDesenlazados = 0;
   for (const e of DATOS.entregables) {
     const actividadId = actividadIdPorProducto.get(e.codigo);
     if (!actividadId) continue;
@@ -388,24 +393,20 @@ async function main(): Promise<void> {
     const existentes = await prisma.subactividad.findMany({ where: { actividadId } });
     for (const sub of existentes) {
       if (sub.codigo && codigosValidos.has(sub.codigo)) continue; // se actualiza abajo
-      const [avances, tareas, riesgos] = await Promise.all([
-        prisma.avanceSubactividad.count({ where: { subactividadId: sub.id } }),
-        prisma.tarea.count({ where: { subactividadId: sub.id } }),
-        prisma.riesgo.count({ where: { subactividadId: sub.id } }),
-      ]);
-      if (avances > 0 || tareas > 0 || riesgos > 0) {
-        legadoConservado += 1;
-        continue; // no destruir avances, Tareas de Actas ni Riesgos reales
-      }
+      const { count } = await prisma.actaTema.updateMany({
+        where: { subactividadId: sub.id },
+        data: { subactividadId: null },
+      });
+      temasDesenlazados += count;
       await prisma.subactividad.delete({ where: { id: sub.id } });
       legadoBorrado += 1;
     }
   }
-  if (legadoBorrado || legadoConservado) {
+  if (legadoBorrado) {
     console.log(
-      `Subactividades heredadas: ${legadoBorrado} eliminadas (sin avances)` +
-        (legadoConservado
-          ? `, ${legadoConservado} conservadas por tener avances (revisar a mano).`
+      `Subactividades heredadas: ${legadoBorrado} eliminadas` +
+        (temasDesenlazados
+          ? ` (${temasDesenlazados} referencias en Temas de Acta desenlazadas, texto conservado).`
           : '.'),
     );
   }

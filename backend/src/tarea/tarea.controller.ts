@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { TareaService } from './tarea.service';
 import { CrearTareaDto } from './dto/crear-tarea.dto';
 import { RegistrarAvanceTareaDto } from './dto/registrar-avance-tarea.dto';
@@ -45,5 +45,12 @@ export class TareaController {
   @Get('mis-tareas')
   mias(@UsuarioActual() usuario: JwtPayload) {
     return this.tareas.listarPorUsuario(usuario.sub);
+  }
+
+  @Delete('tareas/:id')
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
+  eliminar(@Param('id') id: string) {
+    return this.tareas.eliminar(id);
   }
 }

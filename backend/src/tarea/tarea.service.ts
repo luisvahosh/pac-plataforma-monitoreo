@@ -100,6 +100,13 @@ export class TareaService {
     return tarea;
   }
 
+  /** Elimina una tarea (solo Administrador) — libera su peso del presupuesto del colaborador. */
+  async eliminar(id: string) {
+    const tarea = await this.obtener(id);
+    await this.prisma.tarea.delete({ where: { id } });
+    await this.avances.recalcularSubactividad(tarea.subactividadId);
+  }
+
   private async sumaPesos(subactividadId: string, usuarioId: string) {
     const filas = await this.prisma.tarea.findMany({
       where: { subactividadId, usuarioId },

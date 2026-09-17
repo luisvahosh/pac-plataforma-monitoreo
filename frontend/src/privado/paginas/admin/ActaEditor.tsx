@@ -796,6 +796,17 @@ function PanelActividad({
     }
   }
 
+  async function eliminarTarea(id: string) {
+    setError(null);
+    try {
+      await apiJson(`/api/tareas/${id}`, { method: 'DELETE' });
+      await cargar();
+      await onCambio();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function crearRiesgo(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -877,9 +888,14 @@ function PanelActividad({
       </form>
       <ul className="lista-simple">
         {tareas.map((t) => (
-          <li key={t.id}>
-            {t.nombre} — {t.usuario.nombre} · peso {Math.round(t.pesoPorcentaje)}% · avance{' '}
-            {Math.round(t.avancePorcentaje)}% · {t.estado}
+          <li key={t.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+            <span>
+              {t.nombre} — {t.usuario.nombre} · peso {Math.round(t.pesoPorcentaje)}% · avance{' '}
+              {Math.round(t.avancePorcentaje)}% · {t.estado}
+            </span>
+            <button type="button" className="enlace" onClick={() => eliminarTarea(t.id)}>
+              eliminar
+            </button>
           </li>
         ))}
         {tareas.length === 0 && <li className="tenue">Sin tareas aún.</li>}

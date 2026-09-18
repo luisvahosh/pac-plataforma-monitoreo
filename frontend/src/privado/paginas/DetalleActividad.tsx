@@ -573,6 +573,7 @@ function SubactividadFila({
                 key={t.id}
                 tarea={t}
                 puedeReportar={esAdmin || usuario?.sub === t.usuario.id}
+                puedeEliminar={esAdmin}
                 onCambio={async () => {
                   await cargarTareas();
                   await onCambio();
@@ -641,10 +642,12 @@ function SubactividadFila({
 function FilaTarea({
   tarea,
   puedeReportar,
+  puedeEliminar,
   onCambio,
 }: {
   tarea: TareaN4;
   puedeReportar: boolean;
+  puedeEliminar: boolean;
   onCambio: () => Promise<void>;
 }) {
   const [mostrar, setMostrar] = useState(false);
@@ -675,6 +678,16 @@ function FilaTarea({
     }
   }
 
+  async function eliminar() {
+    setError(null);
+    try {
+      await apiJson(`/api/tareas/${tarea.id}`, { method: 'DELETE' });
+      await onCambio();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   return (
     <li>
       {tarea.nombre} — {tarea.usuario.nombre}
@@ -686,6 +699,11 @@ function FilaTarea({
       {puedeReportar && (
         <button type="button" className="enlace" onClick={() => setMostrar((v) => !v)}>
           {mostrar ? 'cancelar' : 'reportar avance'}
+        </button>
+      )}{' '}
+      {puedeEliminar && (
+        <button type="button" className="enlace enlace-peligro" onClick={eliminar}>
+          eliminar
         </button>
       )}
       {error && (

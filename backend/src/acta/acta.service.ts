@@ -227,15 +227,28 @@ export class ActaService {
 
   /**
    * Elimina un acta (asistentes, temas, conclusiones y documentos se borran en
-   * cascada). Las Tareas y Riesgos que nacieron en ella NO se borran: solo
-   * pierden el enlace a su acta de origen (onDelete: SetNull) — no se pierde
-   * ese historial. El consecutivo (`numero`) del proyecto no se reutiliza ni
-   * se reordena: el siguiente acta sigue siendo (numero máximo actual) + 1,
-   * así que un borrado solo deja un salto en la numeración, nunca un choque.
+   * cascada). Las Tareas que nacieron en ella y NO tienen avance real se
+   * eliminan también (libera el % que ocupaban del presupuesto del
+   * colaborador — si no, quedarían "usando" ese % para siempre sin motivo).
+   * Las que ya tienen avance reportado se conservan: solo pierden el enlace a
+   * su acta de origen (onDelete: SetNull), para no perder ese historial. Los
+   * Riesgos siguen la misma regla (onDelete: SetNull, sin borrado adicional).
+   * El consecutivo (`numero`) del proyecto no se reutiliza ni se reordena: el
+   * siguiente acta sigue siendo (numero máximo actual) + 1, así que un
+   * borrado solo deja un salto en la numeración, nunca un choque.
    */
   async eliminar(id: string) {
     const acta = await this.prisma.acta.findUnique({ where: { id } });
     if (!acta) throw new NotFoundException('Acta no encontrada');
+
+    const tareasSinAvance = await this.prisma.tarea.findMany({
+      where: { actaOrigenId: id, avances: { none: {} } },
+      select: { id: true },
+    });
+    for (const t of tareasSinAvance) {
+      await this.tareas.eliminar(t.id);
+    }
+
     await this.prisma.acta.delete({ where: { id } });
   }
 

@@ -250,6 +250,7 @@ export class ActaService {
     }
 
     await this.prisma.acta.delete({ where: { id } });
+    return { mensaje: 'Acta eliminada' };
   }
 
   // ─── Vistas públicas (solo actas enviadas, sin documentos anexos) ─────

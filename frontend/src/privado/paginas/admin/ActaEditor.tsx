@@ -387,10 +387,32 @@ export function ActaEditor() {
         <h3>Registrado en esta acta</h3>
         <ul className="lista-simple">
           {acta.tareas.map((t) => (
-            <li key={t.id}>
-              <strong>Tarea:</strong> {t.nombre} — {t.usuario.nombre} · peso{' '}
-              {Math.round(t.pesoPorcentaje)}% · avance {Math.round(t.avancePorcentaje)}%{' '}
-              <span className="tenue">(en {t.subactividad.descripcion})</span>
+            <li
+              key={t.id}
+              style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}
+            >
+              <span>
+                <strong>Tarea:</strong> {t.nombre} — {t.usuario.nombre} · peso{' '}
+                {Math.round(t.pesoPorcentaje)}% · avance {Math.round(t.avancePorcentaje)}%{' '}
+                <span className="tenue">(en {t.subactividad.descripcion})</span>
+              </span>
+              {editable && (
+                <button
+                  type="button"
+                  className="enlace enlace-peligro"
+                  onClick={async () => {
+                    setError(null);
+                    try {
+                      await apiJson(`/api/tareas/${t.id}`, { method: 'DELETE' });
+                      await cargarActa();
+                    } catch (e) {
+                      setError((e as Error).message);
+                    }
+                  }}
+                >
+                  eliminar
+                </button>
+              )}
             </li>
           ))}
           {acta.riesgosOrigen.map((r) => (

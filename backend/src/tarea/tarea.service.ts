@@ -105,6 +105,7 @@ export class TareaService {
     const tarea = await this.obtener(id);
     await this.prisma.tarea.delete({ where: { id } });
     await this.avances.recalcularSubactividad(tarea.subactividadId);
+    return { mensaje: 'Tarea eliminada' };
   }
 
   private async sumaPesos(subactividadId: string, usuarioId: string) {

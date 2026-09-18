@@ -4,6 +4,7 @@ import { ClipboardText } from '@phosphor-icons/react';
 import { apiJson } from '../../api-cliente';
 import { Esqueleto } from '../../../components/Esqueleto';
 import { EstadoVacio } from '../../../components/EstadoVacio';
+import { Dialogo } from '../../../components/Dialogo';
 
 interface ActaResumen {
   id: string;
@@ -14,11 +15,21 @@ interface ActaResumen {
   tareas: number;
 }
 
+// Diálogo pendiente de mostrar: reemplaza window.confirm() por un modal propio.
+type DialogoPendiente = {
+  tipo: 'confirmar';
+  titulo: string;
+  mensaje: string;
+  peligro?: boolean;
+  onConfirmar: () => void;
+};
+
 export function Actas() {
   const navigate = useNavigate();
   const [items, setItems] = useState<ActaResumen[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creando, setCreando] = useState(false);
+  const [dialogo, setDialogo] = useState<DialogoPendiente | null>(null);
 
   const cargar = useCallback(async () => {
     try {
@@ -41,6 +52,30 @@ export function Actas() {
     } catch (e) {
       setError((e as Error).message);
       setCreando(false);
+    }
+  }
+
+  function pedirEliminar(a: ActaResumen) {
+    setError(null);
+    setDialogo({
+      tipo: 'confirmar',
+      titulo: 'Eliminar acta',
+      mensaje:
+        `¿Eliminar definitivamente el Acta ${String(a.numero).padStart(2, '0')}? ` +
+        'Esta acción no se puede deshacer. Las Tareas y Riesgos que nacieron en ella se conservan ' +
+        '(solo pierden el enlace a esta acta).',
+      peligro: true,
+      onConfirmar: () => void eliminar(a.id),
+    });
+  }
+
+  async function eliminar(id: string) {
+    setError(null);
+    try {
+      await apiJson(`/api/actas/${id}`, { method: 'DELETE' });
+      await cargar();
+    } catch (e) {
+      setError((e as Error).message);
     }
   }
 
@@ -96,6 +131,7 @@ export function Actas() {
               <th>Tema</th>
               <th>Estado</th>
               <th>Tareas</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -114,11 +150,32 @@ export function Actas() {
                   </span>
                 </td>
                 <td>{a.tareas}</td>
+                <td>
+                  <button
+                    type="button"
+                    className="enlace enlace-peligro"
+                    onClick={() => pedirEliminar(a)}
+                    aria-label={`Eliminar Acta ${String(a.numero).padStart(2, '0')}`}
+                  >
+                    eliminar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+
+      <Dialogo
+        abierto={dialogo !== null}
+        titulo={dialogo?.titulo ?? ''}
+        mensaje={dialogo?.mensaje ?? ''}
+        tipo="confirmar"
+        peligro={dialogo?.peligro}
+        textoConfirmar="Confirmar"
+        onConfirmar={dialogo?.onConfirmar}
+        onCerrar={() => setDialogo(null)}
+      />
     </section>
   );
 }

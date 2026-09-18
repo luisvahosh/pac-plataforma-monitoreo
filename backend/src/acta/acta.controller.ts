@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ActaService } from './acta.service';
 import { ActualizarActaDto } from './dto/actualizar-acta.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -52,5 +52,10 @@ export class ActaController {
   @Post(':id/reabrir')
   reabrir(@Param('id') id: string) {
     return this.actas.reabrir(id);
+  }
+
+  @Delete(':id')
+  eliminar(@Param('id') id: string) {
+    return this.actas.eliminar(id);
   }
 }

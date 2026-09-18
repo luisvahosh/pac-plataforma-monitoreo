@@ -225,6 +225,20 @@ export class ActaService {
     return this.obtener(id);
   }
 
+  /**
+   * Elimina un acta (asistentes, temas, conclusiones y documentos se borran en
+   * cascada). Las Tareas y Riesgos que nacieron en ella NO se borran: solo
+   * pierden el enlace a su acta de origen (onDelete: SetNull) — no se pierde
+   * ese historial. El consecutivo (`numero`) del proyecto no se reutiliza ni
+   * se reordena: el siguiente acta sigue siendo (numero máximo actual) + 1,
+   * así que un borrado solo deja un salto en la numeración, nunca un choque.
+   */
+  async eliminar(id: string) {
+    const acta = await this.prisma.acta.findUnique({ where: { id } });
+    if (!acta) throw new NotFoundException('Acta no encontrada');
+    await this.prisma.acta.delete({ where: { id } });
+  }
+
   // ─── Vistas públicas (solo actas enviadas, sin documentos anexos) ─────
 
   async listarPublicas() {
